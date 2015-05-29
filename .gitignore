@@ -1,0 +1,11 @@
+# latex
+*.aux
+*.log
+*.lof
+*.lot
+*.out
+*.toc
+*.synctex.gz
+
+# sublime
+*.sublime-workspace
