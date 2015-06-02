@@ -137,12 +137,12 @@ literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1}
 % Preface (optional)
 \newpage
 \markboth{Preface}{Preface}
-\include{Preface}
+\include{01_Preface}
 
 % Abstract should not be longer than one page.
 \newpage
 \markboth{Abstract}{Abstract}
-\include{Abstract}
+\include{02_Abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Table of contents and list of figures and %%%   
@@ -160,7 +160,7 @@ literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1}
 \phantomsection
 \addcontentsline{toc}{chapter}{\protect\numberline{}{Notation}}
 \markboth{Notation}{Notation}
-\include{Notation}
+\include{03_Notation}
 
 \cleardoublepage
 \pagenumbering{arabic}%--- switch back to standard numbering 
@@ -171,10 +171,10 @@ literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1}
 %%% or even better: write in separate files   %%%
 %%% that you just have to include here.       %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{Introduction}
-\include{Chapter1}
+\include{11_Introduction}
+\include{12_Chapter1}
 %%\include{Chapter...}
-\include{Summary} 
+\include{13_Summary} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibliography                              %%%
@@ -195,8 +195,8 @@ literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addtocontents{toc}{\vspace{.5\baselineskip}}
 \appendix
-\include{Appendix1}
-\include{Appendix2}
+\include{31_Appendix1}
+\include{32_Appendix2}
 
 
 %% Epilogue (optional)
@@ -205,7 +205,7 @@ literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1}
 \phantomsection
 \addcontentsline{toc}{chapter}{\protect\numberline{}{Epilogue}}
 \markboth{Epilogue}{Epilogue}
-\include{Epilogue}
+\include{33_Epilogue}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -221,5 +221,5 @@ literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1}
 %% General info on plagiarism:
 %% https://www.ethz.ch/students/en/studies/performance-assessments/plagiarism.html 
 \cleardoublepage
-\includepdf[pages={-}, frame=true,scale=1]{confirmation-originality-scan.pdf}
+\includepdf[pages={-}, frame=true,scale=1]{34_Originality.pdf}
 \end{document}
