@@ -1,8 +1,19 @@
 {
-	"folders":
-	[
-		{
-			"path": "."
-		}
-	]
+  "folders": [{
+    "path": "."
+  }],
+  "settings": {
+    "translate_tabs_to_spaces": true,
+    "tab_size": 2,
+    "rulers": [80],
+    "wrap_width": 80,
+  },
+  "options": {
+    "root": "00_Master.tex"
+  },
+  "build_systems": [{
+    "name": "Make all",
+    "cmd": ["make"],
+    "path": "/usr/local/bin:/usr/bin:/usr/texbin:/bin:/opt/local/bin"
+  }]
 }

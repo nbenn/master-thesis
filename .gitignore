@@ -6,6 +6,13 @@
 *.out
 *.toc
 *.synctex.gz
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
 
 # sublime
 *.sublime-workspace
+
+# make
+.refresh
