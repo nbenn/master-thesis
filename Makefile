@@ -1,9 +1,9 @@
 LATEX=pdflatex
-LATEXOPT=--shell-escape
+LATEXOPT=--shell-escape -file-line-error -synctex=1
 NONSTOP=--interaction=nonstopmode
 
 LATEXMK=latexmk
-LATEXMKOPT=-pdf
+LATEXMKOPT=-pdf -outdir=build -pv-
 CONTINUOUS=-pvc
 
 MAIN=00_Master
@@ -12,20 +12,19 @@ SUBFILES=$(filter-out $(MAIN).tex, $(wildcard *.tex))
 SOURCES=$(MAIN).tex Makefile $(SUBFILES)
 FIGURES := $(shell find images/* -type f)
 
-all:    $(RESULT).pdf
+all: once
 
 .refresh:
 		touch .refresh
 
-$(RESULT).pdf: $(MAIN).tex .refresh $(SOURCES) $(FIGURES)
+continous: $(MAIN).tex .refresh $(SOURCES) $(FIGURES)
 		$(LATEXMK) $(LATEXMKOPT) $(CONTINUOUS) -pdflatex="$(LATEX) $(LATEXOPT) \
 		$(NONSTOP) %O %S" $(MAIN)
 
 force:
 		touch .refresh
-		rm $(RESULT).pdf
-		$(LATEXMK) $(LATEXMKOPT) $(CONTINUOUS) -pdflatex="$(LATEX) $(LATEXOPT) \
-		%O %S" $(MAIN)
+		$(LATEXMK) $(LATEXMKOPT) -pdflatex="$(LATEX) $(LATEXOPT) %O %S" $(MAIN)
+		cp build/$(MAIN).pdf $(RESULT).pdf
 
 clean:
 		$(LATEXMK) -C $(MAIN)

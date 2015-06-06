@@ -16,3 +16,6 @@
 
 # make
 .refresh
+
+# build dir
+build/*.pdf
