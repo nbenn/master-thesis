@@ -1,0 +1,21 @@
+{
+  "folders": [{
+    "path": "."
+  }],
+  "settings": {
+    "translate_tabs_to_spaces": true,
+    "tab_size": 2,
+    "rulers": [80],
+    "wrap_width": 80,
+  },
+  "build_systems": [{
+    "name": "make",
+    "cmd": ["make"],
+    "shell": true,
+    "path": "/usr/local/bin:/usr/bin:/usr/texbin:/bin:/opt/local/bin"
+  }],
+  "options": {
+    "root": "thesis.tex",
+    "pdf": "build/pdf/thesis.pdf"    
+  }
+}

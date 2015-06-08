@@ -1,15 +1,15 @@
 %% (Master) Thesis template
-% Template version used: v1.4
-%
-% Largely adapted from Adrian Nievergelt's template for the ADPS
-% (lecture notes) project.
+%% Template version used: v1.4
+%%
+%% Largely adapted from Adrian Nievergelt's template for the ADPS
+%% (lecture notes) project.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Document settings                                                      %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% We use the memoir class because it offers a many easy to use features.
 \documentclass[11pt,a4paper,titlepage]{memoir}
-
-%% Packages
-%% ========
 
 %% LaTeX Font encoding -- DO NOT CHANGE
 \usepackage[OT1]{fontenc}
@@ -55,33 +55,39 @@
 
 %% Some more packages that you may want to use.  Have a look at the
 %% file, and consult the package docs for each.
-\input{extrapackages}
+\input{setup/extrapackages}
 
 %% Our layout configuration.  DO NOT CHANGE.
-\input{layoutsetup}
+\input{setup/layoutsetup}
 
 %% Theorem environments.  You will have to adapt this for a German
 %% thesis.
-\input{theoremsetup}
+\input{setup/theoremsetup}
 
 %% Helpful macros.
-\input{macrosetup}
+\input{setup/macrosetup}
 
 %% Make document internal hyperlinks wherever possible. (TOC, references)
 %% This MUST be loaded after varioref, which is loaded in 'extrapackages'
 %% above.  We just load it last to be safe.
-\usepackage[linkcolor=black,colorlinks=true,citecolor=black,filecolor=black]{hyperref}
-
+\usepackage[
+  linkcolor=black,
+  colorlinks=true,
+  citecolor=black,
+  filecolor=black
+]{hyperref}
 
 %% Document information
-%% ====================
-
 \title{Title of Thesis}
 \author{S. Tudent}
 \thesistype{Master Thesis}
 \advisors{Advisors: Prof.\ Dr.\ A. D. Visor, Dr.\ P. Ostdoc}
 \department{Department of Computer Science}
 \date{January 19, 2038}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Document body                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -97,7 +103,7 @@
 \end{titlingpage}
 
 %% The abstract of your thesis.  Edit the file as needed.
-\input{abstract}
+\input{chapters/abstract}
 
 %% TOC with the proper setup, do not change.
 \cleartorecto
@@ -105,14 +111,14 @@
 \mainmatter
 
 %% Your real content!
-\input{introduction}
-\input{rules}
-\input{typography}
-\input{sections}
+\input{chapters/introduction}
+\input{chapters/rules}
+\input{chapters/typography}
+\input{chapters/sections}
 
 \appendix
 
-\input{appendix}
+\input{chapters/appendix}
 
 \backmatter
 
