@@ -16,6 +16,6 @@
   }],
   "options": {
     "root": "thesis.tex",
-    "pdf": "build/pdf/thesis.pdf"    
+    "pdf": ".build/thesis.pdf"    
   }
 }
