@@ -10,11 +10,9 @@ LATEXMK    = latexmk
 LATEXMKOPT = -pdf -outdir=$(BUILDDIR)
 
 MAIN     = thesis
-TEXSRC   = $(MAIN).tex $(wildcard $(TEXTDIR)/*.tex) refs.bib
+TEXSRC   = $(MAIN).tex $(wildcard $(TEXTDIR)/*.tex) mendeley.bib
 SETUPSRC = $(wildcard $(STYLEDIR)/*.tex) $(wildcard $(STYLEDIR)/*.sty)
 FIGURES  = $(wildcard $(FIGDIR)/*.pdf)
-
-export TEXINPUTS:=./$(STYLEDIR):${TEXINPUTS}
 
 all:    $(MAIN).pdf
 

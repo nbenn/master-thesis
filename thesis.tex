@@ -73,7 +73,21 @@
   filecolor=black
 ]{hyperref}
 
-%% Document information
+%% Set the paths where all figures are taken from:
+\graphicspath{{figures/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Document body                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\frontmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Title page                                                             %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \thesistype{Master Thesis}
 \thesisperiod{Spring 2015}
 \thesisauthor{Nicolas Bennett}
@@ -86,46 +100,86 @@
 \mainreader{Prof.\ Dr.\ Peter Bühlmann}
 \alternatereader{Anna Drewek}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  Document body                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{document}
-
-\frontmatter
-
-%% Title page
 \begin{titlingpage}
-  \vspace*{-3.5cm}
+  \vspace*{-2cm}
   \calccentering{\unitlength}
-  \begin{adjustwidth*}{\unitlength-2cm}{-\unitlength-2cm}
+  \begin{adjustwidth*}{\unitlength-1cm}{-\unitlength-1cm}
     \maketitle
   \end{adjustwidth*}
 \end{titlingpage}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Front matter                                                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Dedication (optional)
+\markright{}
+\vspace*{\stretch{1}}
+\begin{center}
+    To some special person
+\end{center}
+\vspace*{\stretch{2}}
+
+%% Preface (optional)
+\cleartorecto
+\include{chapters/preface}
+
 %% The abstract of your thesis.  Edit the file as needed.
+\cleartorecto
 \include{chapters/abstract}
 
-%% TOC with the proper setup, do not change.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Table of contents and list of figures and tables                       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \cleartorecto
 \tableofcontents
+\cleartorecto
+\listoffigures
+\cleartorecto
+\listoftables
+
+%% Notations and glossary (optional)
+\addcontentsline{toc}{chapter}{\protect\numberline{}{Notation}}
+\include{chapters/notation}
+
 \mainmatter
 
-%% Your real content!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Thesis body                                                            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \include{chapters/introduction}
 \include{chapters/rules}
 \include{chapters/typography}
 \include{chapters/sections}
 
-\appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Appendices (if needed)                                                 %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\include{chapters/appendix}
+\addtocontents{toc}{\vspace{.5\baselineskip}}
+\appendix
+\include{chapters/appendix-a}
+\include{chapters/appendix-b}
 
 \backmatter
 
-\bibliographystyle{plain}
-\bibliography{refs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Bibliography                                                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\bibliographystyle{chicago}
+\bibliography{mendeley}
+
+\addtocontents{toc}{\vspace{.5\baselineskip}}
+\include{chapters/epilogue}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Declaration of originality                                             %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleartorecto
 \includepdf[pages={-}]{declaration-originality.pdf}
 
 \end{document}
