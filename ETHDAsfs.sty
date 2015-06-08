@@ -1,49 +1,31 @@
-% --- ETHDAsfs.sty
-%\RequirePackage{ETHlogo}
+%% set language to english 
 \newif\ifgerman\newif\ifenglish\newif\iffrench
-  \germantrue\englishfalse\frenchfalse
-  \def\@language{german}
-  \providecommand{\ETHlogotext}{\ETHlogotextge}
-%
-\DeclareOption{german}{% default, siehe oben
-}
-\DeclareOption{english}{%
   \germanfalse\englishtrue\frenchfalse
   \def\@language{english}
   \providecommand{\ETHlogotext}{\ETHlogotexte}
-}
-\ProcessOptions
-%
-%\RequirePackage[latin1]{inputenc}% << nötig für das deutsche `ß'
-\RequirePackage{ae}% A[lmost] E[uropean] Fonts
-\ifgerman\RequirePackage{germanU}\fi
+
+%% A[lmost] E[uropean] Fonts
+\RequirePackage{ae}
 
 \PassOptionsToPackage{\@language}{babel}
-
-% --- Package loading
 \RequirePackage{babel}
-\RequirePackage{sfs-hyper}%-> url, {hyperref} + options für pdflatex
-\RequirePackage{ETHDASA}%-- MODIFIED version ./ETHDASA.sty
-% (requires  \ifgermen  etc.)
-\ifgerman
-\laboratory{\sffamily Mathematik Department} 
-\else
+%% url, {hyperref} + options für pdflatex
+\RequirePackage{sfs-hyper}
+%% (requires  \ifgermen  etc.)
+\RequirePackage{ETHDASA}
 \laboratory{\sffamily Department of Mathematics}
-\fi
-% ist jetzt im Logo : \\ Seminar f\"ur Statistik
+%% Theorem / Proof, etc.  von AMS-TeX
+\RequirePackage{amsthm}
 
-\RequirePackage{amsthm}%-- Theorem / Proof, etc.  von AMS-TeX
-\ifgerman\renewcommand{\proofname}{Beweis}\fi
-
-\RequirePackage{fancyhdr}%was {fancyheadings}
+\RequirePackage{fancyhdr}
 \pagestyle{fancyplain}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
-%% MM: The following can be done much nicer with new `fancyhdr' :
+%% MM: The following can be done much nicer with new `fancyhdr'
 \lhead[\fancyplain{}{\bfseries \thepage}]%
       {\fancyplain{}{\bfseries \rightmark}}
 \rhead[\fancyplain{}{\bfseries \leftmark}]%
       {\fancyplain{}{\bfseries \thepage}}
 \cfoot{\fancyplain{\thepage}{}}
-
-\RequirePackage{parskip}%-- \parindent 0; but parskip
+%% \parindent 0; but parskip
+\RequirePackage{parskip}
