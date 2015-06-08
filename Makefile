@@ -1,41 +1,37 @@
-LATEX=pdflatex
-LATEXOPT=--shell-escape -file-line-error -synctex=1
-NONSTOP=--interaction=nonstopmode
+BUILDDIR = .build
+TEXTDIR  = chapters
+STYLEDIR = setup
+FIGDIR   = figures
 
-LATEXMK=latexmk
-LATEXMKOPT=-pdf -outdir=build -pv-
-CONTINUOUS=-pvc
+LATEX    = pdflatex
+LATEXOPT = --shell-escape -file-line-error -synctex=1
 
-MAIN=00_Master
-RESULT=MasterThesis
-SUBFILES=$(filter-out $(MAIN).tex, $(wildcard *.tex))
-SOURCES=$(MAIN).tex Makefile $(SUBFILES)
-FIGURES := $(shell find images/* -type f)
+LATEXMK    = latexmk
+LATEXMKOPT = -pdf -outdir=$(BUILDDIR)
 
-all: once
+MAIN     = thesis
+TEXSRC   = $(MAIN).tex $(wildcard $(TEXTDIR)/*.tex) mendeley.bib
+SETUPSRC = $(wildcard $(STYLEDIR)/*.tex) $(wildcard $(STYLEDIR)/*.sty)
+FIGURES  = $(wildcard $(FIGDIR)/*.pdf)
+
+all:    $(MAIN).pdf
 
 .refresh:
 		touch .refresh
 
-continous: $(MAIN).tex .refresh $(SOURCES) $(FIGURES)
-		$(LATEXMK) $(LATEXMKOPT) $(CONTINUOUS) -pdflatex="$(LATEX) $(LATEXOPT) \
-		$(NONSTOP) %O %S" $(MAIN)
+$(MAIN).pdf: $(TEXSRC) $(SETUPSRC) $(FIGURES) .refresh Makefile
+		mkdir -p $(BUILDDIR)/$(TEXTDIR)
+		$(LATEXMK) $(LATEXMKOPT) -pdflatex="$(LATEX) $(LATEXOPT) %O %S" \
+		$(MAIN).tex
+		cp $(BUILDDIR)/$(MAIN).pdf $(MAIN).pdf
 
 force:
 		touch .refresh
-		$(LATEXMK) $(LATEXMKOPT) -pdflatex="$(LATEX) $(LATEXOPT) %O %S" $(MAIN)
-		cp build/$(MAIN).pdf $(RESULT).pdf
+		$(MAKE) $(MAIN).pdf
+
+.PHONY: clean force all
 
 clean:
-		$(LATEXMK) -C $(MAIN)
+		$(LATEXMK) -C $(MAIN).tex
 		rm -f $(MAIN).pdfsync
 		rm -rf *~ *.tmp
-		rm -f *.bbl *.blg *.aux *.end *.fls *.log *.out *.fdb_latexmk
-
-once:
-		$(LATEXMK) $(LATEXMKOPT) -pdflatex="$(LATEX) $(LATEXOPT) %O %S" $(MAIN)
-
-debug:
-		$(LATEX) $(LATEXOPT) $(MAIN)
-
-.PHONY: clean force once all

@@ -1,0 +1,99 @@
+%% See the TeXed file for more explanations
+
+%% [OPT] Multi-rowed cells in tabulars
+%\usepackage{multirow}
+
+%% [REC] Intelligent cross reference package. This allows for nice
+%% combined references that include the reference and a hint to where
+%% to look for it.
+\usepackage{varioref}
+
+%% [OPT] Easily changeable quotes with \enquote{Text}
+%\usepackage[german=swiss]{csquotes}
+
+%% [REC] Format dates and time depending on locale
+\usepackage{datetime}
+
+%% [OPT] Provides a \cancel{} command to stroke through mathematics.
+%\usepackage{cancel}
+
+%% [NEED] This allows for additional typesetting tools in mathmode.
+%% See its excellent documentation.
+\usepackage{mathtools}
+
+%% [ADV] Conditional commands
+%\usepackage{ifthen}
+
+%% [OPT] Manual large braces or other delimiters.
+%\usepackage{bigdelim, bigstrut}
+
+%% [REC] Alternate vector arrows. Use the command \vv{} to get scaled
+%% vector arrows.
+\usepackage[h]{esvect}
+
+%% [NEED] Some extensions to tabulars and array environments.
+\usepackage{array}
+
+%% [OPT] Postscript support via pstricks graphics package. Very
+%% diverse applications.
+%\usepackage{pstricks,pst-all}
+
+%% [?] This seems to allow us to define some additional counters.
+%\usepackage{etex}
+
+%% [ADV] XY-Pic to typeset some matrix-style graphics
+%\usepackage[all]{xy}
+
+%% [OPT] This is needed to generate an index at the end of the
+%% document.
+%\usepackage{makeidx}
+
+%% to allow cloring in code listings
+\usepackage{color}
+
+%% [OPT] Fancy package for source code listings.  The template text
+%% needs it for some LaTeX snippets; remove/adapt the \lstset when you
+%% remove the template content.
+\usepackage{listings}
+%% for linenumbers only!
+\definecolor{Mygrey}{gray}{0.75}
+%% for comments
+\definecolor{Cgrey}{gray}{0.4}
+\lstloadlanguages{R}
+%% for help, see http://en.wikibooks.org/wiki/LaTeX/Packages/Listings
+\lstset{
+  language=R,
+  %% \small > \footnotesize > \scriptsize > \tiny
+  basicstyle=\ttfamily\scriptsize,
+  %commentstyle=\ttfamily\color{Cgrey},
+  commentstyle=\itshape\color{Cgrey},
+  numbers=left,
+  numberstyle=\ttfamily\color{Mygrey}\tiny,
+  stepnumber=1,
+  numbersep=5pt,
+  backgroundcolor=\color{white},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  tabsize=2,
+  captionpos=b,
+  breaklines=true,
+  %breakatwhitespace=false,
+  keywordstyle={},
+  morekeywords={},
+  xleftmargin=4ex, 
+  literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1
+}
+%% for (*\ref{ }*) inside lstlistings (Scode) 
+\lstset{escapeinside={(*}{*)}}
+
+%% [REC] Fancy character protrusion.  Must be loaded after all fonts.
+\usepackage[activate]{pdfcprot}
+
+%% [REC] Nicer tables.  Read the excellent documentation.
+\usepackage{booktabs}
+
+%% use 'numbers': \usepackage[longnamesfirst,number]{natbib} for [1], [2] 
+\usepackage[longnamesfirst]{natbib}
+

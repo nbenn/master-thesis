@@ -10,13 +10,12 @@
   },
   "build_systems": [{
     "name": "make",
-    "cmd": ["make force"],
+    "cmd": ["make"],
     "shell": true,
-    "file_regex": "^(?:W|E|B):\\s(.*):([0-9]+)",
     "path": "/usr/local/bin:/usr/bin:/usr/texbin:/bin:/opt/local/bin"
   }],
   "options": {
-    "root": "00_Master.tex",
-    "pdf": "build/00_Master.pdf"    
+    "root": "thesis.tex",
+    "pdf": ".build/thesis.pdf"    
   }
 }

@@ -8,7 +8,7 @@ you can include several chapters in the main part of your work).
 
 \section{Including \Rp code with verbatim}
 A simple (rather too simple, see~\ref{App:listings}) way to include code or
-{\it R} output is to use 
+{\textit R} output is to use 
 \texttt{verbatim}. It just prints the text however it is (including all
 spaces, ``strange'' symbols,...) in a slightly different font.
 \begin{verbatim}
@@ -37,15 +37,10 @@ However, it is much nicer to use the \emph{listings} package to include \Rp
 code in your report. It allows you to number the lines, color the comments
 differently than the code, and so on.
 
-\lstinputlisting{images/picture.R}
+\lstinputlisting{figures/picture.R}
 
 
 \section{Using Sweave to include \Rp code (and more) in your report}
 The easiest (and most elegant) way to include \Rp code and its output (and
 have all your figures up to date with your report) is to use Sweave. You
 can find an introduction Sweave in \texttt{/u/sfs/StatSoftDoc/Sweave/Sweave-tutorial.pdf}.
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "00_Master"
-%%% End: 

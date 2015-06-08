@@ -1,0 +1,172 @@
+%% Memoir layout setup
+
+%% NOTE: You are strongly advised not to change any of them unless you
+%% know what you are doing.  These settings strongly interact in the
+%% final look of the document.
+
+%% Title page: redefine maketitle macro
+\newlength{\logounitlength}
+\setlength{\logounitlength}{0.08mm}
+
+\def\thesistype#1{\def\thesistypestring{#1}}
+\def\thesistypestring{}
+\def\thesisperiod#1{\def\thesisperiodstring{#1}}
+\def\thesisperiodstring{}
+\def\thesistitle#1{\def\thesistitlestring{#1}}
+\def\thesistitlestring{}
+\def\thesisauthor#1{\def\thesisauthorstring{#1}}
+\def\thesisauthorstring{}
+\def\submissiondate#1{\def\submissiondatestring{#1}}
+\def\submissiondatestring{}
+\def\alternatereader#1{\def\alternatereaderstring{#1}}
+\def\alternatereaderstring{}
+\def\mainreader#1{\def\mainreaderstring{#1}}
+\def\mainreaderstring{}
+
+\newcommand{\ETHlogo}{
+  \parbox{100mm}{
+    \vbox{
+      \kern2pt\setlength{\unitlength}{\logounitlength}
+      \begin{picture}(330,110)(0,-5)
+        \thicklines
+        \multiput(0,0)(2,0){16}{\line(1,4){25}}
+        \multiput(1,0)(0.5,2){12}{\line(1,0){84}}
+        \multiput(42,40.4)(0.5,2){11}{\line(1,0){53}}
+        \multiput(19.5,78.8)(0.5,2){12}{\line(1,0){210}}
+        \multiput(116,0)(2,0){16}{\line(1,4){24}}
+        \multiput(180,0)(2,0){16}{\line(1,4){25}}
+        \multiput(237,0)(2,0){16}{\line(1,4){25}}
+        \multiput(220,39)(0.5,2){12}{\line(1,0){30}}
+        \put(262.5,100){\line(1,0){30}}
+      \end{picture}
+      \hfill\break\sffamily\bfseries Swiss Federal Institute of Technology 
+      Zurich
+    }
+  }
+}
+
+\newcommand{\SfSlogo}{
+  \parbox{40mm}{
+    \hfill\kern2pt
+    \setlength{\unitlength}{\logounitlength}\begin{picture}(330,110)(0,-5)
+    \end{picture}\\
+    \sffamily\bfseries
+    \null\hfill Seminar for\kern3mm\break
+    \null\hfill \phantom{g}Statistics\kern3mm%
+  }
+}
+
+\makeatletter
+\def\maketitle{
+  \begingroup
+  \hspace*{-3pt}\raise 20pt\hbox{\ETHlogo}\hfill
+    \raise 19pt\hbox{\SfSlogo}\hspace*{-10pt}
+  \linebreak
+  \vspace{1pt}
+  {\sffamily\bfseries\noindent{\\Departement of Mathematics}}
+  \par\vspace*{5pt}
+  \rule{\linewidth}{.3pt}\\[1pt]
+  \vspace*{-15pt}
+  \begin{center}
+    \Large \thesistypestring
+    \hfill
+    \Large \thesisperiodstring\\[2pt] 
+  \end{center}
+  \rule{\linewidth}{.3pt}
+  \medskip
+  \vspace{70pt}
+  \begin{center}
+    \bfseries
+    \Large \thesisauthorstring\\
+    \vspace{2ex plus 1ex minus 1.5ex}
+    \LARGE \thesistitlestring
+  \end{center}
+  \vspace{\stretch{2}}
+  \vspace{\stretch{3}}
+
+  \begin{center} \large
+    \rule{.5\linewidth}{.3pt} \\[8pt]
+    \begin{tabular}{ll}
+      Submission Date: & \submissiondatestring
+    \end{tabular}
+    \\[5pt] \rule{.5\linewidth}{.3pt}
+    
+    \vspace{2ex plus 25ex minus 1.5ex}
+    
+    \begin{tabular}{ll}
+      Co-Adviser: & \alternatereaderstring \\
+      Adviser:    & \mainreaderstring
+    \end{tabular}
+  \end{center}
+  \vspace*{-20pt}
+
+  \endgroup
+}
+\makeatother
+
+% Turn extra space before chapter headings off.
+\setlength{\beforechapskip}{0pt}
+
+\nonzeroparskip
+\parindent=0pt
+\defaultlists
+
+% Chapter style redefinition
+\makeatletter
+
+\if@twoside
+  \pagestyle{Ruled}
+  \copypagestyle{chapter}{Ruled}
+\else
+  \pagestyle{ruled}
+  \copypagestyle{chapter}{ruled}
+\fi
+\makeoddhead{chapter}{}{}{}
+\makeevenhead{chapter}{}{}{}
+\makeheadrule{chapter}{\textwidth}{0pt}
+\copypagestyle{abstract}{empty}
+
+\makechapterstyle{bianchimod}{%
+  \chapterstyle{default}
+  \renewcommand*{\chapnamefont}{\normalfont\Large\sffamily}
+  \renewcommand*{\chapnumfont}{\normalfont\Large\sffamily}
+  \renewcommand*{\printchaptername}{%
+    \chapnamefont\centering\@chapapp}
+  \renewcommand*{\printchapternum}{\chapnumfont {\thechapter}}
+  \renewcommand*{\chaptitlefont}{\normalfont\huge\sffamily}
+  \renewcommand*{\printchaptertitle}[1]{%
+    \hrule\vskip\onelineskip \centering \chaptitlefont\textbf{\vphantom{gyM}##1}\par}
+  \renewcommand*{\afterchaptertitle}{\vskip\onelineskip \hrule\vskip
+    \afterchapskip}
+  \renewcommand*{\printchapternonum}{%
+    \vphantom{\chapnumfont {9}}\afterchapternum}}
+
+% Use the newly defined style
+\chapterstyle{bianchimod}
+
+\setsecheadstyle{\Large\bfseries\sffamily}
+\setsubsecheadstyle{\large\bfseries\sffamily}
+\setsubsubsecheadstyle{\bfseries\sffamily}
+\setparaheadstyle{\normalsize\bfseries\sffamily}
+\setsubparaheadstyle{\normalsize\itshape\sffamily}
+\setsubparaindent{0pt}
+
+% Set captions to a more separated style for clearness
+\captionnamefont{\sffamily\bfseries\footnotesize}
+\captiontitlefont{\sffamily\footnotesize}
+\setlength{\intextsep}{16pt}
+\setlength{\belowcaptionskip}{1pt}
+
+% Set section and TOC numbering depth to subsection
+\setsecnumdepth{subsection}
+\settocdepth{subsection}
+
+\checkandfixthelayout
+
+\setlength{\droptitle}{-48pt}
+
+\makeatother
+
+% This defines how theorems should look. Best leave as is.
+\theoremstyle{plain}
+\setlength\theorempostskipamount{0pt}

@@ -1,21 +1,3 @@
-# latex
-*.aux
-*.log
-*.lof
-*.lot
-*.out
-*.toc
-*.synctex.gz
-*.bbl
-*.blg
-*.fls
-*.fdb_latexmk
-
-# sublime
+/.build
 *.sublime-workspace
-
-# make
 .refresh
-
-# build dir
-build/*.pdf
