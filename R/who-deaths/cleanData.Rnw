@@ -1,0 +1,66 @@
+<<who-deaths_top-causes, eval=TRUE, echo=FALSE, message=FALSE>>=
+path <- gsub("/R/", "/data/", getwd())
+files <- list.files(path, pattern="\\.csv$", full.names=TRUE)
+if(length(files) != 5) stop("expecting 5 data files.")
+input <- lapply(files, read.csv, stringsAsFactors=FALSE)
+data  <- lapply(input, function(data) {
+  col1   <- strsplit(data[,1], "; ")
+  region <- sapply(col1, function(x) return(x[1]))
+  cause  <- sapply(col1, function(x) return(x[2]))
+  cause1 <- c(cause[1], rep(cause[2], 53), rep(cause[55], 91),
+              rep(cause[146], 13))
+  cause2 <- c(cause[1], cause[2], rep(cause[3], 40),
+              rep("Maternal and perinatal conditions", 6), rep(cause[49], 6),
+              cause[55], rep(cause[56], 18), cause[74], cause[75], cause[76],
+              rep(cause[77], 12), rep(cause[89], 8), rep(cause[97], 8),
+              rep(cause[105], 7), rep(cause[112], 4), rep(cause[116], 5),
+              rep(cause[121], 5), cause[126], cause[127], cause[128],
+              rep(cause[129], 6), rep(cause[135], 7), rep(cause[142], 4),
+              cause[146], rep(cause[147], 8), rep(cause[155], 4))
+  cause3 <- cause
+  cause3[6:10] <- cause[5]
+  cause3[14:17] <- cause[13]
+  cause3[23:33] <- cause[22]
+  cause3[35:37] <- cause[34]
+  cause3[40:42] <- cause[39]
+  cause3[44:48] <- "Perinatal conditions"
+
+  all <- cbind(region, cause1, cause2, cause3, cause, data[,20], data[,39])
+  colnames(all) <- c("Region", "Cause1", "Cause2", "Cause3", "Cause4",
+                     "Deaths2012", "Deaths2000")
+  all <- as.data.frame(all, stringsAsFactors=FALSE)
+  all$Deaths2012 <- as.integer(gsub(",", "", all$Deaths2012))
+  all$Deaths2000 <- as.integer(gsub(",", "", all$Deaths2000))
+  drop <- c(1, 2, 3, 5, 13, 22, 34, 39, 49, 55, 56, 77, 89, 97, 105, 112, 116,
+            121, 129, 135, 142, 146, 147, 155)
+  sum <- all[drop,]
+  res <- all[-drop,]
+
+  ind.names <- c(1, 2, 3, 5, 13, 22, 34, 39, 49, 55, 56, 77, 89, 97, 105, 112,
+                 116, 121, 129, 135, 142, 146, 147, 155)
+  ind.sum   <- 1:24
+  ind1.res  <- c(1, 1, 1, 2, 9, 17, 28, 32, 41, 46, 46, 66, 77, 84, 91, 97,
+                 100, 104, 111, 116, 122, 125, 125, 132)
+  ind2.res  <- c(134, 45, 31, 6, 12, 27, 30, 34, 45, 124, 62, 76, 83, 90, 96,
+                 99, 103, 107, 115, 121, 124, 134, 131, 134)
+  indices <- cbind(ind.names, ind.sum, ind1.res, ind2.res)
+  message("\nreport: dropped summaries - kept results")
+  apply(indices, 1, function(ind) {
+    message(cause3[ind[1]], ": ", paste(
+      sum[ind[2],c(6,7)] - colSums(res[ind[3]:ind[4],c(6,7)]),
+      collapse=" and "))
+  })
+
+  return(res)
+})
+
+who.deaths <- do.call(rbind, data)
+who.deaths$row.names <- NULL
+who.deaths$Region <- as.factor(who.deaths$Region)
+who.deaths$Cause1 <- as.factor(who.deaths$Cause1)
+who.deaths$Cause2 <- as.factor(who.deaths$Cause2)
+who.deaths$Cause3 <- as.factor(who.deaths$Cause3)
+who.deaths$Cause4 <- as.factor(who.deaths$Cause4)
+
+saveRDS(who.deaths, paste0(path, "/all.rds"))
+@

@@ -85,6 +85,10 @@
 
 %% Set the paths where all figures are taken from:
 \graphicspath{{figures/}}
+%% level on which equation numbering is done
+\numberwithin{equation}{chapter}
+%% import knitr related stuff
+\input{R/knitrPreamble}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Document body                                                          %%%
@@ -123,19 +127,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Dedication (optional)
-\markright{}
+%\markright{}
 \vspace*{\stretch{1}}
-\begin{center}
-    To some special person
-\end{center}
+[B]ecause we tend to reward others when they do well and punish them when they do badly, and because there is regression to the mean, it is part of the human condition that we are statistically punished for rewarding others and rewarded for punishing them --- \cite{Kahneman2012}.
 \vspace*{\stretch{2}}
 
 %% Preface (optional)
 \cleartorecto
+\addcontentsline{toc}{chapter}{Preface}
 \include{chapters/preface}
 
 %% The abstract of your thesis.  Edit the file as needed.
 \cleartorecto
+\addcontentsline{toc}{chapter}{Abstract}
 \include{chapters/abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,7 +154,7 @@
 \listoftables
 
 %% Notations and glossary (optional)
-\addcontentsline{toc}{chapter}{\protect\numberline{}{Notation}}
+\addcontentsline{toc}{chapter}{Notation}
 \include{chapters/notation}
 
 \mainmatter
@@ -160,6 +164,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \include{chapters/introduction}
+\include{chapters/maths}
 \include{chapters/rules}
 \include{chapters/typography}
 \include{chapters/sections}
@@ -180,9 +185,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \bibliographystyle{chicago}
-\bibliography{references}
+\bibliography{mendeley}
 
-\addtocontents{toc}{\vspace{.5\baselineskip}}
+\addcontentsline{toc}{chapter}{Epilogue}
 \include{chapters/epilogue}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

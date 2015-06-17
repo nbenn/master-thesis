@@ -1,115 +1,25 @@
-% Some commands used in this file
-\newcommand{\package}{\emph}
-
 \chapter{Introduction}
 
-This is version \verb-v1.4- of the template.
+\input{R/ggplotTheme}
 
-We assume that you found this template on our institute's website, so
-we do not repeat everything stated there.  Consult the website again
-for pointers to further reading about \LaTeX{}.  This chapter only
-gives a brief overview of the files you are looking at.
+Infectious diseases have played an undeniably important role in human history. With human populations becoming sufficiently aggregated to sustain direct life cycle viral and bacterial infectants around 2000 BC, devastating invasions of a growing number of pathogens started to occur \citep{Dobson1996}.
 
-\section{Features}
-\label{sec:features}
+One of the earliest well documented incidence of a large-scale epidemic is known as the Plague of Athens. Starting in 430 BC and lasting roughly three years, a highly infectious disease killed 75'000 to 100'000 people or 25\% of Athen's population. This catastrophic event is attributed either to smallpox, a viral infection with \textit{Variola major} of typhus, caused by \textit{Rickettsia} bacteria \citep{Littman2009}.
 
-The rest of this document shows off a few features of the template
-files.  Look at the source code to see which macros we used!
+The bacterium \textit{Yersinia pestis} caused three major plague pandemics in the early and late middle ages, as well as in the late 19th century. Originating in northern Africa in 523 AD and spreading around the Mediterranean basin throughout the years 541--546, the Plague of Justinian is assumed to have killed up to half of the population of affected areas. The effect on cities was disproportionately severe. In Constantinople, for example, an estimated 230'000 people out of 375'000 lost their lives to the disease \citep{Treadgold1997}. Returning in the years 1347--1351, known today as the Black Death, a plague pandemic again wiped out around half of Europe's population. Death toll estimates range from 15 to 23.5 million \citep{Zietz2004}. Leaving behind a grim cultural heritage, this catastrophe had a lasting effect on economic and social structures in Europe. The third large-scale outbreak started around 1855 in southern China and quickly spread to Japan, Taiwan and India again wreaking havoc on the affected population.
 
-The template is divided into \TeX{} files as follows:
-\begin{enumerate}
-\item \texttt{thesis.tex} is the main file.
-\item \texttt{extrapackages.tex} holds extra package includes.
-\item \texttt{layoutsetup.tex} defines the style used in this document.
-\item \texttt{theoremsetup.tex} declares the theorem-like environments.
-\item \texttt{macrosetup.tex} defines extra macros that you may find
-  useful.
-\item \texttt{introduction.tex} contains this text.
-\item \texttt{sections.tex} is a quick demo of each sectioning level
-  available.
-\item \texttt{refs.bib} is an example bibliography file.  You can use
-  Bib\TeX{} to quote references.  For example, read
-  \cite{bringhurst1996ets} if you can get a hold of it.
-\end{enumerate}
+Bringing diseases such as smallpox, measles (an infection with the \textit{Measles virus}) and typhus to the Americas during the European invasion of the New World had grave repercussions for the indigenous population, carrying no natural resistance towards the newly introduced pathogens. It is estimated that the population of present day Mexico fell from 20 million to 1.6 million over the course of the 16th century due to multiple disease epidemics, critically contributing to the successful colonization of the new continents \citep{Dobson1996}.
 
+Cholera and influenza are further contagious diseases with high mortality rates, responsible for global epidemics. \textit{Vibrio cholerae}, a bacterium which causes infections of the intestine, became widespread in the early 19th century and caused seven pandemics since, the last of which only started in 1961. Antibacterial treatment of sewage and purification of drinking water greatly help to prevent and contain spreading of the disease but in areas with inadequate sanitation, such as Haiti after the 2010 earthquake, it remains a pathogen difficult to control. The influenza virus causes seasonal epidemics characterized by low lethality rates among people with intact immune systems\footnote{In spite of low lethality, these seasonal epidemics still incur significant economic damages. The \cite{WHO2003} estimates annual health care costs and loss of productivity due to influenza at US \$71--176 billion for the United States of America alone.}. Irregularly occurring influenza pandemics, initiated by zoonosis of new virus strains, against which no natural immunity exists, however, are accompanied by much higher lethality rates. The most significant such event is known today as the Spanish flu pandemic of 1918, costing the lives of 50--100 million, nearly half of which were young, healthy adults \citep{Taubenberger2006}.
 
-\subsection{Extra package includes}
+With better knowledge of these diseases, effective countermeasures could be developed. Identifying vectors and natural reservoirs, as well as understanding how transmission between infected individuals occur greatly helps to stymie burgeoning outbreaks of infective pathogens and prevent their spreading. In the case of plague, insecticides killing fleas were successfully used as a prophylactic measure, as well as controlling rat populations. Improvements in sanitary conditions and general population health are further important contributing factors to the decline of certain infectious diseases. Most important of all are advancements in medicine such as the development of vaccines and antibiotics. Among the great successes of widespread vaccination efforts is the global eradication of smallpox through a coordinated initiative lead by the World Health Organization in the 1970's.
 
-The file \texttt{extrapackages.tex} lists some packages that usually
-come in handy.  Simply have a look at the source code.  We have
-added the following comments based on our experiences:
-\begin{description}
-\item[REC] This package is recommended.
-\item[OPT] This package is optional.  It usually solves a specific
-  problem in a clever way.
-\item[ADV] This package is for the advanced user, but solves a problem
-  frequent enough that we mention it. Consult the package's
-  documentation.
-\end{description}
+\input{R/who-deaths/cleanData}
+\input{R/who-deaths/topCauses}
 
-As a small example, here is a reference to the Section \emph{Features}
-typeset with the recommended \package{varioref} package:
-\begin{quote}
-  See Section~\vref{sec:features}.
-\end{quote}
+Despite development of means to treat and prevent many previously devastating diseases, infectious pathogens remain a serious threat to global health. In 2012, an estimated total of \knitrTotalDeathsTwelve{} people died (\knitrPercentageDeathsTwelveHigh{} in high, \knitrPercentageDeathsTwelveUmid{} in upper-middle, \knitrPercentageDeathsTwelveLmid{} in lower-middle and \knitrPercentageDeathsTwelveLow{} in low income countries). Figure \ref{fig:who-deaths_top-causes} partitions the total death count into World Bank income groups and causes. In low income countries, infective diseases are the most prevalent cause of death (\knitrPercentDeathsTwelveLowInfect{}), followed by maternal and perinatal complications with substantial margin (\knitrPercentDeathsTwelveLowPerinat{}). In lower middle income countries, cardiovascular conditions catch up (\knitrPercentDeathsTwelveLmidCardio{}), but are still almost matched in frequency by infectious diseases (\knitrPercentDeathsTwelveLmidInfect{}). In upper middle (\knitrPercentDeathsTwelveUmidInfect{}) and high income countries (\knitrPercentDeathsTwelveHighInfect{}), the importance of infectious disease while weakened remains accountable for a significant number of deaths. Globally, infectious diseases are the second most frequent cause of death (\knitrPercentDeathsTwelveWorldInfect{}), only preceded by cardiovascular diseases (\knitrPercentDeathsTwelveWorldCardio{}).
 
+\input{R/who-deaths/byDisease}
 
-\subsection{Layout setup}
+Focusing only on deaths caused by infectious disease, lower respiratory infections are most frequent (for each income region individually, low to high: \knitrPercentageInfectTwelveLowLRI{}, \knitrPercentageInfectTwelveLmidLRI{}, \knitrPercentageInfectTwelveUmidLRI{} and \knitrPercentageInfectTwelveHighLRI{} as well as worldwide: \knitrPercentageInfectTwelveWorldLRI{}; cf. figure \ref{fig:who-deaths_by-disease}). Diarrhoeal diseases and HIV/AIDS are the next most common worldwide (\knitrPercentageInfectTwelveWorldDiarr{} and \knitrPercentageInfectTwelveWorldAIDS{}, respectively) where diarrhea is more prevalent in lower income regions (\knitrPercentageInfectTwelveLowDiarr{} and \knitrPercentageInfectTwelveLmidDiarr{} versus \knitrPercentageInfectTwelveUmidDiarr{} and \knitrPercentageInfectTwelveHighDiarr{}), while HIV/AIDS plays a major role irrespective of income region (low to high: \knitrPercentageInfectTwelveLowAIDS{}, \knitrPercentageInfectTwelveLmidAIDS{}, \knitrPercentageInfectTwelveUmidAIDS{} and \knitrPercentageInfectTwelveHighAIDS{}).
 
-This defines the overall look of the document -- for example, it
-changes the chapter and section heading appearance.  We consider this
-a `do not touch' area.  Take a look at the excellent \emph{Memoir}
-documentation before changing it.
-
-In fact, take a look at the excellent \emph{Memoir} documentation,
-full stop.
-
-
-\subsection{Theorem setup}
-
-This file defines a bunch of theorem-like environments.
-
-\begin{theorem}
-  An example theorem.
-\end{theorem}
-
-\begin{proof}
-  Proof text goes here.
-\end{proof}
-
-Note that the q.e.d.\ symbol moves to the correct place automatically
-if you end the proof with an \texttt{enumerate} or
-\texttt{displaymath}.  You do not need to use \verb-\qedhere- as with
-\package{amsthm}.
-
-\begin{theorem}[Some Famous Guy]
-  Another example theorem.
-\end{theorem}
-
-\begin{proof}
-  This proof
-  \begin{enumerate}
-  \item ends in an enumerate.
-  \end{enumerate}
-\end{proof}
-
-\begin{proposition}
-  Note that all theorem-like environments are by default numbered on
-  the same counter.
-\end{proposition}
-
-\begin{proof}
-  This proof ends in a display like so:
-  \begin{displaymath}
-    f(x) = x^2.
-  \end{displaymath}
-\end{proof}
-
-
-\subsection{Macro setup}
-
-For now the macro setup only shows how to define some basic macros,
-and how to use a neat feature of the \package{mathtools} package:
-\begin{displaymath}
-  \abs{a}, \quad \abs*{\frac{a}{b}}, \quad \abs[\big]{\frac{a}{b}}.
-\end{displaymath}

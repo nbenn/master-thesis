@@ -1,0 +1,54 @@
+<<who-deaths_by-disease, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of death causes in 2012 by World Bank income groups. Binning is based on Gross National Income (GNI; see figure \\ref{fig:who-deaths_top-causes}). The data was obtained from the \\cite{WHO2012}.">>=
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library("grid"))
+who.deaths <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/all.rds"))
+subset <- who.deaths[who.deaths$Cause2 == "Infectious and parasitic diseases",]
+aggr <- aggregate(x=subset$Deaths2012, 
+                  by=list(Region=subset$Region, Cause=subset$Cause4),
+                  FUN="sum")
+aggr <- aggr[order(aggr$Region),]
+aggr$scaled <- unlist(lapply(unique(aggr$Region), function(region, data) {
+  return(data[data$Region==region,]$x / sum(data[data$Region==region,]$x))
+}, aggr))
+aggr <- aggr[aggr$scaled > 0.015,]
+aggr$scaled <- unlist(lapply(unique(aggr$Region), function(region, data) {
+  return(data[data$Region==region,]$x / sum(data[data$Region==region,]$x))
+}, aggr))
+aggr <- droplevels(aggr)
+aggr$Region <- factor(aggr$Region, levels(aggr$Region)[c(5,1,4,3,2)],
+                      ordered=TRUE)
+aggr <- aggr[order(aggr$Region),]
+
+theme <- readRDS(paste0(gsub("/R/who-deaths", "/data", getwd()),
+                        "/ggplot-theme.rds"))
+theme_set(theme)
+ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
+  geom_bar(position = "stack", stat = "identity") +
+  scale_fill_brewer(name="Cause of death", palette="Spectral",
+                    labels=c("Acute hepatitis B", "Acute hepatitis C",
+                             "Diarrhoeal\ndiseases", "HIV/AIDS",
+                             "Lower respiratory\ninfections", "Malaria",
+                             "Measles", "Meningitis",
+                             "Other infectious\ndiseases", "Tuberculosis")) +
+  scale_x_discrete(labels=c("World", "High\nincome", "Upper\nmiddle",
+                            "Lower\nmiddle", "Low\nincome")) +
+  labs(y="Percentage of deaths caused by infectious diseases") +
+  coord_flip() +
+  theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"))
+@
+
+\newcommand{\knitrPercentageInfectTwelveWorldLRI}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveHighLRI}{\Sexpr{round(aggr[aggr$Region=="High-income" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveUmidLRI}{\Sexpr{round(aggr[aggr$Region=="Upper-middle-income" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveLmidLRI}{\Sexpr{round(aggr[aggr$Region=="Lower-middle-income" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveLowLRI}{\Sexpr{round(aggr[aggr$Region=="Low-income" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveHighDiarr}{\Sexpr{round(aggr[aggr$Region=="High-income" & aggr$Cause == "Diarrhoeal diseases",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveUmidDiarr}{\Sexpr{round(aggr[aggr$Region=="Upper-middle-income" & aggr$Cause == "Diarrhoeal diseases",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveLmidDiarr}{\Sexpr{round(aggr[aggr$Region=="Lower-middle-income" & aggr$Cause == "Diarrhoeal diseases",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveLowDiarr}{\Sexpr{round(aggr[aggr$Region=="Low-income" & aggr$Cause == "Diarrhoeal diseases",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveWorldAIDS}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "HIV/AIDS",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveWorldDiarr}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Diarrhoeal diseases",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveHighAIDS}{\Sexpr{round(aggr[aggr$Region=="High-income" & aggr$Cause == "HIV/AIDS",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveUmidAIDS}{\Sexpr{round(aggr[aggr$Region=="Upper-middle-income" & aggr$Cause == "HIV/AIDS",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveLmidAIDS}{\Sexpr{round(aggr[aggr$Region=="Lower-middle-income" & aggr$Cause == "HIV/AIDS",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentageInfectTwelveLowAIDS}{\Sexpr{round(aggr[aggr$Region=="Low-income" & aggr$Cause == "HIV/AIDS",]$scaled*100, digits=1)}\%}

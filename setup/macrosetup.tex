@@ -4,7 +4,7 @@
 %% Special characters for number sets, e.g. real or complex numbers.
 \newcommand{\C}{\mathbb{C}}
 \newcommand{\K}{\mathbb{K}}
-\newcommand{\N}{\mathbb{N}}
+\newcommand{\Nat}{\mathbb{N}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}
@@ -22,5 +22,103 @@
 \let\oldphi\phi
 \renewcommand{\phi}{\ensuremath{\varphi}}
 
+\newcommand\given[1][]{\:#1\vert\:}
+\let\existstemp\exists
+\let\foralltemp\forall
+\renewcommand{\exists}{\ensuremath\enskip\existstemp\:}
+\renewcommand{\forall}{\ensuremath\enskip\foralltemp\:}
+
 %% excerpts from SfS texab.sty
-\newcommand*{\Rp}{\textsf{R}$\;$}% R program
+%% ===========================
+%% R program
+\newcommand*{\Rp}{\textsf{R}$\;$}
+%% the epsfCfile function used in an example
+\makeatletter
+\newcommand{\@epsFFile}[2]{\includegraphics[#1]{#2}}
+\newcommand{\epsFracFile}[2]{\@epsFFile{width=#1\textwidth}{#2}}%
+\newcommand{\epsFracFileRot}[3][-90]{\@epsFFile{angle=#1,width=#2\textwidth}{#3}}
+\newcommand{\epsfCfile}[2]{\centerline{\epsFracFile{#1}{#2}}}%
+\newcommand{\epsfCfileRot}[3][-90]{\centerline{\epsFracFileRot[#1]{#2}{#3}}}%
+\makeatother
+
+\DeclareMathOperator{\logit}{logit}
+\DeclareMathOperator{\med}{med}
+\DeclareMathOperator{\median}{median}
+\DeclareMathOperator{\Med}{Med}
+\DeclareMathOperator{\Erw}{\mathbf{E}}%-- see also \E (below)
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\cov}{cov}
+\DeclareMathOperator{\Cor}{Corr}
+\DeclareMathOperator{\cor}{corr}
+\DeclareMathOperator{\se}{se}
+\DeclareMathOperator{\sd}{sd}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\diag}{diag}
+%% Nachteil von diesen (wegen \limits !?): \argmax_\beta setzt \beta
+%% *unterhalb*, auch inline, was  \max_\beta nicht tut
+%% \newcommand{\argmin}{\mathop{\arg \min}\limits}
+%% \newcommand{\argmax}{\mathop{\arg \max}\limits}
+%% \newcommand{\ave}{\mathop{ave}\limits}
+%% This is following http://en.wikipedia.org/wiki/Arg_max 's recommendation:
+\DeclareMathOperator*{\ave}{ave}
+\DeclareMathOperator*{\argmin}{arg\, min}
+\DeclareMathOperator*{\argmax}{arg\, max}
+%
+\DeclareMathOperator{\IF}{IF}
+\DeclareMathOperator{\und}{ und }
+\DeclareMathOperator{\oder}{ oder }
+%\def\mit{\mathrm{ mit }}  %-- causes some problems with \mbox or \boldmath !!!
+\DeclareMathOperator{\for}{ for }
+\DeclareMathOperator{\where}{ where }
+\DeclareMathOperator{\with}{ with }
+%%-------  NB.  << NEVER >> REdefine  \or !!! ----
+%% Not ``\and'': this is used in \author
+
+% - Math. Operatoren
+\newcommand{\op}[1]{\mathop{#1}}%was\newcommand{\op}[1]{\kern-.2em #1\kern-.2em}
+% \newcommand{\oneover}[1]{{1\over#1}\,\,}
+\newcommand{\oneover}[1]{{\textstyle 1\over#1}}
+\newcommand{\inv}{^{-1}}
+\newcommand{\sups}[1]{^{(#1)}}
+%%-- shorter, for convergence ...==== unnecessary ===
+%%-- There is already \to  (in standard TeX & LaTeX !) :
+\newcommand{\go}{\rightarrow%
+        \typeout{use standard \TeX \verb|\to| instead of \verb|\go|}}
+%% convergence in Probability, Distribution: \tendsto{P}, \tendsto{D} :
+\newcommand{\tendsto}[1]{\buildrel {#1} \over \longrightarrow}
+\newcommand{\wt}{\widetilde}
+\newcommand{\wh}[1]{\if \sigma{#1}\widehat{\sigma}\else
+{}\kern0.1em\widehat{\kern-0.1em#1}{}\fi}
+\newcommand{\wb}[1]{{}\if Y#1\overline{Y}\else
+\kern0.2em\overline{\kern-0.2em#1}\fi}
+\newcommand{\Ssum}{\sum\nolimits}
+\newcommand{\Sn}{\Ssum_{i=1}^n}
+\newcommand{\Seq}[4]{#1_{#2},\,#1_{#3},\ldots,#1_{#4}}% siehe auch \Nl , \No (unten)
+\newcommand{\Half}{{\textstyle 1\over2}}% siehe auch \half (unten)
+\newcommand{\ul}[1]{\textbf{#1}}
+
+\newcommand{\Hmu}{\widehat{\mu}}
+\newcommand{\Halpha}{\widehat{\alpha}}
+\newcommand{\Hbeta}{\widehat{\beta}}
+%
+\newcommand{\iid}{\mbox{ i.i.d. }}
+\newcommand{\fs}{\mbox{f.s.}}
+\newcommand{\Loglik}{\ell\kern-1pt\ell}
+
+%%%------------ script und andere Spezialschriften ----------------------
+
+
+\DeclareMathOperator{\N}{\mathcal{N}}% Normalverteilung
+\renewcommand{\P}{\mathcal{P}}%--- RE-defining the standard \P (Paragraph)!!--
+%%%
+\DeclareMathOperator{\M}{\mathcal{M}}% Multinom ?
+\DeclareMathOperator{\B}{\mathcal{B}}% Binom
+\DeclareMathOperator{\Bern}{\mathcal{B}ernoulli}
+\DeclareMathOperator{\E}{\mathcal{E}}%-- see also \Erw (above)
+\DeclareMathOperator{\F}{\mathcal{F}}
+\DeclareMathOperator{\Wish}{\mathcal{W}}
+\newcommand{\phibf}{\boldsymbol{\phi}}%{\phi\hskip-5.4pt\phi} % bold \phi

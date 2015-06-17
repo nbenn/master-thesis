@@ -1,0 +1,3 @@
+<<create-preamble,echo=FALSE,results='asis'>>=
+cat(knitr:::make_header_latex())
+@

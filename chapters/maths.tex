@@ -1,0 +1,30 @@
+\chapter{Mathematical Background}
+
+Modeling the relationship among variables is one of the most important applications of statistical theory. The study of regression analysis (and the closely related notion of correlation) started to form towards the end of the 19th century with Sir Francis Galton's study of height heredity in humans and his observation of regression towards the mean. Over the next few years, Udny Yule and Karl Pearson cast the developed concepts into precise mathematical formulation, in turn building on work performed by Adrien-Marie Legendre and Carl Friedrich Gauss who developed the method of least squares almost a century earlier \citep{Allen1997}.
+
+A multiple linear regression model can be written in matrix-vector form as
+\begin{equation}
+  y = X \beta + \epsilon
+\end{equation}
+where $y \in \R^n$ is the vector of observations on the dependent variable, the design matrix $X \in \R^{n \times p}$ contains data on the independent variables, $\beta \in \R^p$ is the $p$-dimensional parameter vector and the error term $\epsilon \in \R^n$ captures effects not modeled by the regressors. Without loss of generality, all variables are assumed to be expressed as deviations from their means and measured on the same scale.
+
+In order to find unknown coefficients $\beta_i$, the ordinary least squares estimator minimizes the residual sum of squares, the squared differences between observed responses and their predictions according to the linear model.
+\begin{subequations}
+\begin{align}
+  \Hbeta &= \argmin_{\beta} \norm{y - X \beta}^2 \\
+         &= (X^T X)^{-1} X^T y \label{eq:olsEstimate}
+\end{align}
+\end{subequations}
+Some assumptions are typically associated with linear regression models that yield desirable attributes for the estimates. None of these restrictions are imposed on the explanatory variables; they can be continuous or discrete and combined as well as transformed arbitrarily. Furthermore, in practice, it is irrelevant whether the covariates are treated as random variables or as deterministic constants. With exception of the field of econometrics it appears that the majority of literature adheres to the latter interpretation and therefore, statements will not explicitly be conditional on covariate values.
+\begin{description}
+  \item[Linearity.] The relationship between dependent and independent variables should be linear (after suitable transformations) and individual effects additive. If this cannot be satisfied, a linear model is not suitable.
+  \item[Full rank.] For the matrix $X^T X$ to be invertible, it has to have full rank $p$. Therefore $n \leq p$ and all covariates must be linearly independent.
+  \item[Exogeneity.] All independent variables should be known exactly i.e. contain no measurement or observation errors as only the mean squared error of the dependent variable is minimized. Additionally, all important causal factors have to be included in the model. Exogeneity implies $\Erw[\epsilon_i] = 0 \forall i$, as well no correlation between regressors and error terms \citep{Hayashi2000}.
+  \item[Spherical errors.] This includes both homoscedasticity or constant error variance: $\Erw[\epsilon_i^2] = \sigma^2 \forall i$ and uncorrelated errors $\Erw[\epsilon_i \epsilon_j] = 0 \forall i \neq j$. These two conditions can be written more compactly as $\Var[\epsilon] = \sigma^2I_{n \times n}$.
+  \item[Normality.] To have some additional desirable characteristics of the estimated coefficients, it can be required that the errors $\epsilon_i$ be jointly normally distributed. With the above restrictions on expectation and variance, this yields $\epsilon \sim \N_n(0, \sigma^2 I_{n \times n})$.
+\end{description}
+Violations of these assumptions have varying consequences. In case of perfect multicollinearity, the ordinary least squares estimator $\Hbeta$ as defined in \eqref{eq:olsEstimate} does not exist. Recovering such a situation is possible by using a generalized matrix inverse (for example the Moore--Penrose pseudoinverse) or employing a regularization scheme such as ridge regression.
+
+Omitting a variable that is both correlated with dependent variables and has an effect on the response (a nonzero true coefficient) will introduce bias in the parameters. The method of instrumental variables can help to produce an unbiased estimator.
+
+The assumption of spherical errors ensures that the least squares estimator is the best linear unbiased estimator in the sense that it has minimal variance among all linear unbiased estimators. Heteroscedasticity and autocorrelation do not cause coefficient estimates to be biased but can introduce bias in OLS estimates of variance, causing inaccurate standard errors. A generalized least squares estimator (for example weighted least squares) 

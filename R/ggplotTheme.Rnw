@@ -1,0 +1,5 @@
+<<ggplot-theme, eval=TRUE, echo=FALSE, message=FALSE>>=
+suppressPackageStartupMessages(library(ggplot2))
+theme <- theme_bw(base_size = 18)
+saveRDS(theme, paste0(gsub("/R", "/data", getwd()), "/ggplot-theme.rds"))
+@
