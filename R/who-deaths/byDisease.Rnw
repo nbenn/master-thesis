@@ -1,4 +1,4 @@
-<<who-deaths_by-disease, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of death causes in 2012 by World Bank income groups. Binning is based on Gross National Income (GNI; see figure \\ref{fig:who-deaths_top-causes}). The data was obtained from the \\cite{WHO2012}.">>=
+<<who-deaths_by-disease, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies deadly infectious diseases for 2012 by World Bank income groups. Binning is based on Gross National Income (GNI; see figure \\ref{fig:who-deaths_top-causes}). The data was obtained from the \\cite{WHO2012}.", fig.scap="Relative frequencies deadly infectious diseases for 2012 by World Bank income groups">>=
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library("grid"))
 who.deaths <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/all.rds"))
@@ -26,7 +26,7 @@ ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_fill_brewer(name="Cause of death", palette="Spectral",
                     labels=c("Acute hepatitis B", "Acute hepatitis C",
-                             "Diarrhoeal\ndiseases", "HIV/AIDS",
+                             "Diarrhoeal diseases", "HIV/AIDS",
                              "Lower respiratory\ninfections", "Malaria",
                              "Measles", "Meningitis",
                              "Other infectious\ndiseases", "Tuberculosis")) +
@@ -34,7 +34,8 @@ ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
                             "Lower\nmiddle", "Low\nincome")) +
   labs(y="Percentage of deaths caused by infectious diseases") +
   coord_flip() +
-  theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"))
+  theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"),
+        plot.margin=unit(c(c(0, 3, 0, 3)), units="mm"))
 @
 
 \newcommand{\knitrPercentageInfectTwelveWorldLRI}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}

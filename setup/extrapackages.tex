@@ -1,7 +1,7 @@
 %% See the TeXed file for more explanations
 
 %% [OPT] Multi-rowed cells in tabulars
-%\usepackage{multirow}
+\usepackage{multirow}
 
 %% [REC] Intelligent cross reference package. This allows for nice
 %% combined references that include the reference and a hint to where
@@ -95,5 +95,16 @@
 \usepackage{booktabs}
 
 %% use 'numbers': \usepackage[longnamesfirst,number]{natbib} for [1], [2] 
-\usepackage[longnamesfirst]{natbib}
+\usepackage{natbib}
 
+%% glossary/acronyms
+\usepackage[nogroupskip, toc]{glossaries}
+\newcommand*\revacr[2][]{\glsdisp[#1]{#2}{\glsentryshort{#2} (\glsentrylong{#2})}}
+\glsdisablehyper
+\makeglossaries
+
+%% greek letters in text mode
+\usepackage[euler]{textgreek}
+
+%% rotate cells in tables
+\usepackage{rotating}

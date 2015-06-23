@@ -4,17 +4,18 @@
 - infectome as anti-infective target
 - merits and problems of both approaches
 
+# biological background
 ## bacterial pathogens
 - entry mechanisms
     + zipper
     + trigger
     + invasome mediated
 - studied organisms
-    + Bartonella
-    + Brucella
-    + Listeria
-    + Salmonella
-    + Shigella
+    + Bartonella henselae
+    + Brucella abortus
+    + Listeria monocytogenes
+    + Salmonella enterica (Salmonella enterica ssp. enterica ser. Typhimurium)
+    + Shigella flexneri
 
 ## viral pathogens
 - entry mechanisms
@@ -23,13 +24,10 @@
     + Rhinoviruses
     + Vaccinia virus
 
-## data generation
-- siRNA and RNAi
-- microscopy
-- computational image analysis
+## siRNA and RNAi
 
 # mathematical background
-- pmm
+- introduction: linear regression
 - glm
 - regularization
     + lasso
@@ -38,8 +36,14 @@
     + stability
     + complete separation
     + inference: p-values/sample splitting
+- pmm
 
 # single cell data
+- microscopy
+- computational image analysis
+- features
 
 
 because we tend to reward others when they do well and punish them when they do badly, and because there is regression to the mean, it is part of the human condition that we are statistically punished for rewarding others and rewarded for punishing them. - kahneman
+
+The planning fallacy is that you make a plan, which is usually a best-case scenario. Then you assume that the outcome will follow your plan, even when you should know better. - kahneman

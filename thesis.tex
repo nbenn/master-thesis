@@ -89,6 +89,7 @@
 \numberwithin{equation}{chapter}
 %% import knitr related stuff
 \input{R/knitrPreamble}
+\input{R/ggplotTheme}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Document body                                                          %%%
@@ -154,8 +155,11 @@
 \listoftables
 
 %% Notations and glossary (optional)
-\addcontentsline{toc}{chapter}{Notation}
-\include{chapters/notation}
+\printglossary[
+  title=Abbreviations and Notation,
+  toctitle=List of Abbreviations and Notation,
+  nonumberlist
+]
 
 \mainmatter
 
@@ -164,6 +168,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \include{chapters/introduction}
+\include{chapters/biology}
 \include{chapters/maths}
 \include{chapters/rules}
 \include{chapters/typography}

@@ -1,4 +1,4 @@
-<<who-deaths_top-causes, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of death causes in 2012 by World Bank income groups. Binning is based on Gross National Income (GNI) per capita and the thresholds are \\$1\'045 or less for low income, \\$1046 to \\$4125 for lower-middle, \\$4126 to \\$12745 for upper-middle and \\$12746 or more for high income economies. The data was obtained from the \\cite{WHO2012}.">>=
+<<who-deaths_top-causes, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of death causes in 2012 by World Bank income groups. Binning is based on Gross National Income (GNI) per capita and the thresholds are \\$1045 or less for low income, \\$1046 to \\$4125 for lower-middle, \\$4126 to \\$12745 for upper-middle and \\$12746 or more for high income economies. The data was obtained from the \\cite{WHO2012}.", fig.scap="Relative frequencies of death causes in 2012 by World Bank income groups">>=
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library("grid"))
 who.deaths <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/all.rds"))
@@ -30,18 +30,22 @@ theme_set(theme)
 ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_fill_brewer(name="Cause of death", palette="Spectral",
-                    labels=c("Infectious and parasitic\ndiseases",
-                             "Maternal and perinatal\nconditions",
-                             "Nutritional deficiencies", "Malignant neoplasms",
-                             "Diabetes mellitus", "Neurological conditions",
-                             "Cardiovascular diseases", "Respiratory diseases",
-                             "Digestive diseases", "Unintentional injuries",
+                    labels=c("Infectious and\nparasitic diseases",
+                             "Maternal and\nperinatal conditions",
+                             "Nutritional\ndeficiencies",
+                             "Malignant\nneoplasms",
+                             "Diabetes mellitus", "Neurological\nconditions",
+                             "Cardiovascular\ndiseases",
+                             "Respiratory\ndiseases", "Digestive diseases",
+                             "Unintentional\ninjuries",
                              "Intentional injuries")) +
   scale_x_discrete(labels=c("World", "High\nincome", "Upper\nmiddle",
                             "Lower\nmiddle", "Low\nincome")) +
   labs(y="Percentage of deaths") +
   coord_flip() +
-  theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"))
+  theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"),
+        #              top, right, bottom, left
+        plot.margin=unit(c(c(0, 4, 0, 3)), units="mm"))
 @
 
 \newcommand{\knitrTotalDeathsTwelve}{\Sexpr{round(sum(who.deaths[who.deaths$Region=="World",]$Deaths2012)/10e5, digits=1)} million}
@@ -59,3 +63,4 @@ ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
 \newcommand{\knitrPercentDeathsTwelveHighInfect}{\Sexpr{round(aggr[aggr$Region=="High-income" & aggr$Cause == "Infectious and parasitic diseases",]$scaled*100, digits=1)}\%}
 \newcommand{\knitrPercentDeathsTwelveWorldInfect}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Infectious and parasitic diseases",]$scaled*100, digits=1)}\%}
 \newcommand{\knitrPercentDeathsTwelveWorldCardio}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Cardiovascular diseases",]$scaled*100, digits=1)}\%}
+\newcommand{\knitrPercentDeathsTwelveWorldCancer}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Malignant neoplasms",]$scaled*100, digits=1)}\%}
