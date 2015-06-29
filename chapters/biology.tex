@@ -17,6 +17,7 @@ The outside of many epithelial barriers is covered in natural bacterial flora an
 
 Viruses are entirely dependent on host-cell metabolism and machinery for their replication, making them obligately intracellular. The first step of any entering sequence is binding to the target surface. This can be mediated by attachment factors which simply serve to concentrate the virions on the cell membrane or by virus receptors, which additionally act as communicators between host and pathogen. Common attachment factors include glycosamminoglycan chains and sialic acids and are comparatively unspecific. Glycoprotein spikes on enveloped and capsid proteins of non-enveloped viruses provide host specificity by binding cellular receptors. Mostly these cellular receptors serve other purposes which are exploited for infection. Binding affinity for individual interactions may be weak but aggregation of multiple interactions provide virtually irreversible avidity \citep{Smith2012}.
 
+\paragraph{Viral import.}
 For viral cell entry, different strategies exist. Enveloped viruses can either directly fuse with the plasma membrane (e.g. \gls{hiv}) or be endocytosed by the host cell (e.g. influenza), while non-enveloped viruses either create a pore and directly inject their genome into the cytosol (e.g. poliovirus) or are endocytosed (e.g. adenovirus). Endocytosis has major advantages over alternative strategies. Reaching its replicatory niche within the host cell is a difficult task for a micoorganism having no means of locomotion and hijacking the endocytic system solves this problem elegantly. Furthermore, maturation of endosomes provides precise environmental cues to the invader for triggering uncoating and release. Both fusion with the cell membrane and injection of viral material into the cytosol leaves back traces of infection to be detected by the immune system. Being completely engulfed by the host, virions leave back no telltale traces. Finally, lytic penetration techniques are not as problematic to the host if only applied inside an endosome.
 
 Many endocytic viruses trigger clathrin-mediated, lipid-raft mediated or ma\-cro\-pi\-no\-cy\-tic mechanisms. The clathrin pathway is most commonly used (for example by rhinoviruses, some adenoviruses and influenza), while larger virions such as adeonvirus 3 or vaccinia virus initiate macropinocytosis, an actin dependent formation of a lamellipodium which folds back onto the plasma membrane, creating a macropinosome. Lipid raft dependent pathways are poorly understood. Simian virus 40 and polyomaviruses initiate cholesterol dependent formation of lipid rafts and trigger endocytic uptake by inducing plasma membrane curvature.
@@ -35,44 +36,65 @@ Upon endocytic uptake, viral pathogens need to uncoat and eject their genetic ma
 
 Non enveloped viruses cannot fuse with host membranes and have developed alternative approaches such as lysis (e.g. adenovirus) or ejecting their genome through pore-forming complexes (e.g. reovirus). Polyomaviruses need to pass through the \gls{er} because they rely on \gls{er} localized proteins to uncoat their capsid. For export from the \gls{er} into the cytosol, they exploit the \gls{erad} pathway, which serves as export mechanism for misfolded proteins from the endoplasmic reticulum to be degraded by proteasomes.
 
+\renewcommand{\arraystretch}{1.5}
+
 \begin{table}
-  \label{tab:activityTracking}
+  \label{tab:baltimore-classification}
   \centering
-  \caption{Tracking daily activities.}
+  \caption[The Baltimore classification scheme for viruses]{The Baltimore classification scheme is based on diversity of genetic system that have evolved in viruses. For each group, a selection of virus families capable of infecting humans, is provided, along with whether the virions are enveloped and the location of their replicatory niche. The data was obtained from \cite{Hulo2011}}
   \footnotesize
-  \begin{tabular}[c]{c|l|l|c|c}
-    & Genome based class & Examples & Enveloped & Replication site\\
-    \hline \multirow{2}{*}{\begin{sideways}DNA viruses\end{sideways}} &   
-    Group I: dsDNA &
+  \begin{tabular}{c|l|l|c|c}
+    & Genome based class & Examples & Enveloped & Replication site \\
+    \hline \multirow{4}{*}{\begin{sideways}DNA viruses\end{sideways}} &
+    \multirow{2}{*}{Group I: dsDNA} &
     Adenoviridae &
-    no &\\
+    no & nucleus \\
+    \cline{3-5} &
+    & Poxviridae &
+    yes & cytoplasm \\
     \cline{2-5} &
-    Group II: ssDNA(+) &
-    Anelloviridae &
-    no &\\
-    \hline \multirow{3}{*}{\begin{sideways}RNA viruses\end{sideways}} &   
+    \multirow{2}{*}{Group II: ssDNA(+)} &
+    Parvovirinae &
+    no & nucleus \\
+    \cline{3-5} &
+    & Anelloviridae &
+    no & nucleus \\
+    \hline \multirow{6}{*}{\begin{sideways}RNA viruses\end{sideways}} &   
     Group III: dsRNA &
     Reoviridae &
-    no &\\
+    no & cytoplasm \\
     \cline{2-5} &
-    Group IV: ssRNA(+) &
+    \multirow{3}{*}{Group IV: ssRNA(+)} &
     Coronaviridae &
-    yes &\\
+    yes & cytoplasm \\
+    \cline{3-5} &
+    & Picornaviridae &
+    no & cytoplasm \\
+    \cline{3-5} &
+    & Hepeviridae &
+    no & cytoplasm \\
     \cline{2-5} &
-    Group V: ssRNA(-) &
-    Paramyxoviridae &
-    yes &\\
-    \hline \multirow{2}{*}{\begin{sideways}Retroviruses\end{sideways}} &   
+    \multirow{2}{*}{Group V: ssRNA(-)} &
+    Filoviridae &
+    yes & cytoplasm \\
+    \cline{3-5} &
+    & Paramyxoviridae &
+    yes & cytoplasm \\
+    \hline \multirow{2}{*}{\begin{sideways}Retro\end{sideways}} &   
     Group VI: ssRNA(+)-RT &
-    Lentivirus &
-    yes &\\
+    Orthoretrovirinae &
+    yes & nucleus \\
     \cline{2-5} &
     Group VII: dsDNA-RT &
     Hepadnaviridae &
-    yes &
+    yes & nucleus
   \end{tabular}
 \end{table}
 
+\paragraph{Replication.}
+Requirements for replication of the viral genome, possible transcription and translation vary widely among different groups of viruses. A classification system, based on the diversity of mRNA production mechanisms has been devised by \cite{Baltimore1971}. Table \ref{tab:baltimore-classification} provides examples of human viruses for each of the 7 groups, whether those viruses are enveloped and where they replicate.
+
+\paragraph{Viral export.}
 
 \subsection{Bacterial Entry Mechanisms}
 
@@ -89,6 +111,9 @@ Two recurring patterns for inducing phagocytosis in non-phagocytic cells have be
 
 \newacronym{rac-1}{Rac1}{Ras-related C3 botulinum toxin substrate 1}
 \newacronym{arp-2-3}{Arp2/3}{actin-related-protein 2 and 3}
+
+\phantomsection
+\label{zipper-mechanism}
 
 \paragraph{Zipper Mechanism.}
 The first step for zippering bacteria is binding to target cell receptors by expressing adhesins. \textit{Y. pseudotuberculosis} displays invasins on its cell surface, capable of interacting with \textbeta$_1$ integrins, while \textit{L. monocytogenes} uses internalin A, a protein that binds E-cadherin. In both settings, a downstream signaling cascade leads to actin polymerization via recruitment of an \revacr{arp-2-3} complex and \revacr{rac-1}, yielding a phagocytic cup.
@@ -117,6 +142,7 @@ Early in \textit{Shigella} entry, VirA, secreted through the \gls{t3ss} causes l
 In addition to trigger and zipper type uptake, other atypical mechanisms exist. Host cell entry of \textit{Brucella abortus}, for example, has been described as invasome mediated \citep{Dehio2005}. In this actin dependent process, bacteria aggregate on the cell surface and trigger their engulfment by injecting bacterial effectors into the host via \gls{t4ss}. The internalized structure is called an invasome. So far, actin has always been the driving force behind internalization. Actin-independent uptake albeit rare, is possible as evidenced by \textit{Campylobacter jejuni}, which have evolved a microtubule dependent invasion strategy \citep{Kopecko2001}.
 
 \subsection{Actin-based Intracellular Motility}
+\label{subsec:actin-motility}
 
 \section{Select Microbial Pathogens}
 
@@ -184,9 +210,25 @@ Preferred natural reservoir species for \textit{B. abortus} are cattle (\textit{
 Worldwide, an estimated 500000 new cases of brucellosis occur annually, making it one of the most prevalent zoonoses. Although usually susceptible to combined antibiotic therapies of at least two agents (usually a tetracycline antibiotic combined with an aminoglycoside or rifampin), untreated brucellosis leads to a high degree of morbidity, leading to being classified a neglected zoonosis by the \gls{who}.
 
 \subsection{Listeria Monocytogenes}
+
+The short, Gram-positive bacilli are non-sporeforming facultative anaerobes, capable of growing in a wide temperature range (0--50\si{\degree}C) and in many different environments. Flagellation is temperature dependent with flagellin being expressed and assembled into peritrichous flagella around 20--25\si{\degree}C but not at 37\si{\degree}C. First described in 1924 by Murray after isolation from lymph glands of diseased laboratory animals, the pathogen was found to also infect humans four years later. For much of the time since, listeriosis was considered a rare zoonotic disease and did not receive much attention. It was not until the 1980s, when several food-borne listeria outbreaks caused a shift in interest towards the pathogen, which has since become a well studied facultatively intracellular parasite \citep{Farber1991}.
+
 \paragraph{Diseases.}
+Maternal and neonatal listeriosis accounts for almost half of all infections. Listeriosis in pregnancy typically manifests in bacteraemia and presents as a self-limiting febrile disease with flu-like symptoms. Many cases, however are asymptomatic and the first sign of infection is abortion or neonatal listeriosis. Maternal infection does not necessarily carry over to the fetus, especially if proper chemotherapy is administered. Perinatal incidences are divided into early and late onset (\textgreater 5 days after parturition), with former cases typically resulting in septicemia and latter cases in meningitis. While in early onset cases the predominant route of transmission is transplacental, the situation is less clear in late onset cases. Both the maternal genital tract during child birth and environmental sources have been implicated. Despite antibiotic treatment, overall mortality rates of 30--40\% are typical and prognosis for early onset disease is worse, as it is often associated with preterm birth and advanced stage of infection. 
+
+Among adults, most cases of listeriosis occur in T-cell deficient individuals. HIV infection, for example, increases incidence 150--300 fold compared to general population control groups. Predisposing conditions include lymphoreticular neoplasms, deliberate immunosuppression (e.g. antirejection treatment after organ transplants), alcoholism and diabetes mellitus. Despite increased susceptibility caused by immunodeficiency, roughly 30\% of all infections affect immunocompetent individuals. In healthy adults, consumption of food contaminated with \textit{L. Monocytogenes} can either lead to self-limiting febrile gastroenteritis with short incubation time (\textless 24 h) or invasive listeriosis with much longer incubation periods (3--4 weeks). The systemic form of infection often manifests as bacteraemia or as a neurological infection, but can also involve endocarditis and spread to other parts of the body. Central nervous system involvement occurs in as much as 75\% of cases and either presents as meningitis or encephalitis. Mortality rates of 35--45\%  have been reported for listeriosis in adults.
+
 \paragraph{Pathogenesis.}
+The predominant entry path for \textit{L. Monocytogenes} into the human body is via the gastrointestinal tract, where Peyer's patches are targeted. The bacteria can induce cellular uptake (see section \ref{zipper-mechanism}), even by non-phagocytic host cells via expression of cell-surface associated interanlins. Upon cell entry, the phagosomal membrane is lysed, mediated by haemolysin secretion, and actin polymerization (see section \ref{subsec:actin-motility}) provides means of intracellular movement. Listerial haemolysin (listeriolysin) is acid activated with an optimum around pH 5.5, which is reached in late endosomes and membrane lysis is caused by the formation of large transmembrane pores. Growth and replication occur in the cytoplasm and adjacent cells can be entered by pushing against the plasma membrane and forming a pseudopod-like structure which in turn is taken up the neighbor. The resulting double-membrane vacuole can be escaped by cytolysis.
+
+In an extracellular setting, haemolysins serve to rupture erythrocytes in order to generate free iron, a limiting growth factor. Furthermore the nonspecific immune system has to be evaded and haemolysins have also been shown to be cytotoxic towards leukocytes. Additionally, expression of bacterial superoxide dismutase mitigates the effect of free superoxide radicals which play an important role in killing phagocytized bacteria.
+
 \paragraph{Epidemiology.}
+Incidence of listeriosis has initially been increasing since its recognition as food-borne disease but effects of awareness and diagnostic methods are unclear. While typically long incubation periods do pose difficulties for clinical diagnosis, the number of susceptible individuals is on the rise and certain aspects modern processing and handling of foods may be beneficial for growth of \textit{L. Monocytogenes}. Disease rates of 2--15 cases per million population have been reported and listeriosis is among the leading case of lethal food-borne pathogen infections. Most recent data, however suggests, that incidence is decreasing again.
+
+Due to its non-fastidious lifestyle, \textit{L. Monocytogenes} has been isolated from a wire array of ecological niches, including soil, sewage and water (both fresh water bodies and estuaries). High persistence (up to 4 years) in soil samples is problematic when contaminated manure is used as fertilizer and biofilm formation poses challenges for eradication from food processing plants. Additionally, the ability to grow in refrigerated foods and resistance towards heat treatment such as pasteurization warrant alertness and special preventive care. Many different foods have been implicated in listeriosis outbreaks, including vegetables (potatoes, radishes and celery), seafood (shrimp, crabmeat and smoked fish), diary products (soft cheese, pasteurized and unpasteurized milk) and meats (poultry, various types of sausages and pâté).
+
+Despite high prevalence in food (studies have found 20--80\% of meat product samples and 1--10\% of diary product samples contaminated with \textit{L. Monocytogenes}), comparatively few successful infections occur. The bacteria are ingested frequently in small doses and stool sample examinations suggest that 10-70\% of investigated populations could be intestinal carriers. While the minimum infectious dose has not been settled definitively, approximations range from $10^6$ to $10^9$ bacteria.
 
 \subsection{Salmonella Enterica}
 \paragraph{Diseases.}
