@@ -104,14 +104,14 @@
 }
 \makeatother
 
-% Turn extra space before chapter headings off.
+%% Turn extra space before chapter headings off.
 \setlength{\beforechapskip}{0pt}
 
 \nonzeroparskip
 \parindent=0pt
 \defaultlists
 
-% Chapter style redefinition
+%% Chapter style redefinition
 \makeatletter
 
 \if@twoside
@@ -141,7 +141,7 @@
   \renewcommand*{\printchapternonum}{%
     \vphantom{\chapnumfont {9}}\afterchapternum}}
 
-% Use the newly defined style
+%% Use the newly defined style
 \chapterstyle{bianchimod}
 
 \setsecheadstyle{\Large\bfseries\sffamily}
@@ -151,13 +151,13 @@
 \setsubparaheadstyle{\normalsize\itshape\sffamily}
 \setsubparaindent{0pt}
 
-% Set captions to a more separated style for clearness
+%% Set captions to a more separated style for clearness
 \captionnamefont{\sffamily\bfseries\footnotesize}
 \captiontitlefont{\sffamily\footnotesize}
 \setlength{\intextsep}{16pt}
 \setlength{\belowcaptionskip}{1pt}
 
-% Set section and TOC numbering depth to subsection
+%% Set section and TOC numbering depth to subsection
 \setsecnumdepth{subsection}
 \settocdepth{subsection}
 
@@ -167,6 +167,6 @@
 
 \makeatother
 
-% This defines how theorems should look. Best leave as is.
+%% This defines how theorems should look. Best leave as is.
 \theoremstyle{plain}
 \setlength\theorempostskipamount{0pt}
