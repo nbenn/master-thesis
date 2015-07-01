@@ -99,7 +99,7 @@
 
 %% glossary/acronyms
 \usepackage[nogroupskip, toc]{glossaries}
-\newcommand*\revacr[2][]{\glsdisp[#1]{#2}{\glsentryshort{#2} (\glsentrylong{#2})}}
+\newcommand*\glsrev[2][]{\ifglsused{#2}{\glsdisp[#1]{#2}{\glsentryshort{#2}}}{\glsdisp[#1]{#2}{\glsentryshort{#2} (\glsentrylong{#2})}}}
 \glsdisablehyper
 \makeglossaries
 
