@@ -1,6 +1,44 @@
 %% Custom commands
 %% ===============
 
+%% enable glossary style to be reversed in select instances
+\newcommand*\glsrev[2][]{%
+  \ifglsused{#2}{%
+    %% subsequent use
+    \glsdisp[#1]{#2}{\glsentryshort{#2}}%
+  }{%
+    %% first use
+    \glsdisp[#1]{#2}{\glsentryshort{#2}\space(\glsentrylong{#2})}%
+  }%
+}
+\newcommand*\Glsrev[2][]{%
+  \ifglsused{#2}{%
+    %% subsequent use
+    \glsdisp[#1]{#2}{\Glsentryshort{#2}}%
+  }{%
+    %% first use
+    \glsdisp[#1]{#2}{\Glsentryshort{#2}\space(\glsentrylong{#2})}%
+  }%
+}
+\newcommand*\glsrevpl[2][]{%
+  \ifglsused{#2}{%
+    %% subsequent use
+    \glsdisp[#1]{#2}{\glsentryshortpl{#2}}%
+  }{%
+    %% first use
+    \glsdisp[#1]{#2}{\glsentryshortpl{#2}\space(\glsentrylongpl{#2})}%
+  }%
+}
+\newcommand*\Glsrevpl[2][]{%
+  \ifglsused{#2}{%
+    %% subsequent use
+    \glsdisp[#1]{#2}{\Glsentryshortpl{#2}}%
+  }{%
+    %% first use
+    \glsdisp[#1]{#2}{\Glsentryshortpl{#2}\space(\glsentrylongpl{#2})}%
+  }%
+}
+
 %% Special characters for number sets, e.g. real or complex numbers.
 \newcommand{\C}{\mathbb{C}}
 \newcommand{\K}{\mathbb{K}}
