@@ -1,0 +1,18 @@
+<<scf-intro_plot, eval=TRUE, echo=FALSE, fig.width=12, fig.height=9, fig.cap="Cell colony edges are detected by 2D binning of cell center locations. Dots represent cell centers within the well H6 of plate J107-2C. Each of the nine images is segmented into 12 horizontal and 12 vertical sections yielding 144 tiles (1296 bins for the entire well). The tiles are colored according to the number of non-empty neighboring bins.", fig.scap="Visualization of cell colony edge detection by 2D binning.">>=
+suppressPackageStartupMessages(library(ggplot2))
+data <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/data.rds"))
+theme <- readRDS(paste0(gsub("/R/scf-intro", "/data", getwd()),
+                        "/ggplot-theme.rds"))
+theme_set(theme)
+ggplot(data=data$coords, aes(x=x, y=y)) +
+  geom_point() +
+  geom_tile(data=data$rects, aes(x=x1, y=y2, fill=factor(border)), alpha=0.5) +
+  scale_fill_brewer(name="Non-empty neighbor bins", palette="YlGnBu") +
+  theme(legend.position="bottom", axis.title=element_blank(),
+        axis.text=element_blank(), axis.ticks=element_blank(),
+        line=element_blank()) +
+  geom_vline(data=data$lines, aes(xintercept=x)) +
+  geom_hline(data=data$lines, aes(yintercept=y)) +
+  scale_x_continuous(limits=range(data$lines$x), expand = c(0, 0)) +
+  scale_y_continuous(limits=range(data$lines$y), expand = c(0, 0))
+@

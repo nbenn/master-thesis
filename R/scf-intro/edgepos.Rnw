@@ -1,0 +1,43 @@
+<<scf-intro_edgepos, eval=TRUE, echo=1, size="footnotesize">>=
+edgepos <- function(x, y, img, n) {
+  empty <- logical()
+  xst <- img[1] / n
+  yst <- img[2] / n
+  sgrid <- matrix(0, nrow=n, ncol=n)
+  for (i in 1:n) {
+    for (j in 1:n) {
+      ispos <- (x > (i - 1) * xst) & (x <= (i * xst)) &
+               (y > (j - 1) * yst) & (y <= (j * yst))
+      sgrid[i, j] <- sum(ispos)
+    }
+  }
+
+  for (i in 1:n) {
+    for (j in 1:n) {
+      ispos <- (x > (i - 1) * xst) & (x <= (i * xst)) &
+               (y > (j - 1) * yst) & (y <= (j * yst))
+      isempty <- F
+      if ((i > 1) && (j > 1) && (sgrid[i - 1, j - 1] == 0))
+        isempty <- T
+      else if ((i > 1) && (sgrid[i - 1, j] == 0))
+        isempty <- T
+      else if ((i > 1) && (j < n) && (sgrid[i - 1, j + 1] == 0))
+        isempty <- T
+      else if ((j > 1) && (sgrid[i, j - 1] == 0))
+        isempty <- T
+      else if ((j < n) && (sgrid[i, j + 1] == 0))
+        isempty <- T
+      else if ((i < n) && (j > 1) && (sgrid[i + 1, j - 1] == 0))
+        isempty <- T
+      else if ((i < n) && (sgrid[i + 1, j] == 0))
+        isempty <- T
+      else if ((i < n) && (j < n) && (sgrid[i + 1, j + 1] == 0))
+        isempty <- T
+      empty[ispos] <- isempty
+    }
+  }
+  return(empty)
+}
+path <- gsub("/R/", "/data/", getwd())
+saveRDS(edgepos, paste0(path, "/edgepos.rds"))
+@

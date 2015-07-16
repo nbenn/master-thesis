@@ -1,0 +1,19 @@
+<<scf-intro_benchmark, eval=TRUE, echo=FALSE>>=
+suppressPackageStartupMessages(library(microbenchmark))
+path <- gsub("/R/", "/data/", getwd())
+data <- readRDS(paste0(path, "/data.rds"))
+facetBorder <- readRDS(paste0(path, "/facetBorder.rds"))
+edgepos <- readRDS(paste0(path, "/edgepos.rds"))
+
+time.facet <- microbenchmark(facetBorder(data$coords$x, data$coords$y,
+                             data$img, data$bin), times=384)
+time.edge  <- microbenchmark(edgepos(data$coords$x, data$coords$y,
+                             data$img, data$bin[1]), times=384)
+@
+
+\newcommand{\knitrScfBenchmarkFacetMean}{\Sexpr{round(mean(time.facet$time)/10^6, digits=3)} ms}
+\newcommand{\knitrScfBenchmarkFacetSd}{\Sexpr{round(sd(time.facet$time)/10^6, digits=3)} ms}
+\newcommand{\knitrScfBenchmarkFacetTotal}{\Sexpr{round(sum(time.facet$time)/10^9, digits=3)} s}
+\newcommand{\knitrScfBenchmarkEdgeMean}{\Sexpr{round(mean(time.edge$time)/10^6, digits=3)} ms}
+\newcommand{\knitrScfBenchmarkEdgeSd}{\Sexpr{round(sd(time.edge$time)/10^6, digits=3)} ms}
+\newcommand{\knitrScfBenchmarkEdgeTotal}{\Sexpr{round(sum(time.edge$time)/10^9, digits=3)} s}

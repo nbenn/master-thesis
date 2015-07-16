@@ -1,0 +1,77 @@
+<<scf-intro_get-data, eval=TRUE, echo=FALSE, message=FALSE>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+
+facetGrid <- function(x, y, img, facet) {
+  facet.size <- img / facet
+  # calculate facets (2d binning)
+  x.bin <- ceiling(x / facet.size[1])
+  y.bin <- ceiling(y / facet.size[2])
+  # initialize empty grid/border matrices
+  grid <- matrix(0, facet[2], facet[1])
+  # calculate col-major grid index for each object
+  index <- y.bin + (x.bin - 1) * facet[2]
+  # summarize as counts
+  counts <- table(index)
+  # fill grid with counts
+  grid[as.numeric(names(counts))] <- counts
+  grid <- grid > 0
+  # extend grid with a frame of ones
+  grid.ext <- rbind(rep(1, (facet[1] + 2)),
+                    cbind(rep(1, facet[2]), grid, rep(1, facet[2])),
+                    rep(1, (facet[1] + 2)))
+  # set up stencil
+  row <- rep(rep(1:facet[2], facet[1]))
+  col <- rep(1:facet[1], each=facet[2])
+  colP1 <- col + 1
+  colM1 <- col - 1
+  rowP1 <- row + 1
+  rowP2 <- row + 2
+  nrowP <- facet[2] + 2
+  stencil <- cbind(row   + colM1 * nrowP, # northwest neighbor
+                   row   + col   * nrowP, # north neighbor
+                   row   + colP1 * nrowP, # northeast neighbor
+                   rowP1 + colP1 * nrowP, # west neighbor
+                   rowP2 + colP1 * nrowP, # east neighbor
+                   rowP2 + col   * nrowP, # southwest neighbor
+                   rowP2 + colM1 * nrowP, # south neighbor
+                   rowP1 + colM1 * nrowP) # southeast neighbor
+  # apply stencil row-wise to grid
+  border <- apply(stencil, 1, function(ind, mat) {
+    return(sum(mat[ind]))
+  }, as.numeric(grid.ext))
+  return(as.numeric(grid) * border)
+}
+
+data <- WellData(WellLocation("J107-2C", "H", 6))
+data <- augmentImageLocation(data)
+molten <- meltData(data)
+
+bin <- c(36, 36)
+img <- c(1392 * 3 + 20, 1040 * 3 + 20)
+lines <- data.frame(x=c(0, 1397, 2799, 4196),
+                    y=c(0, 1045, 2095, 3140))
+binwidth <- c(1392 * 3, 1040 * 3) / bin
+
+x <- molten$mat$Cells$Cells.Location_Shifted_X
+y <- molten$mat$Cells$Cells.Location_Shifted_Y
+
+border <- facetGrid(x, y, img, bin)
+
+# account for the 10px gaps between images
+rect.x <- c(
+  1:(bin[1] / 3) * binwidth[1] - binwidth[1] / 2,
+  (bin[1] / 3 + 1):(2 * bin[1] / 3) * binwidth[1] - binwidth[1] / 2 + 10,
+  (2 * bin[1] / 3 + 1):bin[1] * binwidth[1] - binwidth[1] / 2 + 20)
+rect.y <- c(
+  1:(bin[2] / 3) * binwidth[2] - binwidth[2] / 2,
+  (bin[2] / 3 + 1):(2 * bin[2] / 3) * binwidth[2] - binwidth[2] / 2 + 10,
+  (2 * bin[2] / 3 + 1):bin[2] * binwidth[2] - binwidth[2] / 2 + 20)
+rects <- data.frame(cbind(x1=rep(rect.x, each=bin[2]),
+                          y2=rep(rep(rect.y, bin[1])),
+                          border=as.numeric(border)))
+res <- list(coords=data.frame(x, y), rects=rects, lines=lines, img=img,
+            bin=bin)
+path <- gsub("/R/", "/data/", getwd())
+if(!dir.exists(path)) dir.create(path, recursive=TRUE)
+saveRDS(res, paste0(path, "/data.rds"))
+@

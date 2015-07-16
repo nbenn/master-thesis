@@ -1,0 +1,46 @@
+<<scf-intro_facetBorder, eval=TRUE, echo=1, size="footnotesize">>=
+facetBorder <- function(x, y, img, facet) {
+  facet.size <- img / facet
+  # calculate facets (2d binning)
+  x.bin <- ceiling(x / facet.size[1])
+  y.bin <- ceiling(y / facet.size[2])
+  # initialize empty grid/border matrices
+  grid <- matrix(0, facet[2], facet[1])
+  # calculate col-major grid index for each object
+  index <- y.bin + (x.bin - 1) * facet[2]
+  # summarize as counts
+  counts <- table(index)
+  # fill grid with counts
+  grid[as.numeric(names(counts))] <- counts
+  grid.res <- grid
+  grid <- grid > 0
+  # extend grid with a frame of ones
+  grid.ext <- rbind(rep(1, (facet[1] + 2)),
+                    cbind(rep(1, facet[2]), grid, rep(1, facet[2])),
+                    rep(1, (facet[1] + 2)))
+  # set up stencil
+  row <- rep(rep(1:facet[2], facet[1]))
+  col <- rep(1:facet[1], each=facet[2])
+  colP1 <- col + 1
+  colM1 <- col - 1
+  rowP1 <- row + 1
+  rowP2 <- row + 2
+  nrowP <- facet[2] + 2
+  stencil <- cbind(row   + colM1 * nrowP, # northwest neighbor
+                   row   + col   * nrowP, # north neighbor
+                   row   + colP1 * nrowP, # northeast neighbor
+                   rowP1 + colP1 * nrowP, # west neighbor
+                   rowP2 + colP1 * nrowP, # east neighbor
+                   rowP2 + col   * nrowP, # southwest neighbor
+                   rowP2 + colM1 * nrowP, # south neighbor
+                   rowP1 + colM1 * nrowP) # southeast neighbor
+  # apply stencil row-wise to grid
+  border <- apply(stencil, 1, function(ind, mat) {
+    return(sum(mat[ind]))
+  }, as.numeric(grid.ext))
+  # map col-major object index to border array
+  return(border[index])
+}
+path <- gsub("/R/", "/data/", getwd())
+saveRDS(facetBorder, paste0(path, "/facetBorder.rds"))
+@

@@ -1,0 +1,89 @@
+\chapter{Data}
+
+\tikzset{
+    every node/.style={
+        font=\scriptsize
+    },
+    decision/.style n args={2}{
+        shape=rectangle,
+        minimum height=0.75cm,
+        text width=6.5cm,
+        text centered,
+        draw,
+        label={[xshift=3cm,yshift=-0.9cm]left:#1},
+        label={[xshift=-3cm,yshift=-0.9cm]right:#2},
+    },
+    outcome/.style={
+        shape=ellipse,
+        fill=gray!15,
+        draw,
+    minimum height=1cm,
+        text width=1.5cm,
+        text centered
+    },
+    decision tree/.style={
+        edge from parent path={
+          (\tikzparentnode.south) -- ++(0,-0.75cm) -| (\tikzchildnode.north)
+        },
+        sibling distance=5cm,
+        level distance=2cm
+    }
+}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+
+\node [decision={$> 0.075$}{$\le 0.075$}] {
+  \texttt{Cells.Intensity\_MeanIntensity\_CorrPathogen}
+}
+[decision tree]
+child { node [outcome] { infected } }
+child { node [decision={$> 0.085$}{$\le 0.085$}] { 
+\texttt{PeriNuclei.Intensity\_MeanIntensity\_CorrPathogen} } 
+  child { node [outcome] { infected } }
+  child { node [decision={$> 0.115$}{$\le 0.115$}] { 
+  \texttt{Nuclei.Intensity\_MeanIntensity\_CorrPathogen} } 
+    child { node [outcome] { infected } }
+    child { node [outcome] { not infected } }
+  }
+};
+
+\end{tikzpicture}
+\caption{Decision tree for adenovirus infection scoring.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+
+\node [decision={$> 0.800$}{$\le 0.800$}] { 
+  \texttt{Invasomes.Intensity\_MaxIntensity\_Corr1Pathogen}
+}
+[decision tree]
+child { node [outcome] { infected } }
+child { node [decision={$> 0.075$}{$\le 0.075$}] { 
+\texttt{Invasomes.Intensity\_MeanIntensity\_Corr1Pathogen} } 
+  child { node [outcome] { infected } }
+  child { node [decision={$> 0.085$}{$\le 0.085$}] { 
+  \texttt{Invasomes.Intensity\_UpperQuartileIntensity\_Corr1Pathogen} }
+    child { node [outcome] { infected } }
+    child { node [decision={$> 12.00$}{$\le 12.00$}] { 
+    \texttt{Invasomes.AreaShape\_Area} }
+    child { node [decision={$< 1000$}{$\ge 1000$}] { 
+      \texttt{Invasomes.AreaShape\_Area} }
+      child { node [decision={$< 0.060$}{$\ge 0.060$}] { 
+        \texttt{Invasomes.RadialDistribution\_FracAtD\_Corr1Actin\_1} }
+        child { node [outcome] { infected } }
+        child { node [outcome] { not infected } }
+      }
+      child { node [outcome] { not infected } }
+    }
+    child { node [outcome] { not infected } }
+  }
+    }
+};
+
+\end{tikzpicture}
+\caption{Decision tree for adenovirus infection scoring.}
+\end{figure}
