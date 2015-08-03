@@ -37,20 +37,20 @@ Non enveloped viruses cannot fuse with host membranes and have developed alterna
   \caption[The Baltimore classification scheme for viruses]{The Baltimore classification scheme is based on diversity of genetic system that have evolved in viruses. For each group, a selection of virus families capable of infecting humans, is provided, along with whether the virions are enveloped and the location of their replicatory niche. The data was obtained from \cite{Hulo2011}}
   \label{tab:baltimore-classification}
   \footnotesize
-  \begin{tabular}{c|l|l|c|c}
+  \begin{tabular}{c|l|lll}
     & Genome based class & Examples & Enveloped & Replication site \\
     \hline \multirow{4}{*}{\begin{sideways}DNA viruses\end{sideways}} &
     \multirow{2}{*}{Group I: dsDNA} &
     \textit{Adenoviridae} &
     no & nucleus \\
-    \cline{3-5} &
+    &
     & \textit{Poxviridae} &
     yes & cytoplasm \\
     \cline{2-5} &
     \multirow{2}{*}{Group II: ssDNA(+)} &
     \textit{Parvovirinae} &
     no & nucleus \\
-    \cline{3-5} &
+    &
     & \textit{Anelloviridae} &
     no & nucleus \\
     \hline \multirow{6}{*}{\begin{sideways}RNA viruses\end{sideways}} &   
@@ -61,17 +61,17 @@ Non enveloped viruses cannot fuse with host membranes and have developed alterna
     \multirow{3}{*}{Group IV: ssRNA(+)} &
     \textit{Coronaviridae} &
     yes & cytoplasm \\
-    \cline{3-5} &
+    &
     & \textit{Picornaviridae} &
     no & cytoplasm \\
-    \cline{3-5} &
+    &
     & \textit{Hepeviridae} &
     no & cytoplasm \\
     \cline{2-5} &
     \multirow{2}{*}{Group V: ssRNA(-)} &
     \textit{Filoviridae} &
     yes & cytoplasm \\
-    \cline{3-5} &
+    &
     & \textit{Paramyxoviridae} &
     yes & cytoplasm \\
     \hline \multirow{2}{*}{\begin{sideways}Retro\end{sideways}} &   
@@ -81,7 +81,8 @@ Non enveloped viruses cannot fuse with host membranes and have developed alterna
     \cline{2-5} &
     Group VII: dsDNA-RT &
     \textit{Hepadnaviridae} &
-    yes & nucleus
+    yes & nucleus \\
+    \hline
   \end{tabular}
 \end{table}
 
@@ -99,43 +100,173 @@ Once the host cell resources are depleted and replication is completed, progeny 
 
 Due to the much larger size of bacterial pathogens, endocytosis is not a feasible mechanism for entry. Phagocytosis, however can deal with uptake of particles this large. While phagocytosis is a function usually only available to macrophages, some bacteria have evolved mechanisms of inducing phagocytosis in other cell types. Species explicitly targeting macrophages, such as \textit{Mycobacterium tuberculosis} and \textit{Legionella pneumophila}, have to be able to escape phagosomes or deal with resisting digestion.
 
-Two recurring patterns for inducing phagocytosis in non-phagocytic cells have been described as the zipper mechanism, encountered in \textit{Yersinia pseudotuberculosis} and \textit{Listeria monocytogenes} and the trigger mechanism used by \textit{Salmonella enterica} and \textit{Shigella flexneri}. Not all entry strategies can be assigned to these two classes and several additional, unrelated pathways have been investigated.
+Two recurring patterns for inducing phagocytosis in non-phagocytic cells have been described by \cite{Cossart2004} as zipper (encountered in \textit{Yersinia pseudotuberculosis} and \textit{Listeria monocytogenes}) and trigger mechanisms (used by \textit{Salmonella enterica} and \textit{Shigella flexneri}). Not all entry strategies can be assigned to these two classes and several additional, unrelated pathways have been uncovered.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.6\textwidth]{zipper-trigger}
-  \caption[Zipper and trigger mechanisms for bacterial host-cell entry]{Both the zipper (A) and trigger mechanisms (B) are actin dependent and lead to phagocytosis by usually non-phagocytic host cells. Zippering bacteria display an invasion protein on their surface that recruits actin filaments via a host receptor, while triggering bacteria inject an effector into the host cytosol via a type III secretion system leading to uptake. \citep{Haglund2011}}
+  \includegraphics[width=0.95\textwidth]{zipper-trigger}
+  \caption[Zipper and trigger mechanisms for bacterial host-cell entry]{Both the zipper (A) and trigger mechanisms (B) are actin dependent and lead to phagocytosis by usually non-phagocytic host cells. Zippering bacteria display an invasion protein on their surface that recruits actin filaments via a host receptor, while triggering bacteria inject an effector into the host cytosol by means of a syringe like type III secretion system leading to their uptake. Adapted from \cite{Haglund2011}.}
   \label{fig:zipper-trigger}
 \end{figure}
 
 \phantomsection
 \label{zipper-mechanism}
 
-\paragraph{Zipper Mechanism.}
-The first step for zippering bacteria is binding to target cell receptors by expressing adhesins. \textit{Y. pseudotuberculosis} displays invasins on its cell surface, capable of interacting with \textbeta$_1$ integrins, while \textit{L. monocytogenes} uses internalin A, a protein that binds E-cadherin. In both settings, a downstream signaling cascade leads to actin polymerization via recruitment of an \glsrev{arp-2-3} complex and \glsrev{rac-1}, yielding a phagocytic cup.
-
-Cadherin and integrins are usually involved in anchoring cell junctions and the host cell is fooled into thinking, a neighboring cell is initiating formation of such a junction. Responding by recruiting actin at the site of bacterial attachment to cover the surface of mistaken invasion proteins leads to engulfment and phagocytosis to the bacterium. This process incurs only modest cytoskeletal rearrangements. 
+\paragraph{Zipper mechanism.}
+Host entry by zippering bacteria is characterized by bacterial surface proteins binding to cellular receptors, thereby inducing signaling cascades that lead to limited, localized actin rearrangements. This extends the plasma membrane alongside the entering bacteria in a zipper-like fashion. \citeauthor{Cossart2004} divide the scheme into three successive steps:
+\begin{enumerate}[label=(\alph*)]
+  \item Contact and adherence. Independent of the actin cytoskeleton, bacterial adhesins interact with host cell surface proteins leading to receptor clustering. \textit{Y. pseudotuberculosis} displays invasin, capable of interacting with \textbeta$_1$ integrins, while \textit{L. monocytogenes} uses internalin A, a protein that binds E-cadherin. Cadherin and integrins are usually involved in anchoring cell junctions and the invading bacteria mimic initiation of junction formation by a neighboring cell.
+  \item Phagocytic cup formation. Responding to the mistaken signal, the target cell extends its surface towards the signal origin via \glsrev{arp23} and \glsrev{rac-1} mediated actin polymerization, attempting to cover the adhesive surface. This leads to engulfment of the invading bacterium. 
+  \item Phagocytic cup closure. In a process probably involving the phosphotransferase phosphatidylinositol-4-phosphate 5-kinase, catalyzing the conversion of \glsrev{pi4p} to \glsrev{pi45p2}, the protruding membrane sections fuse and actin depolymerization returns the plasma membrane to its original state.
+\end{enumerate}
 
 \phantomsection
 \label{trigger-mechanism}
 
-\paragraph{Trigger Mechanism.}
-In case of the trigger mechanism, bacterial \gls{t3ss} weakly adhere to target cell receptors (CD44 for \textit{Shigella}) and effector molecules are injected into the host cytosol through a pore formed by \glsrev{sip} or \glsrev{ipa} proteins. These induce major actin rearrangements that result in localized ruffling of the plasma membrane and subsequent swallowing of the bacterium.
+\begin{table}
+  \centering
+  \caption[Homologous genes of \gls{t3ss} in \textit{Salmonella} and \textit{Shigella}.]{A selection of \gls{t3ss} genes in \textit{Salmonella} and \textit{Shigella}. The \textit{Salmonella} genome encodes two separate secretion systems which are deployed at distinct phases of infection. The data was obtained from \cite{Wang2012}.}
+  \label{tab:t3ss-genes}
+  \footnotesize
+  \begin{tabular}{L{0.2\linewidth}L{0.2\linewidth}L{0.2\linewidth}L{0.2\linewidth}}
+    \gls{t3ss} component&
+      \textit{Salmonella} SPI-1 &
+      \textit{Salmonella} SPI-2 &
+      \textit{Shigella} \\
+    \hline 
+    Outer membrane ring &
+      InvG &
+      SsaC &
+      MxiD \\
+    Inner membrane ring &
+      PrgK, PrgH &
+      SsaJ, SsaD &
+      MxiJ, MxiG \\
+    Cytoplasmic ring &
+      SpaO &
+      SsaQ &
+      Spa33 \\
+    Export apparatus &
+      % SpaR, SpaS,
+      SpaP, SpaQ, InvA &
+      % SsaU, SsaV
+      SsaR, SsaS, SsaT &
+      % Spa29, Spa40,
+      Spa24, Spa9, MxiA \\
+    Needle assembly &
+      % OrgB
+      InvI, InvJ, OrgA &
+      % SsaL
+      SsaO, SsaP, SsaK &
+      % MxiN
+      Spa13, Spa32, MxiK \\
+    Needle major subunit &
+      PrgI &
+      SsaG &
+      MxiH \\
+    Needle minor subunit &
+      PrgJ &
+      SsaI &
+      MxiI \\
+    Translocon &
+      SipB, SipC, SipD &
+      SseB, SseC, SseD &
+      IpaB, IpaC, IpaD \\
+    ATPase &
+      InvC &
+      SsaN &
+      Spa47 \\
+    Effector export &
+      InvE &
+      &
+      MxiC \\
+    Chaperone &
+      % SicP
+      SicA, InvB, SigE &
+      % SsaE
+      SseA, SscA, SscB &
+      % Spa15,
+      IpgC, IpgE, IpgA \\
+    Secreted effector &
+      % AvrA, SspH1, SopD
+      SipA, SptP, SopE, SopE2, SopB, SopA &
+      % SspH1, SspH2, SlrP, GogB,  SseF, SseJ, SseL
+      SifA, SifB, SseE, SpvC, SseG, SseI &
+      % IpaH1.4, IpaH4.5, IpaH7.8, IpaH9.8, OspZ, OspB, OspF, OspC1, OspE1, OspE2, OspD1, OspG,
+      IpaA, IcsB, IpgD, IpgB1, IpgB2, VirA \\
+    Transcription regulator &
+      % HilD, HilE, PhoP, 
+      InvF, HilA, HilC, SirA, SirB, PhoP &
+      SsrA, SsrB, YdgT, OmpR, H-NS, Hha &
+      MxiE, VirB \\
+      \hline
+  \end{tabular}
+\end{table}
 
-Early in \textit{Shigella} entry, VirA, secreted through the \gls{t3ss} causes local destabilization of microtubules by binding to \textalpha/\textbeta-tubulin heterodimers. This in turn stimulates \glsrev{rac-1} activity, \glsrev{cdc-42} recruitment and subsequent \gls{arp-2-3} activation leading to protrusions formed by actin filaments. \Gls{ipa}C recruits the Src tyrosine kinase further enhancing actin dynamics. Upon closing of the phagocytic pocket, the \gls{t3ss}-secreted protein \gls{ipa}A binds to vinculin and induces actin depolymerization.
+\paragraph{Trigger mechanism.}
+In trigger schemes, bacterial \gls{t3ss} weakly adhere to target cell receptors and inject effector molecules into the host cytosol through a pore formed by the syringe like delivery mechanism. These proteins directly interact with actin regulatory cellular components, causing major actin rearrangement characterized by membrane ruffling. This in turn leads to non-specific engulfment of bacteria and surrounding particles. Four steps have been identified by \citeauthor{Cossart2004}:
+\begin{enumerate}[label=(\alph*)]
+  \item Pre-interaction stage. Effector molecules, stored in bacterial cytosol, are associated with dedicated chaperones in order to prevent aggregation, degradation and guide them towards \gls{t3ss} once secretion is initiated. \Gls{t3ss} needle complexes (several hundred per bacterium are possible) are fully assembled and integrated into the two membranes of gram-negative bacteria.
+  \item Interaction stage. Initiation of secretion is triggered by a process not well understood. The tip of \gls{t3ss} recognizes the host cell membrane and activates secretion. Originally it was believed that the needle complex was able to puncture the target membrane but recent evidence suggests that translocator proteins are ejected which subsequently form a pore and thusly facilitate insertion of the secretion system. Once bacterial and cellular cytoplasms are connected, effector chaperones dissociate and unfolded proteins (the needle passage is only 3 nm wide) enter the host in a probably \gls{atp} dependent manner. Chaperones serve a double purpose as transcription factors, encouraging synthesis of new effector protein when not attached to their substrate.
+  \item Formation of macropinocytic pocket. Massive, but localized membrane protrusions due to action of bacterial effectors. In \textit{Shigella} entry, VirA causes local destabilization of microtubules by binding to \textalpha/\textbeta-tubulin heterodimers. This in turn stimulates \glsrev{rac-1} activity, \glsrev{cdc-42} recruitment and subsequent \gls{arp23} activation leading to actin polymerization. \Glsrev{ipa}C recruits the Src tyrosine kinase further enhancing actin dynamics. \textit{Salmonella} inject the proteins \glsrev{sop}E and \glsrev{spt-p}, an activator/inhibitor pair for the GTPase complex \gls{rac-1}/\gls{cdc-42}. \Gls{gef} activity of \acrshort{sop}E induces actin rearrangements leading to formation of the macropinocytic cup.
+  \item Closing of macropinocytic pocket. In \textit{Salmonella} invasion, \gls{gap} activity of \gls{spt-p}, restores the inactive \gls{gdp} state of \gls{rac-1}/\gls{cdc-42} and leads to actin depolymerization. Its \gls{gef} partner \acrshort{sop}E is degraded more rapidly than \gls{spt-p}, enabling reversible control over the pathways exploited for entering. In case of \textit{Shigella}, actin depolymerization is initiated by binding of \acrshort{ipa}A to vinculin, a key protein of focal adhesion plaques.
+\end{enumerate}
 
-\textit{Salmonella} inject the proteins \glsrev{sop}E and \glsrev{spt-p}, an activator/inhibitor pair for the GTPase complex \gls{rac-1}/\gls{cdc-42}, into the host cell. First, \gls{gef} activity of \gls{sop}E induces massive actin-rearrangements leading to membrane ruffling and facilitating phagocytosis, followed by GAP activity of \gls{spt-p}, restoring the inactive \gls{gdp} state of \gls{rac-1}/\gls{cdc-42} and leading to actin depolymerization. \Gls{sop}E is degraded more rapidly than \gls{spt-p}, enabling the invading pathogen to reversibly control the pathways exploited for entering.
+\paragraph{Other entry pathways.}
+In addition to trigger and zipper type uptake, other atypical mechanisms exist. Host cell entry of \textit{Brucella abortus}, for example, has been described as invasome mediated \citep{Dehio2005}. In this actin dependent process, bacteria aggregate on the cell surface and trigger their engulfment by injecting bacterial effectors into the host via \gls{t4ss}. The internalized structure is called an invasome.
 
-\paragraph{Other Entry Pathways.}
-In addition to trigger and zipper type uptake, other atypical mechanisms exist. Host cell entry of \textit{Brucella abortus}, for example, has been described as invasome mediated \citep{Dehio2005}. In this actin dependent process, bacteria aggregate on the cell surface and trigger their engulfment by injecting bacterial effectors into the host via \gls{t4ss}. The internalized structure is called an invasome. Actin-independent uptake albeit rare, is possible as evidenced by \textit{Campylobacter jejuni}, which have evolved a microtubule dependent invasion strategy \citep{Kopecko2001}.
+Actin-independent uptake albeit rare, is possible as evidenced by \textit{Campylobacter jejuni} and \textit{Citrobacter freundii}, which have evolved a microtubule dependent invasion strategy \citep{Kopecko2001}. A further example of microtubule involvement is presented by \textit{Clostridium} spp. (a genus that includes the etiological agent of tetanus and several species capable of botulinum toxin synthesis). These intercellular pathogens induce formation of long protrusions formed by microtubule filaments that wrap around the bacteria and fix them in close proximity. It has been speculated that such a mechanism could be exploited by intracellular pathogens to promote adherence \citep{Haglund2011}.
 
-\subsection{Actin-based Intracellular Motility}
-\label{subsec:actin-motility}
-As for large viruses, free diffusion within the cytoplasm is not possible for bacteria.
+\subsection{Intracellular Survival}
+While bacteria that successfully subvert endocytic pathways and trigger their uptake have defied innate and evaded adaptive immune responses, they are still faced with defensive mechanisms by their new hosts. A multitude of strategies has evolved in order to undermine hostile actions directed at intruding bacteria and for establishing a replicatory niche within this initially adverse but nevertheless potentially propitious environment.
+
+Phagocytic vacuoles, containing internalized microorganisms are destined for endocytic maturation. These compartments undergo successive acidification and finally develop into mature degradative phagolysosomes. Most intracellular pathogens either escape the endocytic vacuole before fusion with lysosomes occurs or manipulate cellular pathways that control its maturation, thereby creating a niche permissive to their survival. Two important themes for cytosolic bacteria are efficient means of locomotion and evasion of cellular responses such as autophagy.
+
+\paragraph{The phagocytic vacuole.}
+In order to survive an environment characterized by constantly decreasing pH, poor nutrient content and an increasing concentration of antibacterial and lysosomal enzymes, most successful pathogens incapable of escaping their internalization compartment alter biogenesis and dynamics of their surroundings. Examples include \textit{Salmonella}, \textit{Mycobacterium tuberculosis} and \textit{Legionella pneumophila} \citep{Ham2011}.
+
+\textit{Salmonella} replicates in plasma membrane derived perinuclear \glspl{scv} that are neither early, nor late endosomes. While some fusion events with vesicles of the endocytic pathway take place, maturation into lysosomes is inhibited. \Acrshort{sop}B, an \acrshort{spi}-1 encoded \gls{t3ss} effector, hydrolyzes \gls{pi45p2} and reduced concentration of \gls{pi45p2} inhibits recruitment of cellular RAB GTPases required for phagosome-lysosome fusion. A key role in manipulating membrane trafficking is played by the \acrshort{spi}-2 encoded \gls{t3ss} effector SifA. Endosomal maturation is associated with microtubule dependent vacuole relocation and SifA has been shown to regulate kinesin activity, thereby contributing to \gls{scv} integrity. Furthermore, SifA activity is essential in increasing the \gls{scv} volume and creating the necessary space for replications.
+
+Similarly to \Acrshort{sop}B in \textit{Salmonella}, the bacterial phosphatase SapM expressed by \textit{M. tuberculosis}, dephosphorylates \gls{pi3p} which blocks phagosomes from fusing with late endosomes and consequently arrests maturation. A different approach is employed by \textit{L. pneumophila} which secrete SidC via \gls{t4ss}, an effector protein capable of binding and displaying \gls{pi4p} on the vacuolar surface. This leads to recruitment of \acrshort{er}-derived vesicles which turns the phagosome into an \glsrev{lcv} which is removed from the endocytic pathway and becomes sufficiently spacious for replication.
+
+\paragraph{Cytosolic replication.}
+Pathogens that evolved to replicate in the cytosol must quickly escape the internalization vacuole. Most species are capable of triggering their release within 30 minutes of infection, highlighting the importance of quick action in order to prevent damage incurred by acidification of the phagosome. In all known cytosolic bacteria vacuolar egress is a pathogen driven process and most species employ lytic enzymes capable of forming trans-membrane pores. Examples of bacteria that enter the cytosol as part of their life-cycle include \textit{Listeria monocytogenes}, \textit{Shigella flexneri}, \textit{Burkholderia pseudomallei}, \textit{Francisella tularensis} and species of the \textit{Rickettsia} genus.
+
+The best studied organism, \textit{L. monocytogenes}, secretes \gls{llo} a hemolytic enzyme, capable of inserting into the target membrane, oligomerize and through a conformational change form a pore. This delays endosomal maturation, prevents fusion with lysosomes and finally releases the bacteria into the cytosol. Regulation of \gls{llo} is pH mediated and involves the host factor \gls{gilt}, specific to endosomes, phagosomes and lysosomes. Vacuole escape by \textit{S. flexneri} is dependent on the three \gls{t3ss} translocator proteins \gls{ipa}B, \gls{ipa}C and \gls{ipa}D with \gls{ipa}B and \gls{ipa}C forming a pore complex and \gls{ipa}D facilitating insertion into the membrane. For both \textit{Rickettsia} spp. and \textit{B. pseudomallei}, little information on vacuole-lytic mechanisms exist. Hemolysin C and phospholipases have been implicated of playing important roles but more work is necessary to uncover their exact mechanistic relevance. \textit{F. tularensis} stands out among the previously mentioned organisms in that lysis of the internalization vacuole is followed by re-entry of another membrane bound compartment, the \gls{fcv}.
+
+Interestingly, it is not known to what extent, the nutritional content of mammalian cytosol is permissive to bacterial growth. As evidenced by \textit{S. flexneri} which can grown with a doubling time of only 40 minutes (growth rates in laboratory medium are comparable) it is possible for microorganisms to adapt to this environment. While it seems natural to assume that cellular cytosol provides ideal conditions for bacterial growth and replication, this raises the question of why only comparably few pathogenic organisms exploit this ecological niche. Indeed, nutritional arguments are not the only reasons to consider, as it is clear that reaching this habitat is no easy feat and further defense against foreign particles in the cytosol, for example autophagocytosis, exist \citep{Ray2009}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]{actin-motility}
+  \caption[Mechanisms of actin based motility in several intracellular bacterial pathogens.]{The capability for actin based motility evolved independently in several intracellular bacterial pathogens. (A) The entry points into the cellular actin assembly pathway vary, with some organisms providing their own \acrlong{npf} (\textit{Listeria} and \textit{Rickettsia}), while others rely on cellular \gls{npf} (\textit{Shigella} and \acrlong{ehec}). The branching pattern of actin tails differs between organisms relying on cellular \gls{arp23} from those capable of \gls{arp23} independent \gls{abm} (B). Cofilin is responsible for actin depolymerization, profilin is a regulatory protein catalyzing the exchange of ADP to ATP and fimbrin crosslinks actin strands into bundles. \citep{Haglund2011}.}
+  \label{fig:actin-motility}
+\end{figure}
+
+\phantomsection
+\label{actin-motility}
+\paragraph{Actin-based motility.}
+As for large viruses, free diffusion within the cytoplasm is not readily possible for bacteria and a feature common to most cytosolic bacterial is 
+\gls{abm}. Actin monomers exist in two forms, G-actin (globular) and F-actin (filamentous). \Gls{atp} binds G-actin, and upon formation of a trimeric nucleus the nascent chain grows in both directions while \gls{atp} is hydrolyzed. When the chain reaches a certain length, growth becomes directional and association of monomers at the plus end compensates for dissociation of monomers at the minus end. This leads to a self-sustaining scheme described as treadmilling. Limiting to actin polymerization is the kinetically unfavorable nucleation step and in vivo, this is simulated by cellular factor such as \gls{arp23} which require activation by \glspl{npf}, including members of the \gls{wasp} family.
+
+\Gls{abm} exhibiting pathogens can be divided into two groups dependin on whether they provide \glspl{npf} of their own or recruit host cell \glspl{npf}. Expression of ActA by \textit{L. monocytogenes} is both necessary and sufficient for \gls{abm} as shown in a cell free system using ActA coated beads, actin, \gls{arp23}, CapZ, cofilin and \gls{atp}. No cellular \gls{npf} is required as ActA mimics \gls{wasp} and directly activates \gls{arp23}. \textit{Rickettsia} are currently the only known pathogens capable of \gls{abm} without relying on \gls{arp23}, leading to formation of actin tails with a distinct morphology. The formin-like protein Sca2 directly interacts with actin and RickA, exhibiting some homology to \gls{wasp} can act as \gls{npf}. A further organism that mimics cellular \gls{npf} is \textit{B. pseudomallei}, which is capable of BimA-mediated, \gls{arp23} independent actin polymerization.
+
+Bacterial pathogens that rely on cellular \gls{npf} instead of supplying their own include \textit{S. flexneri}, \textit{Mycobacterium marinum}  and \gls{ehec}. In \textit{S. flexneri} infection, bacterial IcsA, capable of recruiting \gls{n-wasp}, is the only required bacterial factor for inducing \gls{abm}. By inducing conformational changes in \gls{n-wasp}, IcsA is thought to mimic activation by \gls{cdc-42}, allowing for association of \gls{n-wasp} with \gls{arp23}. Details of \gls{abm} in \textit{M. marinum} are less well known but as it is both \gls{wasp} and \gls{arp23} dependent, it is assumed that the employed mechanism is similar to that of \textit{S. flexneri}.
+
+Both \gls{ehec} and \gls{epec}, while not intracellular pathogens, are able to induce cytosolic actin polymerization. By inserting the transmembrane protein \gls{tir} into the plasma membrane they are able to initiate actin polymerization via the same pathway as \gls{abm}, leading to the formation of pedestals protruding outwards. This is thought to provide means of extracellular motility. Intercellular motility by \gls{abm} capable bacteria is achieved by pushing against the host cell membrane into the neighboring cell body until being engulfed in a double membrane vacuole that is subsequently lysed \citep{Stevens2006,Haglund2011}.
+
+\paragraph{Autophagy.}
+The basic catabolic cellular mechanism of autophagy is initiated as response to stress signals such as nutrient starvation, damaged cellular compartments and foreign particles. Cytoplasmic components marked for degradation are captured by the double-membrane autophagosome, intended for fusion with lysosomes. As cellular defense mechanism, cytosolic pathogens are targeted by selective autophagy in a process also related to as xenophagy. Bacterial response can be categorized as interference with the autophagy pathway, evasion of autophagy recognition or escape from the autophagosome.
+
+\textit{S.} typhimurium, while not usually considered a cytosolic pathogen, has been shown to occasionally escape the phagocytic vacuole and replicate in the cytosol. Membrane damage triggers an amino acid starvation response that activates autophagy signaling by relocating \gls{mtor} from the late endosome to the cytosol. The bacteria respond via unknown action probably involving \acrshort{spi}-2 \gls{t3ss} secretions that are able to restore both the cytosolic amino acid pool and \gls{mtor} localization, successfully inhibiting autophagy. Further examples of autophagy-initiation signaling inhibition are provided by \textit{M. tuberculosis} which is able to produce \gls{eis}, an inhibitor to production of \gls{ros} needed as an autophagy signal. Furthermore, bacterial toxins apt for interfering with \gls{camp} regulation can block autophagy in mammalian cells.
+
+After autophagy has been initiated, the procedure can still be modified as shown by \textit{L. pneumophila} and \textit{S. flexneri}. The former organism secretes RavZ via \gls{t4ss} which decouples the autophagy marker LC3 from the phagosomal membrane while the latter expresses VirA via \gls{t3ss}, a \gls{gap}capable of inactivating the autophagy regulator RAB1. Another group of bacteria prevent or delay lysosome fusion and accumulate in non-degradative vacuoles at neutral pH. Examples include \textit{M. marinum}, \textit{Chlamydia trachomatis}, \textit{Yersinia pestis} and \textit{Helicobacter pylori}.
+
+Evasive measures have been suggested to be employed for \textit{S. flexneri} and \textit{L. monocytogenes}. IcsB of \textit{S. flexneri} and ActA of \textit{L. monocytogenes} have been implicated of masking the bacteria from autophagy targeting mechanisms and it has been suggested that \gls{abm} might somehow facilitate hiding from host cell detection. By also currently unknown means, \textit{B. pseudomallei} can escape the phagosome of an autophagy-related process, possibly involving BopA secretion via \gls{t3ss} \citep{Huang2014}.
 
 \section{Select Bacterial Pathogens}
 
-A total of 5 bacterial pathogens were selected for study within the InfectX RTD project by SystemsX. This section shortly describes each organism in terms of microbiological features, pathogenesis, epidemiology and diseases caused in humans. For each organism, a chapter of \cite{Rolain2006} serves as basis and is augmented by one or two review article referenced in the first paragraph of each section.
+A total of 5 bacterial pathogens were selected for study within the InfectX RTD project by SystemsX. This section shortly describes each organism in terms of microbiological features, pathogenesis, epidemiology and diseases caused in humans. For each organism, a chapter of \cite{Rolain2006} serves as basis and is enriched by one or two review articles referenced in the first paragraph of each section.
 
 \subsection{\textit{Bartonella Henselae}}
 
@@ -146,7 +277,7 @@ In immunocompetent humans, infection with \textit{B. henselae} can lead to a con
 
 Possible complications include Parinaud's oculoglandular syndrome (granulomatous conjunctivitis in one eye and parotid lymphadenitis on the same side), splenomegaly and hepatic or splenic abscesses, accompanied by fever, weight loss, fatigue and malaise. In 1 to 7\% of the cases, the disease spreads to the central nervous system, leading to encephalopathy, but recovery is usually rapid (within several weeks).
 
-Infections with \textit{B. henselae} tend to have more severe consequences for immunocompromised patients, such as bacillary angiomatosis, bacteremia and endocarditis. \Gls{aids} patients suffering from \gls{csd} usually experience severe, progressive disease with infection spreading systematically and without appropriate treatement, fatal outcome. \textit{Bartonella spp.} are the only prokaryotes known to be able to induce angiogenic tumors such as bacillary angiomas, which may involve skin, respiratory or gastrointestinal epithelia, hart, liver, spleen, bone marrow, muscles, or lymph nodes. Bacteremia may lead to inflamed heart valves, usually requiring endocarditic patients to have heart valve replacement surgery.
+Infections with \textit{B. henselae} tend to have more severe consequences for immunocompromised patients, such as bacillary angiomatosis, bacteremia and endocarditis. \Gls{aids} patients suffering from \gls{csd} usually experience severe, progressive disease with infection spreading systematically and without appropriate treatement, fatal outcome. \textit{Bartonella} spp. are the only prokaryotes known to be able to induce angiogenic tumors such as bacillary angiomas, which may involve skin, respiratory or gastrointestinal epithelia, hart, liver, spleen, bone marrow, muscles, or lymph nodes. Bacteremia may lead to inflamed heart valves, usually requiring endocarditic patients to have heart valve replacement surgery.
 
 \begin{figure}
   \centering
@@ -212,7 +343,7 @@ Among adults, most cases of listeriosis occur in T-cell deficient individuals. H
 \end{figure}
 
 \paragraph{Pathogenesis.}
-The predominant entry path for \textit{L. Monocytogenes} into the human body is via the gastrointestinal tract, where Peyer's patches are targeted. The bacteria can induce cellular uptake (see section \ref{zipper-mechanism}), even by non-phagocytic host cells via expression of cell-surface associated interanlins. Upon cell entry, the phagosomal membrane is lysed, mediated by haemolysin secretion, and actin polymerization (see section \ref{subsec:actin-motility}) provides means of intracellular movement. Listerial haemolysin (listeriolysin) is acid activated with an optimum around pH 5.5, which is reached in late endosomes and membrane lysis is caused by the formation of large transmembrane pores. Growth and replication occur in the cytoplasm and adjacent cells can be entered by pushing against the plasma membrane and forming a pseudopod-like structure which in turn is taken up the neighbor. The resulting double-membrane vacuole can be escaped by cytolysis.
+The predominant entry path for \textit{L. Monocytogenes} into the human body is via the gastrointestinal tract, where Peyer's patches are targeted. The bacteria can induce cellular uptake (see section \ref{zipper-mechanism}), even by non-phagocytic host cells via expression of cell-surface associated interanlins. Upon cell entry, the phagosomal membrane is lysed, mediated by haemolysin secretion, and actin polymerization (see section \ref{actin-motility}) provides means of intracellular movement. Listerial haemolysin (listeriolysin) is acid activated with an optimum around pH 5.5, which is reached in late endosomes and membrane lysis is caused by the formation of large transmembrane pores. Growth and replication occur in the cytoplasm and adjacent cells can be entered by pushing against the plasma membrane and forming a pseudopod-like structure which in turn is taken up the neighbor. The resulting double-membrane vacuole can be escaped by cytolysis.
 
 In an extracellular setting, haemolysins serve to rupture erythrocytes in order to generate free iron, a limiting growth factor. Furthermore the nonspecific immune system has to be evaded and haemolysins have also been shown to be cytotoxic towards leukocytes. Additionally, expression of bacterial superoxide dismutase mitigates the effect of free superoxide radicals which play an important role in killing phagocytized bacteria.
 
@@ -243,7 +374,7 @@ Salmonellosis is a diarrheal disease with a short incubation period of 6--24 h, 
 \paragraph{Pathogenesis.}
 In order to reach the small intestine, ingested \textit{S.} Typhimurium first are exposed to the hostile environment of the stomach. A set of proteins, summarized as \gls{atr} helps mediate the acidic conditions and improves survival rates. The reamining bacteria subsequently reacht the small bowel and target its epithelial cells, with preference towards \gls{m-cells}. Flagellar motility enables penetration of intestinal mucus secretions and improves the chance of reaching the intestinal walls where adhesion can be established. Fimbriae are important attachment factors, capable of interaction with host-cell laminin and fibronectin and provide an initial platform for pathogen induced phagocytosis via trigger mechanism (see section \ref{trigger-mechanism}). 
 
-\textit{S.} Typhimurium utilize two separate \gls{t3ss} systems for host-cell colonization, the first of which (\gls{t3ss}-1) mediates invasion. In addition to strengthening initial interactions attaching the pathogen to its target, the needle like structure serves as delivery mechanisms, capable of injecting effector proteins, including \gls{sop}E, \gls{sop}E2, \gls{sop}B (also known as SigD) and \gls{sip}A. \Gls{sop}E serves as \gls{gef} and activates \gls{rac-1} and \gls{cdc-42} via \acrshort{gdp}/\acrshort{gtp} exchange, which in turn initiate cytoskeletal rearrangements. \Gls{sop}E2 is a further \gls{gef}, highly homologous to \gls{sop}E and it is assumed to fill in for \gls{sop}E in \textit{Salmonella} strains missing the \gls{sop}E gene. \Gls{sop}B is a phosphatase, capable of hydrolyzing various substrates, including \gls{i13456p5}, which has been linked to intestinal fluid secretion causing diarrhea and \gls{pi45p2}, which is involved with membrane rigidity. Finally, the actin binding protein \gls{sip}A  stimulates stimulates actin polymerization and promotes membrane ruffling.
+\textit{S.} Typhimurium utilize two separate \gls{t3ss} systems for host-cell colonization, the first of which (\gls{t3ss}-1) mediates invasion. In addition to strengthening initial interactions attaching the pathogen to its target, the needle like structure serves as delivery mechanisms, capable of injecting effector proteins, including \acrshort{sop}E, \acrshort{sop}E2, \acrshort{sop}B (also known as SigD) and \gls{sip}A. \Acrshort{sop}E serves as \gls{gef} and activates \gls{rac-1} and \gls{cdc-42} via \acrshort{gdp}/\acrshort{gtp} exchange, which in turn initiate cytoskeletal rearrangements. \Acrshort{sop}E2 is a further \gls{gef}, highly homologous to \acrshort{sop}E and it is assumed to fill in for \acrshort{sop}E in \textit{Salmonella} strains missing the \acrshort{sop}E gene. \Acrshort{sop}B is a phosphatase, capable of hydrolyzing various substrates, including \gls{i13456p5}, which has been linked to intestinal fluid secretion causing diarrhea and \gls{pi45p2}, which is involved with membrane rigidity. Finally, the actin binding protein \gls{sip}A  stimulates stimulates actin polymerization and promotes membrane ruffling.
 
 Upon engulfment, maturation of the phagosome and fusion with lysosomes have to be prevented. Unlike other pathogens that escape the digestive mechanisms of phagocytic vesicles by moving to the cytosol, \textit{Salmonella} replicate inside phagosome-derived \glspl{scv}. In this setting, the second translocation complex (\gls{t3ss}-2) is activated, and used to secrete effectors, including SsaB and SifA, capable of interacting with vesicular trafficking mechanisms and guiding the \gls{scv} away from its original degradation pathway. Furthermore \gls{t3ss}-2 translocated effectors induce actin polymerization events, which guide the \gls{scv} toward a perinuclear position. A last step in creating the intracellular niche needed for replication, is formation of \glspl{sif}, extending outwards from the \gls{scv}. \Gls{t3ss}-2 secretes effectors such as SifA, PipB2, SseF and SseG, which mediate the microtubule dependent processes by bundling and accumulating microtubules and regulating microtubule motor function.
 
@@ -271,13 +402,13 @@ Administration of antibiotics is not recommended in mild to moderate cases as th
 \end{figure}
 
 \paragraph{Pathogenesis.}
-Main targets of \textit{S. Flexneri} are mucosa of the distal ileum and colon where they enter epithelial cells from the basolateral side. For initial crossing over from the apical side, action of \gls{m-cells} at Peyer's patches is exploited. These specialized enterocytes constantly sample antigens from the gut lumen and pass them to intraepithelially located dendritic cells and lymphocytes. Upon uptake by basolaterally located macrophages, \textit{S. Flexneri} survive digestive action of the phagosomal vacuole by disrupting the surrounding membrane and initiating host-cell apoptosis, mediated by the bacterial effector protein \gls{ipa}B, capable of acting on a caspase 1 regulated apoptotic pathway. The bacteria are subsequently released into the sub-mucosa, where they induce phagocytosis by normal epithelial cells via trigger mechanism (see section \ref{trigger-mechanism}).
+Main targets of \textit{S. Flexneri} are mucosa of the distal ileum and colon where they enter epithelial cells from the basolateral side. For initial crossing over from the apical side, action of \gls{m-cells} at Peyer's patches is exploited. These specialized enterocytes constantly sample antigens from the gut lumen and pass them to intraepithelially located dendritic cells and lymphocytes. Upon uptake by basolaterally located macrophages, \textit{S. Flexneri} survive digestive action of the phagosomal vacuole by disrupting the surrounding membrane and initiating host-cell apoptosis, mediated by the bacterial effector protein \acrshort{ipa}B, capable of acting on a caspase 1 regulated apoptotic pathway. The bacteria are subsequently released into the sub-mucosa, where they induce phagocytosis by normal epithelial cells via trigger mechanism (see section \ref{trigger-mechanism}).
 
-Initial contact between pathogen and target hos cell is mediated by cellular \textalpha\textsubscript{5}\textbeta\textsubscript{1} integrins and binding of \gls{ipa}B to CD44 receptors may initiate first actin rearrangements, preparing the cell for uptake. Subsequent injection of at least 6 effector proteins into the epithelial cytosol through the \gls{t3ss} triggers engulfment of the bacterium in an actin dependent process, involving the small GTPases \gls{rac-1} and \gls{cdc-42}, which recruit the actin nucleation complex \gls{arp-2-3}. \Gls{ipa}C, a component of the translocation complex, is involved in stimulating \gls{rac-1} and \gls{cdc-42} GTPase activity through an unknown mechanism and the secreted effector proteins IpgB1, IpgB2, IpgD and \gls{ipa}A facilitate actin polymerization. IpgD, an inositol phosphate phosphatase, catalyzes the hydrolysis of \acrshort{pi45p2} to \acrshort{pi5p} which promotes disassociation of cytoskeleton and membrane, increasing actin availability and making the plasma membrane more susceptibility to manipulation. The mechanism of action of IpgB2 remains to be resolved, while IpgB1 is assumed to mimic activated \glsrev{rho-g}, a small GTPase, located upstream in the signaling pathway of \gls{rac-1}. Finally, binding of \gls{ipa}A to vinculin induces depolymerization of actin, which is assumed to be important for closing of the phagocytic cup.
+Initial contact between pathogen and target hos cell is mediated by cellular \textalpha\textsubscript{5}\textbeta\textsubscript{1} integrins and binding of \acrshort{ipa}B to CD44 receptors may initiate first actin rearrangements, preparing the cell for uptake. Subsequent injection of at least 6 effector proteins into the epithelial cytosol through the \gls{t3ss} triggers engulfment of the bacterium in an actin dependent process, involving the small GTPases \gls{rac-1} and \gls{cdc-42}, which recruit the actin nucleation complex \gls{arp23}. \Acrshort{ipa}C, a component of the translocation complex, is involved in stimulating \gls{rac-1} and \gls{cdc-42} GTPase activity through an unknown mechanism and the secreted effector proteins IpgB1, IpgB2, IpgD and \acrshort{ipa}A facilitate actin polymerization. IpgD, an inositol phosphate phosphatase, catalyzes the hydrolysis of \acrshort{pi45p2} to \acrshort{pi5p} which promotes disassociation of cytoskeleton and membrane, increasing actin availability and making the plasma membrane more susceptibility to manipulation. The mechanism of action of IpgB2 remains to be resolved, while IpgB1 is assumed to mimic activated \glsrev{rho-g}, a small GTPase, located upstream in the signaling pathway of \gls{rac-1}. Finally, binding of \acrshort{ipa}A to vinculin induces depolymerization of actin, which is assumed to be important for closing of the phagocytic cup.
 
-The resulting phagocytic vacuole has to be escaped before maturation progresses, which is accomplished in a non-acid dependent fashion, by the translocator proteins \gls{ipa}B, \gls{ipa}C and \gls{ipa}D via membrane lysis. With release into the epithelial cytosol, the replicatory niche of \textit{S. Flexneri} is reached. Actin mediated intracellular motility enables intercellular dissemination (see section \ref{subsec:actin-motility}) and targeting of epithelial tight junctions initiates break-down of the epithelial barrier, providing more pathogens with access to the basolateral side of the gut lining.
+The resulting phagocytic vacuole has to be escaped before maturation progresses, which is accomplished in a non-acid dependent fashion, by the translocator proteins \acrshort{ipa}B, \acrshort{ipa}C and \acrshort{ipa}D via membrane lysis. With release into the epithelial cytosol, the replicatory niche of \textit{S. Flexneri} is reached. Actin mediated intracellular motility enables intercellular dissemination (see section \ref{actin-motility}) and targeting of epithelial tight junctions initiates break-down of the epithelial barrier, providing more pathogens with access to the basolateral side of the gut lining.
 
-Host-cell actin utilization, is driven by activity of two bacterial proteins. VirA is secreted at the forward facing end of the rod shaped bacilli, which promotes degradation of tubulin structures and therefore clearing a path through the dense network of microtubules and surface bound \glsrev{ics}A facilitates actin polymerization at the opposite end. Both \gls{arp-2-3} and \gls{n-wasp} are involved in actin nucleation, the directed nature of which provides the driving force for locomotion.
+Host-cell actin utilization, is driven by activity of two bacterial proteins. VirA is secreted at the forward facing end of the rod shaped bacilli, which promotes degradation of tubulin structures and therefore clearing a path through the dense network of microtubules and surface bound \glsrev{ics}A facilitates actin polymerization at the opposite end. Both \gls{arp23} and \gls{n-wasp} are involved in actin nucleation, the directed nature of which provides the driving force for locomotion.
 
 \paragraph{Epidemiology.}
 Estimates by the \gls{who} peg the disease burden caused by \textit{Shigella} spp. at 80 million annual cases worldwide, leading to 700000 deaths. Developing countries are disproportionately affected, representing 99\% of all cases, as are children less than 5 years old, accounting for 70\% of cases and 60\% of deaths. In developed countries, incidence rates of 1--2 per 100000 population are typical and Shigellae are common causes of Traveler's diarrhea.
@@ -441,18 +572,9 @@ Intercellular, systemic spread of RNAi response in plants and even its heredity 
 
 In addition to investigations with consumer health in mind, improvements in environmental resistance have been studied in many organisms. Susceptibility to bacterial and viral pathogen infection has been reduced in rice, bean, barley and lemon, while fungal resistance has been increased in potato, tobacco and wheat. Successful RNAi application as insecticide has been shown in cotton and maize and even improved resistance to parasitic weeds could be demonstrated in transgenic tomato plants. Despite these achievements, concerns over environmental issues and adverse health effects have so far prevented RNAi based genetic modifications from exiting experimental stages \citep{Saurabh2014}.
 
-\paragraph{Therapeutic potential.}
-Great promise lies in therapeutic application of RNAi as theoretically, any gene can be targeted, yielding unparalleled flexibility not encountered with typical small molecule drugs. An initial obstacle to harnessing this power in humans is the issue of delivery. Systemic spread of naked \glspl{sirna} is hampered by kidney filtration, phagocytic uptake and degradation by serum RNases. Movement across capillary walls is not readily possible for molecules larger than 5 nm and phagocytes patrol the extracellular matrix, ingesting foreign genetic material. Furthermore, polyanionic macromolecules do not easily penetrate hydrophobic cellular membranes.
-
-Topical or local administration offers advantages, including increased bioavailability and reduced side effects and is therefore preferred for treatment of eye, skin and mucosal diseases, as well as localized tumors. If targets are not localized or difficult to reach, injection into the bloodstream may provide a mode of systemic application. Chemical modification of the RNA backbone (2'-O-methylation or 2'-fluorination of ribose) has been shown to provide resistance to RNase and covalent attachment to cholesterol promotes cellular uptake. Encapsulation of \gls{sirna} in liposomes and cationic polymers are further proven techniques for improving extracellular stability, stimulate endocytosis and facilitate endosomal escape.
-
-Some sort of target selectivity is desirable on order to avoid high dosages, associated concerns of toxicity and potential \glspl{ote} in non-target tissue. Coupling of \gls{sirna} reagents to antibodies specific for \gls{hiv} envelope glycoproteins has been successfully employed for selectively entering infected cells, while aptamers (oligonucleotides specifically engineered for binding a given target), carrying \glspl{sirna} have also been shown to be capable homing mechanisms.
-
-Viral delivery of of RNAi inducing agents presents an alternative technique to the above and in case of retroviral transport vessels, \glspl{shrna} that are reverse transcribed and integrated into the host genome, provide stable expression and prolonged RNAi activity. Adenoviral and \gls{aav} vectors have also been employed, resulting in a more transient response. While health concerns associated with perpetuity of gene therapy no longer apply, repeated administrations may prove problematic, triggering strong immune response and thereby limiting therapeutic potential.
-
 \begin{table}
   \centering
-  \caption[A selection of RNAi based drugs in clinical trials.]{A non exhaustive list of RNAi based drugs that currently are in clinical trials. The data was obtained from \cite{McCray2000}}
+  \caption[A selection of RNAi based drugs in clinical trials.]{A non exhaustive list of RNAi based drugs that currently are in clinical trials. The data was obtained from the clinicaltrials.gov database \cite{McCray2000}}
   \label{tab:rnai-clinical}
   \footnotesize
   \begin{tabular}{L{1.5cm}L{3cm}L{2.5cm}L{2cm}}
@@ -478,7 +600,7 @@ Viral delivery of of RNAi inducing agents presents an alternative technique to t
       Polymer (LODER) &
       Phase III planned \\
     Sylentis &
-      Ocular pain &
+      Dry eye syndrome &
       Naked \gls{sirna} &
       Phase II completed \\
     Sylentis &
@@ -490,10 +612,20 @@ Viral delivery of of RNAi inducing agents presents an alternative technique to t
       \gls{aav} vector &
       Phase II recruiting \\
     Tekmira  &
-      Cancers &
-      liposome &
-      Phase I active
+      Advanced Hepatocellular Carcinoma &
+      Liposome &
+      Phase II recruiting \\
+      \hline
   \end{tabular}
 \end{table}
+
+\paragraph{Therapeutic potential.}
+Great promise lies in therapeutic application of RNAi as theoretically, any gene can be targeted, yielding unparalleled flexibility not encountered with typical small molecule drugs. An initial obstacle to harnessing this power in humans is the issue of delivery. Systemic spread of naked \glspl{sirna} is hampered by kidney filtration, phagocytic uptake and degradation by serum RNases. Movement across capillary walls is not readily possible for molecules larger than 5 nm and phagocytes patrol the extracellular matrix, ingesting foreign genetic material. Furthermore, polyanionic macromolecules do not easily penetrate hydrophobic cellular membranes.
+
+Topical or local administration offers advantages, including increased bioavailability and reduced side effects and is therefore preferred for treatment of eye, skin and mucosal diseases, as well as localized tumors. If targets are not localized or difficult to reach, injection into the bloodstream may provide a mode of systemic application. Chemical modification of the RNA backbone (2'-O-methylation or 2'-fluorination of ribose) has been shown to provide resistance to RNase and covalent attachment to cholesterol promotes cellular uptake. Encapsulation of \gls{sirna} in liposomes and cationic polymers are further proven techniques for improving extracellular stability, stimulate endocytosis and facilitate endosomal escape.
+
+Some sort of target selectivity is desirable on order to avoid high dosages, associated concerns of toxicity and potential \glspl{ote} in non-target tissue. Coupling of \gls{sirna} reagents to antibodies specific for \gls{hiv} envelope glycoproteins has been successfully employed for selectively entering infected cells, while aptamers (oligonucleotides specifically engineered for binding a given target), carrying \glspl{sirna} have also been shown to be capable homing mechanisms.
+
+Viral delivery of of RNAi inducing agents presents an alternative technique to the above and in case of retroviral transport vessels, \glspl{shrna} that are reverse transcribed and integrated into the host genome, provide stable expression and prolonged RNAi activity. Adenoviral and \gls{aav} vectors have also been employed, resulting in a more transient response. While health concerns associated with perpetuity of gene therapy no longer apply, repeated administrations may prove problematic, triggering strong immune response and thereby limiting therapeutic potential.
 
 Currently, multiple \gls{sirna} based therapeutics are in clinical trials, including stage III studies (see table \ref{tab:rnai-clinical}). Due to the unprecedented pace at which RNAi technology went from discovery to development of applications, much uncertainty remains surrounding long term effects of exposure to such drugs. Chronic diseases including hepatitis C or \gls{hiv} infections require life-long treatments and consequences of repetitively triggering RNAi response has not been thoroughly studied (unwanted changes to chromatin structure for example, are one area of concern). Apart from safety issues, several implementation aspects require further study. While neurodegenerative diseases have successfully been treated in mouse models via direct injection into the brain, this is not easily feasible in human patients and currently no delivery vehicle capable of crossing the blood-brain barrier. \citep{Kim2007,Whitehead2009},
