@@ -108,12 +108,12 @@
 %% rotate cells in tables
 \usepackage{rotating}
 
-%% for degree symbols
+%% for degree symbols and other unit stuffs
 \usepackage{siunitx}
-
-%% tikz graphics
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric}
+\DeclareSIUnit\molar{\mole\per\cubic\deci\metre}
+\DeclareSIUnit\Molar{\textsc{m}}
+\DeclareSIUnit\rpm{rpm}
+\DeclareSIUnit\gravity{g}
 
 %% inline lists
 \usepackage[inline]{enumitem}

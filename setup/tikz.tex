@@ -1,0 +1,33 @@
+%% tikz graphics
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+
+\tikzset{
+  every node/.style={
+    font=\scriptsize
+  },
+  decision/.style n args={2}{
+    shape=rectangle,
+    minimum height=0.85cm,
+    text width=4.5cm,
+    text centered,
+    draw,
+    label={[xshift=2cm,yshift=-0.7cm]left:#1},
+    label={[xshift=-2cm,yshift=-0.7cm]right:#2},
+  },
+  outcome/.style={
+    shape=ellipse,
+    fill=gray!15,
+    draw,
+    minimum height=0.85cm,
+    text width=1cm,
+    text centered
+  },
+  decision tree/.style={
+    edge from parent path={
+      (\tikzparentnode.south) -- ++(0,-0.5cm) -| (\tikzchildnode.north)
+    },
+    sibling distance=3.5cm,
+    level distance=1.5cm
+  }
+}
