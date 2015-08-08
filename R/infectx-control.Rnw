@@ -1,0 +1,93 @@
+<<infectx-control, eval=TRUE, echo=FALSE, results='asis'>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(xtable))
+
+data(plateDatabase)
+data(wellDatabaseAdeno)
+data(wellDatabaseBartonella)
+data(wellDatabaseBrucella)
+data(wellDatabaseListeria)
+data(wellDatabaseRhino)
+data(wellDatabaseSalmonella)
+data(wellDatabaseShigella)
+data(wellDatabaseVaccinia)
+
+experiments <- unique(plate.database[plate.database$Space ==
+                                       "INFECTX_PUBLISHED",]$Experiment)
+experiments <- experiments[!grepl("-KG", experiments)]
+experiments <- experiments[!grepl("-K[2345]", experiments)]
+
+well.db <- rbind(well.database.adeno, well.database.bartonella,
+                 well.database.brucella, well.database.listeria,
+                 well.database.rhino, well.database.salmonella,
+                 well.database.shigella, well.database.vaccinia)
+
+ctrl.exp <- lapply(experiments, function(exp, plates, wells) {
+  bcs <- plates[plates$Experiment == exp,]$Barcode
+  ctrls <- lapply(bcs, function(bc, wells) {
+    return(wells[wells$barcode == bc & wells$well.type == "CONTROL",]$name)
+  }, wells)
+  return(unique(unlist(ctrls)))
+}, plate.database, well.db)
+names(ctrl.exp) <- experiments
+
+common <- Reduce(intersect, ctrl.exp)
+all    <- Reduce(union, ctrl.exp)
+
+incidence <- lapply(ctrl.exp, function(exp, all) {
+  return(all %in% exp)
+}, all)
+incidence <- do.call(rbind, incidence)
+
+rnms <- sapply(experiments, function(exp) {
+  split <- unlist(strsplit(exp, "-"))
+  pathogen <- paste0(toupper(substring(split[1], 1, 1)),
+                     tolower(substring(split[1], 2)))
+  if(!(pathogen %in% c("Adeno", "Rhino", "Vaccinia")))
+    pathogen <- paste0("\\textit{", pathogen, "}")
+  return(paste(pathogen, split[2], sep=" "))
+})
+cnms <- sapply(all, function(n) {
+  if(n == "ON-TARGETplus Non-targeting Pool")
+    return("Scra 2\\textsuperscript{\\ref{fn:scram}}")
+  else if(n == "Silencer_Select_Negative_Control_1")
+    return(paste0("Scra 1\\footnote{\\label{fn:scram}Scrambled \\gls{sirna} ",
+                  "sequences are provided by Ambion (Silencer Select ",
+                  "Negative Control; Scra 1)",
+                  " and Dharmacon (ON-TARGETplus Non-targeting Control; ",
+                  "Scra 2).}"))
+  else if(n == "Silencer_Select_Negative_Control_2")
+    return("UNKNOWN")
+  else if(n == "egfp")
+    return(paste0("GFP 1\\footnote{\\label{fn:gfp}GFP targeting \\gls{sirna} ",
+                  "sequences are provided by Ambion (Ambion Silencer eGFP; ",
+                  "GFP 1) and Dharmacon (GFP Duplex III; GFP 2).}"))
+  else if(n == "GFP Duplex III")
+    return("GFP 2\\textsuperscript{\\ref{fn:gfp}}")
+  else if(n == "AllStars Hs Cell Death siRNA")
+    return(paste0("Kill\\footnote{A positive control cell killer is provided ",
+                  "by Qiagen (AllStars Hs Cell Death Control)}"))
+  else if(n == "Cyclohexamine - translation inhibition in eukaryotes")
+    return("UNKNOWN")
+  else if(n == paste0("Cytosine Arabinoside - incorporates into DNA and ",
+                      "inhibits DNA replication"))
+    return("UNKNOWN")
+  else return(n)
+})
+
+colnames(incidence) <- cnms
+rownames(incidence) <- rnms
+
+incidence <- incidence[,order(colnames(incidence))]
+
+table <- incidence
+table[incidence] <- "\\checkmark"
+table[!incidence] <- ""
+table <- table[, -which(colnames(table) %in% "UNKNOWN")]
+table <- xtable(t(table))
+caption(table) <- c("main cpation", "short caption")
+label(table) <- "tab:infectx-control"
+
+print(table, rotate.colnames=TRUE, sanitize.text.function=identity,
+      caption.placement="top", hline.after=0, floating=FALSE)
+@

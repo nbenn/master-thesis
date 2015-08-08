@@ -39,8 +39,16 @@
   }%
 }
 
-%% underscript in text, for eg. for stoichiometric formulae
+%% underscript in text
 \newcommand{\textunderscript}[1]{$_{\text{#1}}$}
+
+%% rotated table header
+\newcommand{\mcrot}[4]{\multicolumn{#1}{#2}{\rlap{\rotatebox{#3}{#4}~}}}
+
+%% allow table footnotes (not numeric) to be used multiple times
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
 
 %% Special characters for number sets, e.g. real or complex numbers.
 \newcommand{\C}{\mathbb{C}}
