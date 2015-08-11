@@ -104,7 +104,7 @@ Central to the \gls{sirna} screens produced by InfectX was the effort to develop
       \mcrot{1}{l}{60}{DNA stain} &
       \mcrot{1}{l}{60}{Actin stain\footnote{Phalloidin-based actin stains were supplied by Dyomics and depending on absorption wavelength, different imaging channels were used: GFP for DY-495, RFP for DY-547 and Cy5 for DY-647.}} &
       \mcrot{1}{l}{60}{Pathogen stain} &
-      \mcrot{1}{l}{60}{Additional stain\footnote{The Cy3 channel was used Alexa546, while Cy5 was used for Alexa647 during imaging.}} \\
+      \mcrot{1}{l}{60}{Additional stain\footnote{The Cy3 channel was used Alexa546, staining bacterially secreted InlC, while Cy5 was used for Alexa647, staining cellular \gls{il-8} during imaging.}} \\
     \hline 
     \textit{B. abortus} &
       500 &
@@ -280,12 +280,12 @@ Nomenclature of single cell features follows a hierarchical pattern consisting o
 \texttt{<object>.<group>\_<measurement>\_<channel>}
 \texttt{Cells.Intensity\_MedianUpperTenPercentIntensity\_CorrDNA}
 \end{center}
-In the above example, the measured objects are cells, the feature is of intensity type, the feature name indicates that it represents the mean of the upper decile of intensities and the channel description reveals that DNA stain values are used. Throughout the different screens, 14 single cell feature objects are available:
+In the above example, the measured objects are cells, the feature is of intensity type, the feature name indicates that it represents the mean of intensities above the upper decile and the channel description reveals that DNA stain values are used. Throughout the different screens, 14 single cell feature objects are available:
 
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]{segmentation}
-  \caption[Object detection of nuclei, perinuclei, voronoi cells and cell bodies along with potential pitfalls.]{Object identification is started with easily recognizable nuclei, which become primary objects and serving as basis for detecting secondary objects. Problems with nuclei detection include superfluous splitting (a) and failure to separate some touching objects (c). Mostly results are acceptable and some touching nuclei are correctly separated (b). Perinuclei extend the nuclear border and therefore suffer from problems introduced in nuclear recognition. Further issues include overlap with extracellular space (d) and small perinuclear area in densely populated areas (e). Voronoi cells further extend the nuclear area and often grow beyond cell boundaries (f). Finally, cell segmentation is a hard problem due to irregular shapes, variability in size and inhomogeneities in actin distribution (h). Results suffer from falsely identified nuclei (g and i). Source: plate KB2-05-1A, well G6, site 8.}
+  \caption[Object detection of nuclei, perinuclei, voronoi cells and cell bodies along with potential pitfalls.]{Object identification is started with easily recognizable nuclei, which become primary objects and serving as basis for detecting secondary objects. Problems with nuclei detection include superfluous splitting (a) and failure to separate some touching objects (c). Mostly results are acceptable and some touching nuclei are correctly separated (b). Perinuclei extend the nuclear border and therefore suffer from problems introduced in nuclear recognition. Further issues include overlap with extracellular space (d) and small perinuclear area in densely populated areas (e). Voronoi cells further extend the nuclear area and often grow beyond cell boundaries (f). Finally, cell segmentation is a hard problem due to irregular shapes, variability in size and inhomogeneities in actin distribution (h). Results suffer from falsely identified nuclei (g and i).}
   \label{fig:segmentation}
 \end{figure}
 
@@ -294,15 +294,178 @@ In the above example, the measured objects are cells, the feature is of intensit
 \item[PeriNuclei:] The perinuclear region is defined as an extension of the nuclear border by 8 pixels and removal of the nucleus itself. As some pathogens establish their replicatory niche in this region it lends itself to closer investigation. Furthermore the border is only dependent on the reliably established nuclear object. Potential pitfalls include extension of the perinuclear region into extracellular space or neighboring cell when the nucleus is located close to the plasma membrane, as well as reduced area whenever cells are clustered, as perinuclear regions may not overlap (see figure \ref{fig:segmentation}, B).
 \item[VoronoiCells:] Simultaneously extending all nuclei by maximally 24 pixels or until a neighboring border is met leads to Voronoi cells. This type of defining cell bodies is very prone to extending into extracellular space, as the actin channel is not taken into account (see figure \ref{fig:segmentation}, C).
 \item[Cells:] The cell body border is determined by propagation segmentation based on thresholding. Starting from the nucleus, the cytoplasmic region is extended until the intensity gradient changes abruptly, indicating either the beginning of background, or the boundary to a neighboring cell. Non-uniform actin intensity patterns, irregular shape, large variability in size and frequent touching of neighbors makes this a hard problem and results can be unreliable. Common to all secondary objects, errors in determining primary objects will propagate and lead to cells erroneously being cut up or aggregated. Furthermore, borders to neighbors are frequently not determined correctly, but significant discrepancies among human expert labeling are to be expected in such situations as well (see figure \ref{fig:segmentation}, D).
-\item[ExpandedNuclei:] Serving as precursors to PeriNuclei objects, these have no real measurements associated apart from coordinates and number of perinuclear children (almost elusively 1).
+\item[ExpandedNuclei:] Serving as precursors to PeriNuclei objects, these objects are not further quantified and only have coordinates and number of perinuclear children (almost exclusively 1) associated.
 \item[Bacteria/Viruses/Pathogen:] Due to the heterogeneity between pathogens, detection is assay specific. Generally, pathogens are primary objects and not derived of cell nuclei. In \textit{Bartonella} and \textit{Brucella} screens, large and small pathogen clusters are segmented using Otsu's method on the pathogen channel. Individual bacteria in \textit{Listeria} screens, \glspl{scv} in \textit{Salmonella} screens and small\slash medium pathogen clusters in both \textit{Shigella} and rhinovirus screens are identified using wavelet decomposition of the pathogen channel, while for adenovirus screens, detection of large pathogen aggregates relies on propagation outwards from nuclei, much like cell body identification but using the pathogen channel. For vaccinia virus, direct pathogen segmentation is currently not possible.
 \item[IntBacteria/ExtBacteria:] In \textit{Bartonella} assays, different stains were used for intracellular (\acrshort{gfp}) and extracellular (Cy5) bacteria which consequently can be distinguished during image analysis. This is helpful to prevent bacteria the are sit on top or below a cell from being considered intracellularly located.
-\item[BlobBacteria:] Specific to \textit{Brucella} screens, these large bacterial aggregates do not have any real measurements associated, only coordinates.
-\item[Invasomes:] As one of two internalization structures in \textit{Bartonella} infection, invasomes are characterized as actin surrounded large bacterial aggregates. Exploiting this morphology, the current invasome detection uses a ring template to search the actin channel for candidates and exploits the intensity difference to the cell mean for confirmation. Unfortunately, this yields many false positives. Improvements are being discussed but have yet to be implemented.
-\item[IL8:] 
-\item[CometTails:] Specific to \textit{Listeria} screens 
-\item[Neighbors:] 
+\item[BlobBacteria:] Specific to \textit{Brucella} screens, these large bacterial aggregates do not have any real measurements associated, except coordinates.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]{actin-features}
+  \caption[Detection of two actin based structures, CometTails and Invasomes.]{Both CometTails and Invasomes are detected on actin channels, which poses difficulties due to noisy background. Invasomes are characterized by their ring-shaped morphology (a), while CometTails appear as actin streaks (c). Currently invasome detection yields many false-positives (b).}
+  \label{fig:actin-features}
+\end{figure}
+
+\item[Invasomes:] As one of two internalization structures in \textit{Bartonella} infection, invasomes are characterized as actin surrounded large bacterial aggregates. Exploiting this morphology, the current invasome detection uses a ring template to search the actin channel for candidates and exploits the intensity difference to the cell mean for confirmation. Unfortunately, this yields many false positives. Improvements are being discussed but have yet to be implemented (see figure \ref{fig:actin-features}, A).
+\item[IL8:] In \textit{Shigella} assays, cellular \gls{il-8} was stained in order to study proinflammatory response of uninfected bystander cells. Due to these objects having their own channel, segmentation is fairly straightforward.
+\item[CometTails:] Specific to \textit{Listeria} screens, the telltale signs of \gls{abm} can be identified as dense strokes on the actin channel. CometTails contain only few measurements beyond their location (see figure \ref{fig:actin-features}, B).
+\item[Neighbors:] While not representing detected objects themselves, features involving identities of adjacent objects are summarized within this category. Currently, indices of Cells and Bacteria that come closer than 2 pixels and of Voronoi cells that do not lie further apart than 8 pixels are collected. These thresholds compensate for slight segmentation errors. Furthermore, for each pair of detected neighbors, the length of common border is recorded. Taken together, features of this category allow construction of both a binary adjacency matrix and a weighted adjacency matrix corresponding to each of the objects that were considered.
 \end{description}
+
+Once images are segmented into objects, measurements are applied to the individual image areas. Dependent on object class, the number and types of available features differ, sometimes owing to systematic causes and at other times, only due to differences in implementations of per-object feature recognition. The most commonly available features are grouped into categories \textit{AreaShape}, \textit{Intensity}, \textit{Texture}, \textit{RadialDistribution}, \textit{Location}, \textit{Neighbors\slash IdentityOfNeighbors\slash Per\-centTouchingNeighbors} and \textit{Parent\slash Children}.
+
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{0.2em}
+\begin{table}
+  \begin{minipage}{\textwidth}
+  \centering
+  \caption[List of AreaShape features with corresponding descriptions.]{List of AreaShape features with corresponding descriptions. Some information is taken from the CellProfiler manual \citep{Carpenter2006}.}
+  \label{tab:areashape-feats}
+  \footnotesize
+  \begin{tabular}{L{0.25\linewidth}L{0.7\linewidth}}
+    Feature name &
+      Feature description \\
+    \hline 
+    Area &
+      The number of pixels enclosed by the object border. \\
+    Eccentricity\footnote{\label{fn:ellipse} The corresponding ellipse is defined as the best fitting ellipse in the sense that it has identical second moments compared to the original object \citep{Rocha2002}.} &
+      Ratio of the distance between the foci and major axis length of the corresponding ellipse. The value is between 0 (circle) and 1 (line segment).\\
+    EulerNumber &
+      1 minus the number of holes within the object, assuming 8-connectivity. \\
+    Extent &
+      Area of the object divided by the area of the bounding box. \\
+    FormFactor &
+      Calculated as $4\pi*area/perimeter^2$. Equals 1 for a perfectly circular object. \\
+    <Spec>AxisLength\textsuperscript{\ref{fn:ellipse}} &
+      Spec\,=\,\{Major, Minor\}; The major\slash minor axis length (in pixels) of the corresponding ellipse. \\
+    Orientation\textsuperscript{\ref{fn:ellipse}} &
+      The angle (ranging from \SI{-90}{\degree} to \SI{90} {\degree}) between the x-axis and the major axis of the corresponding ellipse \\
+    Perimeter &
+      The total number of pixels around the object boundary. \\
+    Solidity &
+      Proportion of the pixels in the convex hull that are also part of the object, i.e. $area_{object}/area_{conv. hull}$. \\
+    <Sub\footnote{\label{fn:subcellular} Naming of these features currently is fairly heterogeneous with possible prefixes \textit{PerObj}, \textit{SubCellBacteria}, \textit{SubCellViruses}, \textit{SubCell}. All are based on the set of subcellularly located pathogens.}>Area &
+      The total number of pixels enclosed by all subcellular pathogen object borders. \\
+    <Sub\textsuperscript{\ref{fn:subcellular}}><Stat\footnote{\label{fn:statistics} The statistics applied in order to describe the underlying distributions are mean, median, lower and upper quartiles, standard deviation and sum.}>Distance\-ToNuclNorm &
+      Distances between the nucleus and all subcellular pathogen objects are normalized and a summary statistic is applied. \\
+    <Sub\textsuperscript{\ref{fn:subcellular}}><Stat\textsuperscript{\ref{fn:statistics}}>Distance\-ToNucl &
+      Distances from nucleus to all subcellular pathogen objects are calculated and a summary statistic is applied.\\
+    <Sub\textsuperscript{\ref{fn:subcellular}}><Stat\textsuperscript{\ref{fn:statistics}}>Pairwise\-Distance &
+      A summary statistic is applied to all pairwise distances between subcellular pathogen objects. \\
+    <Sub\textsuperscript{\ref{fn:subcellular}}><Stat\textsuperscript{\ref{fn:statistics}}>Shortest\-Distance &
+      For each subcellular pathogen object, the shortest distance among all distances to other subcellular objects is selected and a summary statistic is applied to the collection of shortest distances. \\
+  \end{tabular}
+  \end{minipage}
+\end{table}
+
+Features belonging to the AreaShape category are not applied to a specific imaging channel but serve to summarize geometric properties of detected objects (\textit{cf.} table \ref{tab:areashape-feats}). When applied to actin channel objects that cannot reliably be segmented, such as cell bodies, some caution has to be exerted, as these features are strongly affected by upstream errors. Nevertheless, this group constitutes features that are among the most frequently used for analysis procedures. Some infection phenotypes, for example membrane ruffling encountered during trigger-type host entry mechanisms are captured by some of these features (FormFactor is able to measure raggedness).
+
+\begin{figure}
+\centering
+  \begin{tikzpicture}
+    \GraphInit[vstyle=Classic]
+    \SetVertexNoLabel
+    \tikzset{VertexStyle/.style = {shape = circle, fill = black, minimum size = 5pt, inner sep=0pt}}
+    \grEmptyPath[form=2,x=0,y=0,RA=0.5,rotation=90]{11}
+    \grEmptyPath[form=2,x=3,y=0,RA=1,rotation=90,prefix=b]{6}
+    \SetUpEdge[lw=0.75pt,color=black]
+    \Edge(a10)(b0)
+    \Edge(a9)(b0)
+    \Edge(a8)(b0)
+    \Edge(a7)(b0)
+    \Edge(a6)(b0)
+    \Edge(a5)(b0)
+    \Edge(a4)(b0)
+    \Edge(a3)(b0)
+    \Edge(a6)(b1)
+    \Edge(a7)(b1)
+    \Edge(a6)(b2)
+    \Edge(a7)(b2)
+    \Edge(a6)(b3)
+    \Edge(a7)(b3)
+    \Edge(a10)(b4)
+    \Edge(a9)(b4)
+    \Edge(a8)(b4)
+    \Edge(a7)(b4)
+    \Edge(a5)(b4)
+    \Edge(a10)(b5)
+    \Edge(a9)(b5)
+    \Edge(a8)(b5)
+    \Edge(a7)(b5)
+    \Edge(a5)(b5)
+    \tikzset{AssignStyle/.append style = {left=6pt}}
+    \AssignVertexLabel[size=\footnotesize]{a}{UpperTwoPercent,UpperFivePercent,UpperTenPercent,LowerQuartile,UpperQuartile,Std,Median,Mean,Min,Max,Integrated}
+    \tikzset{AssignStyle/.append style = {right=12pt}}
+    \AssignVertexLabel[size=\footnotesize]{b}{\textless Sub\textgreater\ (e.g. SubCellLowerQuartile),UpperTwoPercent (e.g. MeanUpperTwoPercent),UpperFivePercent (e.g. MeanUpperFivePercent),UpperTenPercent (e.g. MedianUpperTenPercent),Edge (e.g. MaxIntensityEdge),Weighted (e.g. IntegratedWeighted)}
+  \end{tikzpicture}
+  \caption[Intensity features and possible modifiers.]{Common summary statistics that are applied to intensity data, along with their possible modifiers. The subcellular intensity features have different prefixes, including SubCellBacteria, SubCellCometTails, SubCellViruses, PerObject and SubCell.}
+  \label{fig:intensity-features}
+\end{figure}
+
+Intensity features mostly consist of summary statistics being applied to all or a portion of per channel intensity data within a given object. The functions used to describe the underlying distributions are sum (Integrated), lower quartile, maximum (Max), mean, median, minimum (Min), standard deviation (Std), upper quartile, upper vigintile (UpperFivePercent), upper decile (UpperTenPercent) and upper 50-quantile (UpperTwoPercent). Additional features are generated by using certain functions only on the object border pixels, yielding IntensityEdge features (e.g. IntegratedIntensityEdge) and by only including the upper 10\%, 5\% and 2\% of the data. Weighted features are calculated by extracting weights from a corresponding grayscale image and multiplying individual intensity values before applying the summary statistic. Restricting the data to subcellular pathogen objects yields features such as SubCellLowerQuartile. For a complete list of modifiers and implemented combinations, refer to figure \ref{fig:intensity-features}. The only currently available intensity feature that is not shown in \ref{fig:intensity-features} is MassDisplacement, which quantifies the distance between the centers of gravity in the gray-level representation of the object and the binary representation of the object.
+
+All texture measurements are either based on Haralick features \citep{Haralick1973} or Gabor wavelet features \citep{Gabor1946}, as implemented in CellProfiler and are calculated per image channel. The gray-level co-occurrence matrix $G_k$ with dimensions $n \times n$ where n is the number of gray levels serves as basis for Haralick's texture features \citep{Carpenter2006}.
+
+\begin{equation}
+  G_k = \begin{bmatrix}
+    p(1,1) & p(1,2) & \cdots & p(1,n) \\
+    p(2,1) & p(2,2) & \cdots & p(2,n) \\
+    \vdots  & \vdots  & \ddots & \vdots  \\
+    p(n,1) & p(n,2) & \cdots & p(n,n) 
+  \end{bmatrix}
+\end{equation}
+
+Element $p(i,j)$ is calculated by counting the number of times, a pixel with value $i$ is adjacent to a pixel with value $j$, divided by the total number of comparisons. Consequently, $p(i,j)$ can be thought of as representing a probability. Moreover, assuming 8-connectivity, 4 different types of adjacency are possible: horizontal, vertical, top left to bottom right diagonal and top right to bottom left antidiagonal, yielding 4 co-occurrence matrices $G_k, k\in\{1,2,3,4\}$. 14 statistics were developed by \citeauthor{Haralick1973}, 13 of which are included with CellProfiler:
+
+\begin{align*}
+p_x(i) &= \sum_{j=1}^{n} p(i,j), & p_y(j) &= \sum_{i=1}^{n} p(i,j), \\
+p_{x+y}(k) &= \mathop{\sum_{i=1}^{n}\sum_{j=1}^{n}}_{i+j=k} p(i,j), &
+  p_{x-y}(k) &= \mathop{\sum_{i=1}^{n}\sum_{j=1}^{n}}_{\lvert i-j\rvert=k} p(i,j), \\
+  \mu_x &= \Erw[p_x], & \mu_y &= \Erw[p_y], \\
+  \sigma_x &= \sqrt{\Var(p_x)}, & \sigma_y &= \sqrt{\Var(p_y)}, \\
+  HX &= -\sum_{i=1}^{n} p_x(i) \log\left(p_x(i)\right), &
+  HY &= -\sum_{i=1}^{n} p_y(i) \log\left(p_y(i)\right),
+\end{align*}
+\begin{align*}
+  HXY1 &= -\sum_{i=1}^{n} \sum_{j=1}^{n} p(i,j) \log\left(p_x(i)p_y(j)\right), \\
+  HXY2 &= -\sum_{i=1}^{n} \sum_{j=1}^{n} p_x(i)p_y(j) \log\left(p_x(i)p_y(j)\right)
+\end{align*}
+\begin{align}
+\text{AngularSecondMoment} & &
+  f_1 &= \sum_{i=1}^n \sum_{j=1}^n p(i,j)^2 \\
+\text{Contrast} & &
+  f_2 &= \sum_{k=0}^{n-1} k^2 \left(\mathop{\sum_{i=1}^{n}\sum_{j=1}^{n}}_{\lvert i-j\rvert=k} p(i,j)\right) \\
+\text{Correlation} & &
+  f_3 &= \frac{\sum_{i=1}^n \sum_{j=1}^n (ij) p(i,j)-\mu_x\mu_y}{\sigma_x\sigma_y}\\
+\text{Variance} & &
+  f_4 &= \sum_{i=1}^n \sum_{j=1}^n (i-\mu)^2 p(i,j)\\
+\text{InverseDifferenceMoment} & &
+  f_5 &= \sum_{i=1}^n \sum_{j=1}^n \frac{1}{1+(i-j)^2} p(i,j)\\
+\text{SumAverage} & &
+  f_6 &= \sum_{i=2}^{2n} i p_{x+y}(i)\\
+\text{SumVariance} & &
+  f_7 &= \sum_{i=2}^{2n} (i-f_8)^2 p_{x+y}(i)\\
+\text{SumEntropy} & &
+  f_8 &= -\sum_{i=2}^{2n} p_{x+y}(i) \log\left(p_{x+y}(i)\right)\\
+\text{Entropy} & &
+  f_9 &= -\sum_{i=1}^n \sum_{j=1}^n p(i,j) \log\left(p(i,j)\right)\\
+\text{DifferenceVariance} & &
+  f_{10} &= \sum_{i=0}^{n-1} i^2 p_{x-y}(i)\\
+\text{DifferenceEntropy} & &
+  f_{11} &= -\sum_{i=0}^{n-1} p_{x-y}(i) \log\left(p_{x-y}(i)\right)\\
+\text{InfoMeas1} & &
+  f_{12} &= \frac{f_9-HXY1}{\max\{HX,HY\}}\\
+\text{InfoMeas2} & &
+  f_{13} &= \left(1-\exp\left[-2(HXY2-f_9)\right]\right)^{\frac{1}{2}}
+\end{align}
+
+The individual statistics are averaged over the four co-occurrence matrices to yield a single value per object per imaging channel. Computation of Haralick features is comparably inexpensive and the resulting texture characterization has successfully been used in image-based classification scenarios. Gabor filters on the other hand are more complicated and their application can incur signinificant computational cost. They quantify striped texture that is parallel to a given angle and sets of Gabor filters at certain angles are frequently used for pattern recognition tasks such as optical character recognition or fingerprint recognition. The directions for which Gabor filters are applied to segmented objects are the x- and y-axes, yielding the features GaborX and GaborY.
+
+RadialDistribution features contain 3 measurements that are applied to each image channel. Given an object, it's area is divided into bins formed by concentric rings, where the center is the point that is the farthest from any edge. FracAtD records the fraction of total stain contained in a given bin, MeanFrac normalizes the fraction of total stain with the fraction of pixels of a given bin and RadialCV determines the coefficient of variation of intensity within a ring, calculated over 8 slices. Features of this category are calculated for invasome objects (4 bins) in \textit{Bartonella} screens and are used for infection scoring. Invasomes are characterized by a ring like appearance and the concentration of intensity within this ring can be detected by the FracAtD feature.
+
+Location features store the coordinates of the center for each object (Center_X, Center_Y), while Parent\slash Children features 
+
+\textit{Location}, \textit{Neighbors\slash IdentityOfNeighbors\slash Per\-centTouchingNeighbors} and \textit{Parent\slash Children}.
 
 \section{Infection Scoring}
 \label{sec:infection-scoring}
