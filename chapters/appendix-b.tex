@@ -29,6 +29,7 @@ All liquid handling stages of infection, fixation, and immunofluorescence staini
 All liquid handing stages of infection, fixation, and immunofluorescence staining were performed on a liquid handling robot (BioTek, EL406). For infection assays a recombinant WR VACV, WR E EGFP\slash L mCherry, was utilized. For infection, media was aspirated from the RNAi-transfected cell plates and replaced with \SI{40}{\micro\litre} of virus solution per well (\gls{moi} of 0.125). Screening plates were incubated for \SI{1}{\hour} at \SI{37}{\celsius} to allow for infection, after which virus-containing media was removed and replaced with \SI{40}{\micro\litre} DMEM\slash 10\% \gls{fbs}. \SI{8}{\hour} after infection \SI{40}{\micro\litre} of DMEM\slash 10\% \gls{fbs} containing \SI{20}{\micro\Molar} cytosine arabinoside (AraC) was added to all wells to prevent virus DNA replication in secondary infected cells. \SI{24}{\hour} after infection cells were fixed by the addition of \SI{20}{\micro\litre} 18\% PFA for \SI{30}{\minute} followed by two PBS washes of \SI{80}{\micro\litre}. For immunofluorescence staining of EGFP, cells were incubated for \SI{2}{\hour} in \SI{30}{\micro\litre} primary staining solution (0.5\% Triton X-100, 0.5\% BSA, PBS) per well, containing anti-GFP antibody (1:1000). Cells were washed twice in \SI{80}{\micro\litre} PBS, followed by the addition of \SI{30}{\micro\litre} secondary staining solution (0.5\% BSA, PBS) containing Alexa Fluor 488 secondary antibody (1:1000), Hoechst (1:10000), and DY-647-phalloidin (1:1200, Dyomics). Cells were washed twice with \SI{80}{\micro\litre} PBS after \SI{1}{\hour} incubation in secondary staining solution followed by the addition of \SI{80}{\micro\litre} \ce{H2O}.
 
 \section{Decision Trees for Infection Scoring}
+\label{sec:app-dectree}
 The decision trees for adenovirus and \textit{Bartonella} are shown in section~\ref{sec:infection-scoring} while the ones corresponding to the remaining pathogens (\textit{Brucella}, \textit{Listeria}, rhinovirus, \textit{Salmonella} and vaccinia virus) follow. Please refer to section~\ref{sec:infection-scoring} for more information of infection scoring.
 
 \begin{figure}[b]
@@ -101,22 +102,21 @@ child { node [decision={$> 0.090$}{$\le 0.090$}] {
 \end{figure}
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
-
-\node [decision={$> 0.085$}{$\le 0.085$}] { 
-  \texttt{Cells.Intensity\_SubCell-\\BacteriaMeanIntensity\_CorrPathogen}
-}
-[decision tree]
-child { node [decision={$< 2$}{$\ge 2$}] { 
-  \texttt{Cells.AreaShape\_SubCellBacteria-\\Area\_CorrPathogen} }
-  child { node [outcome] { infected } }
-  child { node [outcome] { not infected } }
-}
-child { node [outcome] { not infected } };
-
-\end{tikzpicture}
-\caption[Decision tree for \textit{Salmonella} infection scoring.]{Decision tree for \textit{Salmonella} infection scoring. For a cell being considered infected, not only does the threshold for pathogen intensity throughout the cell need be exceeded but the bacteria also have to be sufficiently aggregated.}
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> 0.085$}{$\le 0.085$}] { 
+      \texttt{Cells.Intensity\_SubCell-\\BacteriaMeanIntensity\_CorrPathogen}
+    }
+    [decision tree]
+    child { node [decision={$< 2$}{$\ge 2$}] { 
+      \texttt{Cells.AreaShape\_SubCellBacteria-\\Area\_CorrPathogen} }
+      child { node [outcome] { infected } }
+      child { node [outcome] { not infected } }
+    }
+    child { node [outcome] { not infected } };
+  \end{tikzpicture}
+  \caption[Decision tree for \textit{Salmonella} infection scoring.]{Decision tree for \textit{Salmonella} infection scoring. For a cell being considered infected, not only does the threshold for pathogen intensity throughout the cell need be exceeded but the bacteria also have to be sufficiently aggregated.}
+  \label{fig:dectree-salmonella}
 \end{figure}
 
 \begin{figure}

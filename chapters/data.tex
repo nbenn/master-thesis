@@ -309,7 +309,7 @@ In the above example, the measured objects are cells, the feature is of intensit
 \item[Invasomes:] As one of two internalization structures in \textit{Bartonella} infection, invasomes are characterized as actin surrounded large bacterial aggregates. Exploiting this morphology, the current invasome detection uses a ring template to search the actin channel for candidates and exploits the intensity difference to the cell mean for confirmation. Unfortunately, this yields many false positives. Improvements are being discussed but have yet to be implemented (see figure \ref{fig:actin-features}, A).
 \item[IL8:] In \textit{Shigella} assays, cellular \gls{il-8} was stained in order to study proinflammatory response of uninfected bystander cells. Due to these objects having their own channel, segmentation is fairly straightforward.
 \item[CometTails:] Specific to \textit{Listeria} screens, the telltale signs of \gls{abm} can be identified as dense strokes on the actin channel. CometTails contain only few measurements beyond their location (see figure \ref{fig:actin-features}, B).
-\item[Neighbors:] While not representing detected objects themselves, features involving identities of adjacent objects are summarized within this category. Currently, indices of Cells and Bacteria that come closer than 2 pixels and of Voronoi cells that do not lie further apart than 8 pixels are collected. These thresholds compensate for slight segmentation errors. Furthermore, for each pair of detected neighbors, the length of common border is recorded. Taken together, features of this category allow construction of both a binary adjacency matrix and a weighted adjacency matrix corresponding to each of the objects that were considered.
+\item[Neighbors:] While not representing detected objects themselves, features involving identities of adjacent objects are summarized within this category.  Features of this category allow construction of both a binary adjacency matrix and a weighted adjacency matrix corresponding to each object type, with weights representing the length of common border.
 \end{description}
 
 Once images are segmented into objects, measurements are applied to the individual image areas. Dependent on object class, the number and types of available features differ, sometimes owing to systematic causes and at other times, only due to differences in implementations of per-object feature recognition. The most commonly available features are grouped into categories \textit{AreaShape}, \textit{Intensity}, \textit{Texture}, \textit{RadialDistribution}, \textit{Location}, \textit{Neighbors\slash IdentityOfNeighbors\slash Per\-centTouchingNeighbors} and \textit{Parent\slash Children}.
@@ -463,67 +463,80 @@ The individual statistics are averaged over the four co-occurrence matrices to y
 
 RadialDistribution features contain 3 measurements that are applied to each image channel. Given an object, it's area is divided into bins formed by concentric rings, where the center is the point that is the farthest from any edge. FracAtD records the fraction of total stain contained in a given bin, MeanFrac normalizes the fraction of total stain with the fraction of pixels of a given bin and RadialCV determines the coefficient of variation of intensity within a ring, calculated over 8 slices. Features of this category are calculated for invasome objects (4 bins) in \textit{Bartonella} screens and are used for infection scoring. Invasomes are characterized by a ring like appearance and the concentration of intensity within this ring can be detected by the FracAtD feature.
 
-Location features store the coordinates of the center for each object (Center_X, Center_Y), while Parent\slash Children features 
+Location features store the coordinates of the center of mass for each object (Center\_X, Center\_Y), while Parent\slash Children features represent hierarchical relationships between objects (e.g. nucleus to cell). All child features are composed as \textit{<Parent>.Children\_<Child>\_Count} and summarize the number of object of a given child type that are contained within objects of a given parent type. When a child object overlaps with multiple parent objects, it is counted multiple times. Examples include the number of invasomes within a cell or the number of virions within a nucleus. Parent features as named as \textit{<Child>.Parent\_<Parent>} and \textit{<Child>.Parent\_<Parent>\_OverlapPercent}. The former type holds indices of all parent objects which is only a single number in case of child objects that are completely contained within their parents, but may also be a vector of numbers whenever overlap with multiple parent objects occurs, while the latter feature type quantifies the extent of overlap. Non-scalar Parent features were only recently added to the analysis pipeline and are therefore currently not available in all screens. The previous procedure only considered the largest child and therefore yielded one value per object.
 
-\textit{Location}, \textit{Neighbors\slash IdentityOfNeighbors\slash Per\-centTouchingNeighbors} and \textit{Parent\slash Children}.
+Features belonging to the Neighbors category are NumberOfNeighbors, PercentTouching, FirstClosestObjectNumber, FirstClosestXVector, FirstClosestYVector, SecondClosestObjectNumber, SecondClosestXVector, SecondClosestYVector and AngleBetweenNeighbors. In order to correct for slight segmentation errors, objects are expanded by a fix number of pixels (2 for objects such as Cells and Bacteria, 8 for VoronoiCells) prior to being analyzed for their neighborhood. NumberOfNeighbors counts the total number of neighboring object of the same type, \{First, Second\}ClosestObjectNumber store indices of the respective objects, while PercentTouching reports the length of common border with all neighboring objects after object expansion has been performed. Distances are available in the form of \{First, Second\}Closest\{X, Y\}Vector and AngleBetweenNeighbors holds the angle formed by connection the center of the current object with its closest and second closest neighbors.
+
+Two final groups of features are named IdentityOfNeighbors and PercentTouchingNeighbors. These are different from most previous measurement types (the only exception being parent--child relationships with multiple children) in that they are vector-valued per object. The same object expansion rules as in Neighbors category features apply and IdentityOfNeighbors stores the respective indices while PercentTouchingNeighbors holds the length of common border per neighbor. The features of this group can be used to generate binary and weighted adjacency matrices, with weights representing the extent of inter-object interface.
 
 \section{Infection Scoring}
 \label{sec:infection-scoring}
+Reliable identification of infection is central to image-based \gls{sirna} screens involving pathogens, as the per well infection index (number of infected cells divided by total number cells in the given well) is the phenotype of main interest. Binary predictors were developed both in the form of \glspl{svm} and decision trees. Currently the most reliable results are achieved using \gls{dtis} but for quality control purposes it is important to routinely compare results obtained with different methods in order to spot possible problems as indicated by discrepancies.
+
+Classification by an \gls{svm} yields the $(p-1)$-dimensional hyperplane from $p$-dimensional data points that best separates the data into two groups in the sense that the margin between data and plane is maximized. Sample point that lie on the margin are called support vectors. As a supervised learning procedure, training data has to be available (e.g. obtained by expert labeling) in order to produce a model that can subsequently be used to predict the category of new data instances. CellClassifier, the software used for \gls{svm} classification is described in \cite{Ramo2009}. For pathogens that exhibit a clear binary infection pattern (for example \textit{S} typhimurium or vaccinia virus), good result can be obtained using this method (\textgreater 99\% accuracy), but whenever the infection phenotype is more gradual (for example \textit{L. monocytogenes}), result are not always satisfactory. For all pathogens, 3--5 features were hand-picked and plate-wise Z-scored prior to \gls{svm} learning.
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
-
-\node [decision={$> 0.075$}{$\le 0.075$}] {
-  \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}
-}
-[decision tree]
-child { node [outcome] { infected } }
-child { node [decision={$> 0.085$}{$\le 0.085$}] { 
-\texttt{PeriNuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
-  child { node [outcome] { infected } }
-  child { node [decision={$> 0.115$}{$\le 0.115$}] { 
-  \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> 0.075$}{$\le 0.075$}] {
+      \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}
+    }
+    [decision tree]
     child { node [outcome] { infected } }
-    child { node [outcome] { not infected } }
-  }
-};
-
-\end{tikzpicture}
-\caption[Decision tree for adenovirus infection scoring.]{For adenovirus infection scoring, the decision tree classifier checks if enough pathogen is detected within the cell body, the perinuclear region or the nucleus. The threshold decreases as the region of interest concentrates on areas associated with progressively involved in infection.}
-\end{figure}
-
-\begin{figure}
-\centering
-\begin{tikzpicture}
-
-\node [decision={$> 0.800$}{$\le 0.800$}] { 
-  \texttt{Invasomes.Intensity\_MaxIntensity\_\\Corr1Pathogen}
-}
-[decision tree]
-child { node [outcome] { infected } }
-child { node [decision={$> 0.075$}{$\le 0.075$}] { 
-\texttt{Invasomes.Intensity\_MeanIntensity\_\\Corr1Pathogen} } 
-  child { node [outcome] { infected } }
-  child { node [decision={$> 0.085$}{$\le 0.085$}] { 
-  \texttt{Invasomes.Intensity\_UpperQuartile-\\Intensity\_Corr1Pathogen} }
-    child { node [outcome] { infected } }
-    child { node [decision={$> 12.00$}{$\le 12.00$}] { 
-    \texttt{Invasomes.AreaShape\_Area} }
-      child { node [decision={$< 1000$}{$\ge 1000$}] { 
-        \texttt{Invasomes.AreaShape\_Area} }
-        child { node [decision={$< 0.060$}{$\ge 0.060$}] { 
-          \texttt{Invasomes.RadialDistribution\_FracAtD\_\\Corr1Actin\_1} }
-          child { node [outcome] { infected } }
-          child { node [outcome] { not infected } }
-        }
+    child { node [decision={$> 0.085$}{$\le 0.085$}] { 
+    \texttt{PeriNuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
+      child { node [outcome] { infected } }
+      child { node [decision={$> 0.115$}{$\le 0.115$}] { 
+      \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
+        child { node [outcome] { infected } }
         child { node [outcome] { not infected } }
       }
-      child { node [outcome] { not infected } }
-    }
-  }
-};
-
-\end{tikzpicture}
-\caption[Decision tree for \textit{Bartonella} infection scoring.]{Decision tree for \textit{Bartonella} infection scoring. In order to detect bona-fide invasomes, the first three or-linked decisions assemble a list of candidates while the following three and-linked decisions discard some erroneously included instances. In order to obtain the desired cell-based infection score, invasomes are mapped to cellular objects in a subsequent step.}
+    };
+  \end{tikzpicture}
+  \caption[Decision tree for adenovirus infection scoring.]{For adenovirus infection scoring, the decision tree classifier checks if enough pathogen is detected within the cell body, the perinuclear region or the nucleus. The threshold decreases as the region of interest concentrates on areas associated with progressively involved in infection.}
+  \label{fig:dectree-adeno}
 \end{figure}
+
+Decision trees are a classification method that can be visualized by a binary tree with internal nodes serving as decisions and external nodes representing outcomes. Logically, this corresponds to a set of AND\slash OR-linked statements and geometrically, the decision boundary is no longer linear (as in the case of \glspl{svm}), but piecewise linear with segments being parallel to the coordinate axes. Applying this scheme to infection classification necessitates defining a set of features and finding suitable thresholds. Once a good model has been identified, application and interpretation are straightforward and result have proven to be reliable. One down-side of \gls{dtis} is that decision thresholds are affected by plate-specific parameters (e.g. quality of staining, microscope illumination) and therefore have to be adjusted on plate-by-plate basis.
+
+Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies across the cell body and concentrates within the nucleus. Strictly dependent on the amount of virus added to the cells, severity of infection is described well by signal intensity on the pathogen channel. The relevant features therefore include \textit{Cells.Intensity\_MeanIntensity\_CorrPathogen}, \textit{PeriNuclei.Intensity\_MeanIn\-tensity\_CorrPathogen} and \textit{Nuclei.Intensity\_MeanIntensity\_CorrPathogen}. The corresponding decision tree is shown in figure \ref{fig:dectree-adeno}.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> 0.800$}{$\le 0.800$}] { 
+      \texttt{Invasomes.Intensity\_MaxIntensity\_\\Corr1Pathogen}
+    }
+    [decision tree]
+    child { node [outcome] { infected } }
+    child { node [decision={$> 0.075$}{$\le 0.075$}] { 
+    \texttt{Invasomes.Intensity\_MeanIntensity\_\\Corr1Pathogen} } 
+      child { node [outcome] { infected } }
+      child { node [decision={$> 0.085$}{$\le 0.085$}] { 
+      \texttt{Invasomes.Intensity\_UpperQuartile-\\Intensity\_Corr1Pathogen} }
+        child { node [outcome] { infected } }
+        child { node [decision={$> 12.00$}{$\le 12.00$}] { 
+        \texttt{Invasomes.AreaShape\_Area} }
+          child { node [decision={$< 1000$}{$\ge 1000$}] { 
+            \texttt{Invasomes.AreaShape\_Area} }
+            child { node [decision={$< 0.060$}{$\ge 0.060$}] { 
+              \texttt{Invasomes.RadialDistribution\_FracAtD\_\\Corr1Actin\_1} }
+              child { node [outcome] { infected } }
+              child { node [outcome] { not infected } }
+            }
+            child { node [outcome] { not infected } }
+          }
+          child { node [outcome] { not infected } }
+        }
+      }
+    };
+  \end{tikzpicture}
+  \caption[Decision tree for \textit{Bartonella} infection scoring.]{Decision tree for \textit{Bartonella} infection scoring. In order to detect bona-fide invasomes, the first three or-linked decisions assemble a list of candidates while the following three and-linked decisions discard some erroneously included instances. In order to obtain the desired cell-based infection score, invasomes are mapped to cellular objects in a subsequent step.}
+  \label{fig:dectree-bartonella}
+\end{figure}
+
+One mode of pathogen entry in \textit{Bartonella} infection is via specialized invasome structures which can be described by an actin ring surrounding a large bacterial aggregate. These structures are detected on the actin channel, currently with a fair amount of false positives. Therefore, the pathogen channel intensity is taken into account by thresholding maximum, mean and upper quartile pathogen intensities within all invasome structures while remaining false positives are excluded based on size and radial distribution of actin intensity. Cells that contain one or more invasome structures that meet the criteria depicted in figure \ref{fig:dectree-bartonella} are considered infected. The remaining decision trees are shown in section \ref{sec:app-dectree}
+
+%% TODO: add descriptions of infection patterns of the remaining pathogens
+%% TODO: add table with thresholds
+%% TODO: add shigella dectree
