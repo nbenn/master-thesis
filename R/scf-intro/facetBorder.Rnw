@@ -1,4 +1,8 @@
-<<scf-intro_facetBorder, eval=TRUE, echo=1, size="footnotesize">>=
+<<hooks, echo=FALSE>>=
+source("../knitrListingHooks.R")
+@
+
+<<scf-intro_facetBorder, eval=TRUE, echo=1, highlight=FALSE>>=
 facetBorder <- function(x, y, img, facet) {
   facet.size <- img / facet
   # calculate facets (2d binning)

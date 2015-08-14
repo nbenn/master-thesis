@@ -1,48 +1,47 @@
-\begin{knitrout}\footnotesize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{facetBorder} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{,} \hlkwc{y}\hlstd{,} \hlkwc{img}\hlstd{,} \hlkwc{facet}\hlstd{) \{}
-  \hlstd{facet.size} \hlkwb{<-} \hlstd{img} \hlopt{/} \hlstd{facet}
-  \hlcom{# calculate facets (2d binning)}
-  \hlstd{x.bin} \hlkwb{<-} \hlkwd{ceiling}\hlstd{(x} \hlopt{/} \hlstd{facet.size[}\hlnum{1}\hlstd{])}
-  \hlstd{y.bin} \hlkwb{<-} \hlkwd{ceiling}\hlstd{(y} \hlopt{/} \hlstd{facet.size[}\hlnum{2}\hlstd{])}
-  \hlcom{# initialize empty grid/border matrices}
-  \hlstd{grid} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{, facet[}\hlnum{2}\hlstd{], facet[}\hlnum{1}\hlstd{])}
-  \hlcom{# calculate col-major grid index for each object}
-  \hlstd{index} \hlkwb{<-} \hlstd{y.bin} \hlopt{+} \hlstd{(x.bin} \hlopt{-} \hlnum{1}\hlstd{)} \hlopt{*} \hlstd{facet[}\hlnum{2}\hlstd{]}
-  \hlcom{# summarize as counts}
-  \hlstd{counts} \hlkwb{<-} \hlkwd{table}\hlstd{(index)}
-  \hlcom{# fill grid with counts}
-  \hlstd{grid[}\hlkwd{as.numeric}\hlstd{(}\hlkwd{names}\hlstd{(counts))]} \hlkwb{<-} \hlstd{counts}
-  \hlstd{grid.res} \hlkwb{<-} \hlstd{grid}
-  \hlstd{grid} \hlkwb{<-} \hlstd{grid} \hlopt{>} \hlnum{0}
-  \hlcom{# extend grid with a frame of ones}
-  \hlstd{grid.ext} \hlkwb{<-} \hlkwd{rbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{, (facet[}\hlnum{1}\hlstd{]} \hlopt{+} \hlnum{2}\hlstd{)),}
-                    \hlkwd{cbind}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{, facet[}\hlnum{2}\hlstd{]), grid,} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{, facet[}\hlnum{2}\hlstd{])),}
-                    \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{, (facet[}\hlnum{1}\hlstd{]} \hlopt{+} \hlnum{2}\hlstd{)))}
-  \hlcom{# set up stencil}
-  \hlstd{row} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{facet[}\hlnum{2}\hlstd{], facet[}\hlnum{1}\hlstd{]))}
-  \hlstd{col} \hlkwb{<-} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlopt{:}\hlstd{facet[}\hlnum{1}\hlstd{],} \hlkwc{each}\hlstd{=facet[}\hlnum{2}\hlstd{])}
-  \hlstd{colP1} \hlkwb{<-} \hlstd{col} \hlopt{+} \hlnum{1}
-  \hlstd{colM1} \hlkwb{<-} \hlstd{col} \hlopt{-} \hlnum{1}
-  \hlstd{rowP1} \hlkwb{<-} \hlstd{row} \hlopt{+} \hlnum{1}
-  \hlstd{rowP2} \hlkwb{<-} \hlstd{row} \hlopt{+} \hlnum{2}
-  \hlstd{nrowP} \hlkwb{<-} \hlstd{facet[}\hlnum{2}\hlstd{]} \hlopt{+} \hlnum{2}
-  \hlstd{stencil} \hlkwb{<-} \hlkwd{cbind}\hlstd{(row}   \hlopt{+} \hlstd{colM1} \hlopt{*} \hlstd{nrowP,} \hlcom{# northwest neighbor}
-                   \hlstd{row}   \hlopt{+} \hlstd{col}   \hlopt{*} \hlstd{nrowP,} \hlcom{# north neighbor}
-                   \hlstd{row}   \hlopt{+} \hlstd{colP1} \hlopt{*} \hlstd{nrowP,} \hlcom{# northeast neighbor}
-                   \hlstd{rowP1} \hlopt{+} \hlstd{colP1} \hlopt{*} \hlstd{nrowP,} \hlcom{# west neighbor}
-                   \hlstd{rowP2} \hlopt{+} \hlstd{colP1} \hlopt{*} \hlstd{nrowP,} \hlcom{# east neighbor}
-                   \hlstd{rowP2} \hlopt{+} \hlstd{col}   \hlopt{*} \hlstd{nrowP,} \hlcom{# southwest neighbor}
-                   \hlstd{rowP2} \hlopt{+} \hlstd{colM1} \hlopt{*} \hlstd{nrowP,} \hlcom{# south neighbor}
-                   \hlstd{rowP1} \hlopt{+} \hlstd{colM1} \hlopt{*} \hlstd{nrowP)} \hlcom{# southeast neighbor}
-  \hlcom{# apply stencil row-wise to grid}
-  \hlstd{border} \hlkwb{<-} \hlkwd{apply}\hlstd{(stencil,} \hlnum{1}\hlstd{,} \hlkwa{function}\hlstd{(}\hlkwc{ind}\hlstd{,} \hlkwc{mat}\hlstd{) \{}
-    \hlkwd{return}\hlstd{(}\hlkwd{sum}\hlstd{(mat[ind]))}
-  \hlstd{\},} \hlkwd{as.numeric}\hlstd{(grid.ext))}
-  \hlcom{# map col-major object index to border array}
-  \hlkwd{return}\hlstd{(border[index])}
-\hlstd{\}}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+
+
+\begin{rcode}
+facetBorder <- function(x, y, img, facet) {
+  facet.size <- img / facet
+  # calculate facets (2d binning)
+  x.bin <- ceiling(x / facet.size[1])
+  y.bin <- ceiling(y / facet.size[2])
+  # initialize empty grid/border matrices
+  grid <- matrix(0, facet[2], facet[1])
+  # calculate col-major grid index for each object
+  index <- y.bin + (x.bin - 1) * facet[2]
+  # summarize as counts
+  counts <- table(index)
+  # fill grid with counts
+  grid[as.numeric(names(counts))] <- counts
+  grid.res <- grid
+  grid <- grid > 0
+  # extend grid with a frame of ones
+  grid.ext <- rbind(rep(1, (facet[1] + 2)),
+                    cbind(rep(1, facet[2]), grid, rep(1, facet[2])),
+                    rep(1, (facet[1] + 2)))
+  # set up stencil
+  row <- rep(rep(1:facet[2], facet[1]))
+  col <- rep(1:facet[1], each=facet[2])
+  colP1 <- col + 1
+  colM1 <- col - 1
+  rowP1 <- row + 1
+  rowP2 <- row + 2
+  nrowP <- facet[2] + 2
+  stencil <- cbind(row   + colM1 * nrowP, # northwest neighbor
+                   row   + col   * nrowP, # north neighbor
+                   row   + colP1 * nrowP, # northeast neighbor
+                   rowP1 + colP1 * nrowP, # west neighbor
+                   rowP2 + colP1 * nrowP, # east neighbor
+                   rowP2 + col   * nrowP, # southwest neighbor
+                   rowP2 + colM1 * nrowP, # south neighbor
+                   rowP1 + colM1 * nrowP) # southeast neighbor
+  # apply stencil row-wise to grid
+  border <- apply(stencil, 1, function(ind, mat) {
+    return(sum(mat[ind]))
+  }, as.numeric(grid.ext))
+  # map col-major object index to border array
+  return(border[index])
+}
+\end{rcode}
+

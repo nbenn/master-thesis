@@ -165,6 +165,15 @@
 
 \setlength{\droptitle}{-48pt}
 
+%% don't insert spaces between chapters in lof/lot
+\renewcommand{\insertchapterspace}{}
+
+\setlength\cftbeforesectionskip{5pt}
+\setlength\cftbeforesubsectionskip{2pt}
+
+\setlength\cftbeforefigureskip{5pt}
+\setlength\cftbeforetableskip{5pt}
+
 \makeatother
 
 %% This defines how theorems should look. Best leave as is.
@@ -178,3 +187,45 @@
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+%% code listings
+\renewcommand{\theFancyVerbLine}{%
+  \textcolor[rgb]{0.75,0.75,0.75}{\tiny\arabic{FancyVerbLine}}
+}
+\newminted[rcode]{r}{%
+  tabsize=2,
+  fontsize=\footnotesize,
+  linenos,
+  numbersep=4pt,
+  style=knitr
+}
+\newtcolorbox[%
+  auto counter,
+  number within=chapter,
+  list inside=codelist
+]{rlisting}[3]{%
+  list text={#1},
+  title={\renewcommand{\baselinestretch}{1.00}\footnotesize\textbf{Listing \thetcbcounter}: #2},
+  label={lst:#3},
+  fonttitle=\sffamily,
+  enhanced,
+  frame hidden,
+  interior hidden,
+  sharp corners,
+  boxrule=0pt,
+  titlerule=0.5pt,
+  bottomrule=0.5pt,%  <-- reserve space
+  titlerule style=black,
+  borderline south={0.5pt}{0pt}{black},%---- draw line
+  colback=white,
+  coltitle=black,
+  boxsep=0mm,
+  lefttitle=0cm,   % space to the left of title
+  righttitle=0cm,  % space to the right of title
+  bottomtitle=3mm, % space after title
+  top=3mm,         % space at beginning of main
+  bottom=3mm,      % space at end of main
+  leftupper=6mm,   % space to the left of main
+  float,
+  breakable
+}

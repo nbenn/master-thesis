@@ -1,0 +1,115 @@
+<<dectree-thresh-rest, eval=TRUE, echo=FALSE, results='asis'>>=
+suppressPackageStartupMessages(library(xtable))
+#data <- read.csv2(paste0("/Users/nbennett/CloudStation/MasterThesis/software",
+#                        "/tginfectx/trunk/screeningBee/Tools/",
+#                        "BeePreAnalysisDaemon/BeeOpenBISMetaData.csv"),
+#                        stringsAsFactors=FALSE)
+#data <- cbind(data$Experiment.Identifier,
+#              data$Sample,
+#              data$Decision.Tree.Infection.Scoring.Threshold)
+#saveRDS(data, paste0("/Users/nbennett/CloudStation/MasterThesis/report/data/",
+#                     "dectree-thresh.rds"))
+data <- readRDS(paste0(gsub("/R$", "/data", getwd()), "/dectree-thresh.rds"))
+data <- data[grepl("^/INFECTX", data[,1]),]
+brucella <- data[grepl("^/INFECTX_PUBLISHED/BRUCELLA_TEAM/", data[,1]),]
+vaccinia <- data[grepl("^/INFECTX_PUBLISHED/VACCINIA_TEAM/", data[,1]),]
+data <- data[!grepl("/BRUCELLA_TEAM/", data[,1]),]
+data <- data[!grepl("/VACCINIA_TEAM/", data[,1]),]
+data <- rbind(data, brucella, vaccinia)
+find <- c("^AdenoStandardInfection\\(",
+          "^BrucellaNewStandardInfection\\(",
+          "^BartonellaStandardInfection\\(",
+          "^ListeriaStandardInfection\\(",
+          "^SalmonellaStandardInfection\\(",
+          "^RhinoStandardInfection\\(",
+          "^VacciniaStandardInfection\\(")
+found <- lapply(find, grepl, data[,3])
+found <- do.call(cbind, found)
+found <- rowSums(found)
+data.red  <- data[found == 1,3]
+data.red  <- unique(data.red)
+
+split <- strsplit(data.red, "\\(")
+split <- do.call(rbind, split)
+
+split <- split(split[,2], split[,1])
+
+infection <- lapply(split, function(grp, data) {
+  res <- lapply(grp, function(x, data) {
+    n.found <- grepl(x, data)
+    n.found <- sum(n.found)
+    all <- unlist(strsplit(x, "\\)"))[1]
+    split <- unlist(strsplit(all, ","))
+    split <- strsplit(split, ":")
+    names  <- sapply(split, function(n) return(n[1]))
+    values <- sapply(split, function(n) return(n[2]))
+    values <- as.numeric(c(values, n.found))
+    names(values) <- c(names, "NumFound")
+    return(values)
+  }, data)
+  res <- do.call(cbind, res)
+  return(data.frame(t(res), stringsAsFactors=FALSE))
+}, data)
+
+infection <- lapply(names(infection), function(name, dat) {
+  pathogen <- dat[[name]]
+  if(grepl("NewStandardInfection", name)) {
+    new.name <- sub("NewStandardInfection", "", name)
+  } else {
+    new.name <- sub("StandardInfection", "", name)
+  }
+  pathogen$Pathogen <- rep(new.name, nrow(pathogen))
+  return(pathogen)
+}, infection)
+names(infection) <- names(split)
+
+infection <- infection[!names(infection) %in% c("BartonellaStandardInfection")]
+single.tab <- Reduce(function(...) merge(..., all=TRUE), infection)
+single.tab <- single.tab[with(single.tab, order(Pathogen)), ]
+single.tab <- single.tab[,-which(colnames(single.tab) %in% c(
+  "NumFound", "CountCells", "Bacteria.Intensity_MeanIntensity_CorrPathogen",
+  "Bacteria.AreaShape_PerObjArea",
+  "Cells.Intensity_MeanUpperTenPercentIntensity_CorrPathogen",
+  "Nuclei.Intensity_MeanIntensity_CorrLatePathogen",
+  "PeriNuclei.Intensity_MeanIntensity_CorrLatePathogen"))]
+single.tab <- single.tab[!duplicated(single.tab), ]
+
+newcolnames <- lapply(colnames(single.tab), function(x) {
+  if(x == "Pathogen") return("")
+  if(x == "Nuclei.Intensity_MeanIntensity_CorrPathogen")
+    return("\\parbox{4cm}{Nuclei.Intensity_Mean-\\\\Intensity_CorrPathogen}")
+  if(x == "PeriNuclei.Intensity_MeanIntensity_CorrPathogen")
+    return(paste0("\\parbox{4cm}{PeriNuclei.Intensity_Mean-\\\\",
+                  "Intensity_CorrPathogen}"))
+  if(x == "Cells.Intensity_MeanIntensity_CorrPathogen")
+    return("\\parbox{4cm}{Cells.Intensity_Mean-\\\\Intensity_CorrPathogen}")
+  if(x == "Nuclei.MeanIntensity_CorrInlC")
+    return("\\parbox{4cm}{Nuclei.MeanIntensity_\\\\CorrInlC}")
+  if(x == "Nuclei.UpperQuartileIntensity_CorrInlC")
+    return("\\parbox{4cm}{Nuclei.UpperQuartile-\\\\Intensity_CorrInlC}")
+  if(x == "PeriNuclei.MeanIntensity_CorrInlC")
+    return("\\parbox{4cm}{PeriNuclei.MeanIntensity_\\\\CorrInlC}")
+  if(x == "Nuclei.Intensity_MeanUpperTenPercentIntensity_CorrPathogen")
+    return(paste0("\\parbox{4cm}{Nuclei.Intensity_MeanUpperTen-\\\\",
+                  "PercentIntensity_CorrPathogen}"))
+  if(x == "PeriNuclei.Intensity_MeanUpperTenPercentIntensity_CorrPathogen")
+    return(paste0("\\parbox{4cm}{PeriNuclei.Intensity_MeanUpper-\\\\",
+                  "TenPercentIntensity_CorrPathogen}"))
+  if(x == "VoronoiCells.Intensity_MeanUpperTenPercentIntensity_CorrPathogen")
+    return(paste0("\\parbox{4cm}{VoronoiCells.Intensity_MeanUpper-\\\\",
+                  "TenPercentIntensity_CorrPathogen}"))
+  if(x == "Cells.Intensity_SubCellBacteriaMeanIntensity_CorrPathogen")
+    return(paste0("\\parbox{4cm}{Cells.Intensity_SubCellBacteria-\\\\",
+                  "MeanIntensity_CorrPathogen}"))
+  if(x == "Cells.AreaShape_SubCellBacteriaArea_CorrPathogen")
+    return(paste0("\\parbox{4cm}{Cells.AreaShape_SubCell-\\\\",
+                  "BacteriaArea_CorrPathogen}"))
+})
+newcolnames <- gsub("_", "\\\\_", newcolnames)
+newcolnames <- paste("\\rotatebox{90}{", newcolnames, "}", sep="")
+colnames(single.tab) <- newcolnames
+
+print(xtable(single.tab), include.rownames=FALSE,
+      hline.after=c(0,nrow(single.tab)), sanitize.text.function=identity,
+      floating=FALSE)
+@

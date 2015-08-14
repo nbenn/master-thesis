@@ -20,8 +20,8 @@ While genome-wide \gls{sirna} screens were also produced within the InfectX fram
 \end{equation}
 where A represents the donating (typically \gls{atp}) and B the accepting molecule. Kinases are further subdivided according to the type of acceptor which can be an alcohol, carboxy, nitrogenous or phosphate group, or in case of protein kinases, a tyrosine, serine, threonine or histidine residue.
 \begin{align}
-  \cee{A\bond{-}O\bond{-}B + H\bond{-}O\bond{-}PO3^{-2} &<=>> A\bond{-}O\bond{-}PO3^{-2} + H\bond{-}O\bond{-}B} \label{eq:phosphorylase} \\
-  \cee{A\bond{-}O\bond{-}PO3^{-2} + H\bond{-}OH &<=>> A\bond{-}OH + H\bond{-}O\bond{-}PO3^{-2}} \label{eq:phosphatases}
+  \ce{A\bond{-}O\bond{-}B + H\bond{-}O\bond{-}PO3^{-2} &<=>> A\bond{-}O\bond{-}PO3^{-2} + H\bond{-}O\bond{-}B} \label{eq:phosphorylase} \\
+  \ce{A\bond{-}O\bond{-}PO3^{-2} + H\bond{-}OH &<=>> A\bond{-}OH + H\bond{-}O\bond{-}PO3^{-2}} \label{eq:phosphatases}
 \end{align}
 Phosphorylases are a further group of transferases that involve phosphate but unlike kinases, they utilize inorganic phosphate sources (\ref{eq:phosphorylase}). Often phosphorylases are involved in breaking down biological polymers such as polysaccharides and polynucleotides. Finally, phosphatases catalyze the reverse reaction, the removal of a phosphate group (\ref{eq:phosphatases}).}. As phosphorylation reactions have been identified to constitute the most widespread signaling mechanism in eukaryotic cells, the set of 518 genes identified by \citeauthor{Manning2002} are a popular target for functional genomics studies. Up to 30\% of intracellular proteins may be phosphorylated, leading to 20000 phosphoprotein states, all regulated by expression of varyingly substrate specific kinases \citep{Johnson2005}. Due to the importance of kinases for cell behavior, they represent a major drug target in cancer therapeutics and might therefore also be attractive for \gls{hdt}.
 
@@ -417,6 +417,8 @@ All texture measurements are either based on Haralick features \citep{Haralick19
 
 Element $p(i,j)$ is calculated by counting the number of times, a pixel with value $i$ is adjacent to a pixel with value $j$, divided by the total number of comparisons. Consequently, $p(i,j)$ can be thought of as representing a probability. Moreover, assuming 8-connectivity, 4 different types of adjacency are possible: horizontal, vertical, top left to bottom right diagonal and top right to bottom left antidiagonal, yielding 4 co-occurrence matrices $G_k, k\in\{1,2,3,4\}$. 14 statistics were developed by \citeauthor{Haralick1973}, 13 of which are included with CellProfiler:
 
+%% TODO: either cite webpage or rewrite paragraph
+
 \begin{align*}
 p_x(i) &= \sum_{j=1}^{n} p(i,j), & p_y(j) &= \sum_{i=1}^{n} p(i,j), \\
 p_{x+y}(k) &= \mathop{\sum_{i=1}^{n}\sum_{j=1}^{n}}_{i+j=k} p(i,j), &
@@ -497,7 +499,7 @@ Classification by an \gls{svm} yields the $(p-1)$-dimensional hyperplane from $p
   \label{fig:dectree-adeno}
 \end{figure}
 
-Decision trees are a classification method that can be visualized by a binary tree with internal nodes serving as decisions and external nodes representing outcomes. Logically, this corresponds to a set of AND\slash OR-linked statements and geometrically, the decision boundary is no longer linear (as in the case of \glspl{svm}), but piecewise linear with segments being parallel to the coordinate axes. Applying this scheme to infection classification necessitates defining a set of features and finding suitable thresholds. Once a good model has been identified, application and interpretation are straightforward and result have proven to be reliable. One down-side of \gls{dtis} is that decision thresholds are affected by plate-specific parameters (e.g. quality of staining, microscope illumination) and therefore have to be adjusted on plate-by-plate basis.
+Decision trees are a classification method that can be visualized by a binary tree with internal nodes serving as decisions and external nodes representing outcomes. Logically, this corresponds to a set of AND\slash OR-linked statements and geometrically, the decision boundary is no longer linear (as in the case of \glspl{svm}), but piecewise linear with segments being parallel to the coordinate axes. Applying this scheme to infection classification necessitates defining a set of features and finding suitable thresholds. Once a good model has been identified, application and interpretation are straightforward and result have proven to be reliable. One down-side of \gls{dtis} is that decision thresholds are affected by plate-specific parameters (e.g. quality of staining, microscope illumination) and therefore have to be adjusted on plate-by-plate basis (see table \ref{tab:dectree-thresh} for the different sets of threshold currently used).
 
 Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies across the cell body and concentrates within the nucleus. Strictly dependent on the amount of virus added to the cells, severity of infection is described well by signal intensity on the pathogen channel. The relevant features therefore include \textit{Cells.Intensity\_MeanIntensity\_CorrPathogen}, \textit{PeriNuclei.Intensity\_MeanIn\-tensity\_CorrPathogen} and \textit{Nuclei.Intensity\_MeanIntensity\_CorrPathogen}. The corresponding decision tree is shown in figure \ref{fig:dectree-adeno}.
 
@@ -538,5 +540,4 @@ Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies
 One mode of pathogen entry in \textit{Bartonella} infection is via specialized invasome structures which can be described by an actin ring surrounding a large bacterial aggregate. These structures are detected on the actin channel, currently with a fair amount of false positives. Therefore, the pathogen channel intensity is taken into account by thresholding maximum, mean and upper quartile pathogen intensities within all invasome structures while remaining false positives are excluded based on size and radial distribution of actin intensity. Cells that contain one or more invasome structures that meet the criteria depicted in figure \ref{fig:dectree-bartonella} are considered infected. The remaining decision trees are shown in section \ref{sec:app-dectree}
 
 %% TODO: add descriptions of infection patterns of the remaining pathogens
-%% TODO: add table with thresholds
 %% TODO: add shigella dectree

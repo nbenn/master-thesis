@@ -85,9 +85,7 @@ table[incidence] <- "\\checkmark"
 table[!incidence] <- ""
 table <- table[, -which(colnames(table) %in% "UNKNOWN")]
 table <- xtable(t(table))
-caption(table) <- c("main cpation", "short caption")
-label(table) <- "tab:infectx-control"
 
 print(table, rotate.colnames=TRUE, sanitize.text.function=identity,
-      caption.placement="top", hline.after=0, floating=FALSE)
+      hline.after=0, floating=FALSE)
 @

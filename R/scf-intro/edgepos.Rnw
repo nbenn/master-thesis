@@ -1,4 +1,8 @@
-<<scf-intro_edgepos, eval=TRUE, echo=1, size="footnotesize">>=
+<<hooks, echo=FALSE>>=
+source("../knitrListingHooks.R")
+@
+
+<<scf-intro_edgepos, eval=TRUE, echo=1, highlight=FALSE>>=
 edgepos <- function(x, y, img, n) {
   empty <- logical()
   xst <- img[1] / n
@@ -16,23 +20,23 @@ edgepos <- function(x, y, img, n) {
     for (j in 1:n) {
       ispos <- (x > (i - 1) * xst) & (x <= (i * xst)) &
                (y > (j - 1) * yst) & (y <= (j * yst))
-      isempty <- F
+      isempty <- FALSE
       if ((i > 1) && (j > 1) && (sgrid[i - 1, j - 1] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((i > 1) && (sgrid[i - 1, j] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((i > 1) && (j < n) && (sgrid[i - 1, j + 1] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((j > 1) && (sgrid[i, j - 1] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((j < n) && (sgrid[i, j + 1] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((i < n) && (j > 1) && (sgrid[i + 1, j - 1] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((i < n) && (sgrid[i + 1, j] == 0))
-        isempty <- T
+        isempty <- TRUE
       else if ((i < n) && (j < n) && (sgrid[i + 1, j + 1] == 0))
-        isempty <- T
+        isempty <- TRUE
       empty[ispos] <- isempty
     }
   }

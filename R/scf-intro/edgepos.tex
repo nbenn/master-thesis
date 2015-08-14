@@ -1,45 +1,44 @@
-\begin{knitrout}\footnotesize
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{edgepos} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{,} \hlkwc{y}\hlstd{,} \hlkwc{img}\hlstd{,} \hlkwc{n}\hlstd{) \{}
-  \hlstd{empty} \hlkwb{<-} \hlkwd{logical}\hlstd{()}
-  \hlstd{xst} \hlkwb{<-} \hlstd{img[}\hlnum{1}\hlstd{]} \hlopt{/} \hlstd{n}
-  \hlstd{yst} \hlkwb{<-} \hlstd{img[}\hlnum{2}\hlstd{]} \hlopt{/} \hlstd{n}
-  \hlstd{sgrid} \hlkwb{<-} \hlkwd{matrix}\hlstd{(}\hlnum{0}\hlstd{,} \hlkwc{nrow}\hlstd{=n,} \hlkwc{ncol}\hlstd{=n)}
-  \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{n) \{}
-    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{n) \{}
-      \hlstd{ispos} \hlkwb{<-} \hlstd{(x} \hlopt{>} \hlstd{(i} \hlopt{-} \hlnum{1}\hlstd{)} \hlopt{*} \hlstd{xst)} \hlopt{&} \hlstd{(x} \hlopt{<=} \hlstd{(i} \hlopt{*} \hlstd{xst))} \hlopt{&}
-               \hlstd{(y} \hlopt{>} \hlstd{(j} \hlopt{-} \hlnum{1}\hlstd{)} \hlopt{*} \hlstd{yst)} \hlopt{&} \hlstd{(y} \hlopt{<=} \hlstd{(j} \hlopt{*} \hlstd{yst))}
-      \hlstd{sgrid[i, j]} \hlkwb{<-} \hlkwd{sum}\hlstd{(ispos)}
-    \hlstd{\}}
-  \hlstd{\}}
 
-  \hlkwa{for} \hlstd{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{n) \{}
-    \hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlstd{n) \{}
-      \hlstd{ispos} \hlkwb{<-} \hlstd{(x} \hlopt{>} \hlstd{(i} \hlopt{-} \hlnum{1}\hlstd{)} \hlopt{*} \hlstd{xst)} \hlopt{&} \hlstd{(x} \hlopt{<=} \hlstd{(i} \hlopt{*} \hlstd{xst))} \hlopt{&}
-               \hlstd{(y} \hlopt{>} \hlstd{(j} \hlopt{-} \hlnum{1}\hlstd{)} \hlopt{*} \hlstd{yst)} \hlopt{&} \hlstd{(y} \hlopt{<=} \hlstd{(j} \hlopt{*} \hlstd{yst))}
-      \hlstd{isempty} \hlkwb{<-} \hlstd{F}
-      \hlkwa{if} \hlstd{((i} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{&&} \hlstd{(j} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{&&} \hlstd{(sgrid[i} \hlopt{-} \hlnum{1}\hlstd{, j} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((i} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{&&} \hlstd{(sgrid[i} \hlopt{-} \hlnum{1}\hlstd{, j]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((i} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{&&} \hlstd{(j} \hlopt{<} \hlstd{n)} \hlopt{&&} \hlstd{(sgrid[i} \hlopt{-} \hlnum{1}\hlstd{, j} \hlopt{+} \hlnum{1}\hlstd{]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((j} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{&&} \hlstd{(sgrid[i, j} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((j} \hlopt{<} \hlstd{n)} \hlopt{&&} \hlstd{(sgrid[i, j} \hlopt{+} \hlnum{1}\hlstd{]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((i} \hlopt{<} \hlstd{n)} \hlopt{&&} \hlstd{(j} \hlopt{>} \hlnum{1}\hlstd{)} \hlopt{&&} \hlstd{(sgrid[i} \hlopt{+} \hlnum{1}\hlstd{, j} \hlopt{-} \hlnum{1}\hlstd{]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((i} \hlopt{<} \hlstd{n)} \hlopt{&&} \hlstd{(sgrid[i} \hlopt{+} \hlnum{1}\hlstd{, j]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlkwa{else if} \hlstd{((i} \hlopt{<} \hlstd{n)} \hlopt{&&} \hlstd{(j} \hlopt{<} \hlstd{n)} \hlopt{&&} \hlstd{(sgrid[i} \hlopt{+} \hlnum{1}\hlstd{, j} \hlopt{+} \hlnum{1}\hlstd{]} \hlopt{==} \hlnum{0}\hlstd{))}
-        \hlstd{isempty} \hlkwb{<-} \hlstd{T}
-      \hlstd{empty[ispos]} \hlkwb{<-} \hlstd{isempty}
-    \hlstd{\}}
-  \hlstd{\}}
-  \hlkwd{return}\hlstd{(empty)}
-\hlstd{\}}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+
+\begin{rcode}
+edgepos <- function(x, y, img, n) {
+  empty <- logical()
+  xst <- img[1] / n
+  yst <- img[2] / n
+  sgrid <- matrix(0, nrow=n, ncol=n)
+  for (i in 1:n) {
+    for (j in 1:n) {
+      ispos <- (x > (i - 1) * xst) & (x <= (i * xst)) &
+               (y > (j - 1) * yst) & (y <= (j * yst))
+      sgrid[i, j] <- sum(ispos)
+    }
+  }
+
+  for (i in 1:n) {
+    for (j in 1:n) {
+      ispos <- (x > (i - 1) * xst) & (x <= (i * xst)) &
+               (y > (j - 1) * yst) & (y <= (j * yst))
+      isempty <- FALSE
+      if ((i > 1) && (j > 1) && (sgrid[i - 1, j - 1] == 0))
+        isempty <- TRUE
+      else if ((i > 1) && (sgrid[i - 1, j] == 0))
+        isempty <- TRUE
+      else if ((i > 1) && (j < n) && (sgrid[i - 1, j + 1] == 0))
+        isempty <- TRUE
+      else if ((j > 1) && (sgrid[i, j - 1] == 0))
+        isempty <- TRUE
+      else if ((j < n) && (sgrid[i, j + 1] == 0))
+        isempty <- TRUE
+      else if ((i < n) && (j > 1) && (sgrid[i + 1, j - 1] == 0))
+        isempty <- TRUE
+      else if ((i < n) && (sgrid[i + 1, j] == 0))
+        isempty <- TRUE
+      else if ((i < n) && (j < n) && (sgrid[i + 1, j + 1] == 0))
+        isempty <- TRUE
+      empty[ispos] <- isempty
+    }
+  }
+  return(empty)
+}
+\end{rcode}
+

@@ -54,39 +54,8 @@
 %% [OPT] Fancy package for source code listings.  The template text
 %% needs it for some LaTeX snippets; remove/adapt the \lstset when you
 %% remove the template content.
-\usepackage{listings}
-%% for linenumbers only!
-\definecolor{Mygrey}{gray}{0.75}
-%% for comments
-\definecolor{Cgrey}{gray}{0.4}
-\lstloadlanguages{R}
-%% for help, see http://en.wikibooks.org/wiki/LaTeX/Packages/Listings
-\lstset{
-  language=R,
-  %% \small > \footnotesize > \scriptsize > \tiny
-  basicstyle=\ttfamily\scriptsize,
-  %commentstyle=\ttfamily\color{Cgrey},
-  commentstyle=\itshape\color{Cgrey},
-  numbers=left,
-  numberstyle=\ttfamily\color{Mygrey}\tiny,
-  stepnumber=1,
-  numbersep=5pt,
-  backgroundcolor=\color{white},
-  showspaces=false,
-  showstringspaces=false,
-  showtabs=false,
-  frame=single,
-  tabsize=2,
-  captionpos=b,
-  breaklines=true,
-  %breakatwhitespace=false,
-  keywordstyle={},
-  morekeywords={},
-  xleftmargin=4ex, 
-  literate={<-}{{$\leftarrow$}}1 {~}{{$\sim$}}1
-}
-%% for (*\ref{ }*) inside lstlistings (Scode) 
-\lstset{escapeinside={(*}{*)}}
+\usepackage[outputdir=.build]{minted}
+\usepackage[most]{tcolorbox}
 
 %% [REC] Fancy character protrusion.  Must be loaded after all fonts.
 \usepackage[activate]{pdfcprot}
