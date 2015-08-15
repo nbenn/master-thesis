@@ -1,0 +1,8 @@
+<<config-gen, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+path <- configPathGet()
+target <- paste0(gsub("/R", "/data", getwd()), "/config.yaml")
+configPathSet(target)
+configInit()
+configPathSet(path)
+@
