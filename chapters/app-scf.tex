@@ -1,9 +1,44 @@
 \chapter{SingleCellFeatures Manual}
+\label{ch:scf-manual}
 
 \section{Package Installation}
-The following sections describe materials and methods employed in pathogen specific protocols. This information has been published in \cite{Ramo2014} and is only reproduced for the reader's convenience.
+All R code is available on \href{https://github.com/nbenn/singleCellFeatures}{github} and can be directly installed from an R session through the devtools package. External requirements are \href{http://zlib.net/pigz/}{pigz}, a parallel implementation of gzip and access to an openBIS \citep{Bauch2011} instance via the corresponding Java command line tool, which has to be compiled and installed locally.
+
+\begin{rflow}
+install.packages("devtools")
+library(devtools)
+
+install_github("nbenn/singleCellFeatures")
+\end{rflow}
+
+Alternatively the package can be \href{https://github.com/nbenn/singleCellFeatures/archive/master.zip}{downloaded} and installed manually by running the following commands in a shell (dependent on where the zip file was downloaded to).
+
+\begin{bashflow}
+unzip ~/Downloads/singleCellFeatures-master.zip
+R CMD INSTALL --no-multiarch --with-keep.source \
+  ~/Downloads/singleCellFeatures-master
+\end{bashflow}
+
+Some setup dependent information has to be provided, all of which is stored in a yaml formatted configuration file. The default location of this config file is \mintinline{bash}{~/.singleCellFeaturesConfig}. This can be changed on a per-session basis using the function \mintinline{r}{configPathSet()} of more permanently, using an \mintinline{bash}{.Rprofile} file. Furthermore, singleCellFeatures provides a function to generate a template file that can be edited to suit the current setup.
+
+\begin{rflow}
+## if no config file is present, set one up
+# set the config file location
+configPathSet("path/to/where/you/want/your/config.yaml")
+# create a template file
+configInit()
+# using a text editor, modify this file for your system
+
+## for inter-session persistence, add the following to your .Rprofile
+options(singleCellFeatures.configPath = "path/to/your/config.yaml")
+\end{rflow}
 
 \input{R/configGenerator}
-\begin{rlisting}{Short caption.}{Long caption.}{config}
-  \inputminted[fontsize=\footnotesize,linenos,numbersep=4pt,style=igor]{yaml}{data/config.yaml}
+\begin{rlisting}{Structure of the configuration file for singleCellData.}{In order for singleCellData to be correctly configured for a given system, several settings can be adjusted through a yaml-based configuration file.}{config}{t}
+  \inputminted[fontsize=\footnotesize,linenos,numbersep=4pt,style=knitr]{yaml}{data/config.yaml}
 \end{rlisting}
+
+The configuration file structure is shown in listing \ref{lst:config}. The two entries under \mintinline{yaml}{dataStorage} should be chosen such that they point to locations on a volume with several \si{\giga\byte}s of free storage, in order to to be able to hold a couple of plates. A complete plate requires 1--\SI{2}{\giga\byte} of storage and having upwards of \SI{50}{\giga\byte} available is recommended. The section \mintinline{yaml}{beeDownloader} is concerned with the location of the Java command line tool for accessing openBIS data, which in case of InfectX is called \href{https://wiki.systemsx.ch/pages/viewpage.action?title=InfectX+Single+Cell+Data+Access&spaceKey=InfectXRTD}{BeeDataSetDownloader}. Both the executable and a folder containing several JAR-files supplied with openBIS are required. Login credentials for openBIS access can be specified in the following section (\mintinline{yaml}{openBIS}) and the final keyword group holds the path to the local source of this package. It is only used to update the databases in \mintinline{bash}{/data} (see section \ref{sec:update-metadata}) and therefore will not be needed in production environments, unless the metadata that comes with singleCellData is outdated or this package is used for data not produced by InfectX.
+
+\section{Metadata Databases}
+\label{sec:update-metadata}

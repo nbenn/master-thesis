@@ -1,0 +1,75 @@
+<<scf-intro_full-plate, eval=TRUE, echo=FALSE, results='hide', message=FALSE>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+
+edgepos <- function(d, n=10, wells) {
+  # compute for each cell if it is at an edge or not!
+  x <- d
+  x$edge = FALSE
+  xst <- (max(d$X)-min(d$X))/n
+  yst <- (max(d$Y)-min(d$Y))/n
+  sgrid <- matrix(0,nrow=n,ncol=n)
+  for (k in wells){
+    message("Processing well ", k ,"...", sep="")
+    sgrid[,] <- 0
+    for (i in 1:n)
+      for (j in 1:n){
+        ispos <- (d$Well==k) & (d$X >= (i-1)*xst) & (d$X <= (i*xst)) &
+                               (d$Y >= (j-1)*yst) & (d$Y <= (j*yst))
+        sgrid[i,j] <- sum(ispos)
+      }
+    # compute for each object whether it has an empty neighbor-grid
+    for (i in 1:n)
+      for (j in 1:n){
+       ispos <- (d$Well==k) & (d$X >= (i-1)*xst) & (d$X <= (i*xst)) &
+                              (d$Y >= (j-1)*yst) & (d$Y <= (j*yst))
+       isempty <- F
+       if ((i==1)||(i==n)||(j==1)||(j==n))
+         x$edge[ispos] <- T
+       if ((i>1)&&(j>1)&&(sgrid[i-1,j-1]==0))
+         isempty <- T
+       else if ((i>1)&&(sgrid[i-1,j]==0))
+         isempty <- T
+       else if ((i>1)&&(j<n)&&(sgrid[i-1,j+1]==0))
+         isempty <- T
+       else if ((j>1)&&(sgrid[i,j-1]==0))
+         isempty <- T
+       else if ((j<n)&&(sgrid[i,j+1]==0))
+         isempty <- T
+       else if ((i<n)&&(j>1)&&(sgrid[i+1,j-1]==0))
+         isempty <- T
+       else if ((i<n)&&(sgrid[i+1,j]==0))
+         isempty <- T
+       else if ((i<n)&&(j<n)&&(sgrid[i+1,j+1]==0))
+         isempty <- T
+       x$empty[ispos] <- isempty
+     }
+  }
+  return(x)
+}
+
+set.seed(11)
+n.samp <- 10
+samp.well <- sample.int(384, n.samp)
+data <- PlateData(PlateLocation("J107-2C"),
+                  select=c("^Cells.Location_Center_X",
+                           "^Cells.Location_Center_Y"))
+dat.ep <- augmentImageLocation(data)
+dat.ep <- meltData(dat.ep)$mat$Cells
+newcol <- gsub("Cells.Location_Shifted_", "", names(dat.ep))
+newcol <- gsub(".Index", "", newcol)
+names(dat.ep) <- newcol
+dat.ep <- dat.ep[,which(names(dat.ep) %in% c("Well", "X", "Y"))]
+
+time1 <- system.time(dat.ep <- edgepos(dat.ep, n=45, wells=samp.well))
+time2 <- system.time(tmp <- augmentCordinateFeatures(data, facet=c(15, 15)))
+
+samp.nme <- sapply(samp.well, function(x) {
+  res <- getWellIndex2D(x)
+  return(paste0(res$wel.row, res$wel.col))
+})
+@
+
+\newcommand{\knitrScfFullPlateNSamp}{\Sexpr{n.samp}}
+\newcommand{\knitrScfFullPlateSampWell}{\Sexpr{paste(sort(samp.nme), collapse=", ")}}
+\newcommand{\knitrScfFullPlateMyTime}{\SI{\Sexpr{round(time2["elapsed"], digits=2)}}{\second}}
+\newcommand{\knitrScfFullPlateRnaicellTime}{\SI{\Sexpr{round(time1["elapsed"] / n.samp * 384 / 3600, digits=2)}}{\hour}}

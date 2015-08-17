@@ -203,7 +203,7 @@
   auto counter,
   number within=chapter,
   list inside=codelist
-]{rlisting}[3]{%
+]{rlisting}[4]{%
   list text={#1},
   title={\renewcommand{\baselinestretch}{1.00}\footnotesize\textbf{Listing \thetcbcounter}: #2},
   label={lst:#3},
@@ -226,6 +226,27 @@
   top=3mm,         % space at beginning of main
   bottom=3mm,      % space at end of main
   leftupper=6mm,   % space to the left of main
-  float,
+  float={#4},
   breakable
 }
+\definecolor{mintbg}{rgb}{0.95,0.95,0.95}
+\newminted[rflow]{r}{%
+  style=knitr,
+  bgcolor=mintbg,
+  frame=single,
+  rulecolor=\color{mintbg},
+  fontsize=\small,
+  framesep=5px,
+  tabsize=2
+}
+\newminted[bashflow]{bash}{%
+  style=knitr,
+  bgcolor=mintbg,
+  frame=single,
+  rulecolor=\color{mintbg},
+  fontsize=\small,
+  framesep=5px,
+  tabsize=2
+}
+\setmintedinline[r]{style=knitr}
+\setmintedinline[bash]{style=knitr}

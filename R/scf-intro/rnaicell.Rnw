@@ -1,0 +1,108 @@
+<<scf-intro_rnaicell, eval=TRUE, echo=FALSE, results='hide', message=FALSE>>=
+suppressPackageStartupMessages(library(sm))
+suppressPackageStartupMessages(library(fields))
+suppressPackageStartupMessages(library(MASS))
+suppressPackageStartupMessages(library(FNN))
+
+kdensWell <- function(data,well) {
+  xdata <- data$X[data$Well==well]
+  ydata <- data$Y[data$Well==well]
+  thedata=cbind(xdata,ydata)
+  t <- sm.density(thedata,display="none")
+  fld <- list(x=t$eval.points[,1],y=t$eval.points[,2],z=t$estimate)
+  r <- interp.surface(fld,thedata)
+  return(r)
+}
+
+kdens <- function(data) {
+  d <- data
+  d$dens <- rep(NA,length(d$Well))
+  n <- max(d$Well)
+  for (w in 1:n){
+    cat("\nProcessing well ",w,"...",sep="")
+    d$dens[d$Well==w] <- kdensWell(d,w)
+  }
+  return(d)
+}
+
+cellcounts <- function(d) {
+  x <- d
+  x$cellno <- rep(NA,length(d$Well))
+  for (i in 1:max(d$Well)){
+    z <- (x$Well==i)
+    no <- sum(z)
+    x$cellno[z] <- no
+  }
+  return(x)
+}
+
+edgepos <- function(d,n=10) {
+  # compute for each cell if it is at an edge or not!
+  x <- d
+  x$edge = FALSE
+  xst <- (max(d$X)-min(d$X))/n
+  yst <- (max(d$Y)-min(d$Y))/n
+  sgrid <- matrix(0,nrow=n,ncol=n)
+  for (k in 1:384){
+    cat("\nProcessing well ",k,"...",sep="")
+    sgrid[,] <- 0
+    for (i in 1:n)
+      for (j in 1:n){
+        ispos <- (d$Well==k) & (d$X >= (i-1)*xst) & (d$X <= (i*xst)) &
+                               (d$Y >= (j-1)*yst) & (d$Y <= (j*yst))
+        sgrid[i,j] <- sum(ispos)
+      }
+    # compute for each object whether it has an empty neighbor-grid
+    for (i in 1:n)
+      for (j in 1:n){
+       ispos <- (d$Well==k) & (d$X >= (i-1)*xst) & (d$X <= (i*xst)) &
+                              (d$Y >= (j-1)*yst) & (d$Y <= (j*yst))
+       isempty <- F
+       if ((i==1)||(i==n)||(j==1)||(j==n))
+         x$edge[ispos] <- T
+       if ((i>1)&&(j>1)&&(sgrid[i-1,j-1]==0))
+         isempty <- T
+       else if ((i>1)&&(sgrid[i-1,j]==0))
+         isempty <- T
+       else if ((i>1)&&(j<n)&&(sgrid[i-1,j+1]==0))
+         isempty <- T
+       else if ((j>1)&&(sgrid[i,j-1]==0))
+         isempty <- T
+       else if ((j<n)&&(sgrid[i,j+1]==0))
+         isempty <- T
+       else if ((i<n)&&(j>1)&&(sgrid[i+1,j-1]==0))
+         isempty <- T
+       else if ((i<n)&&(sgrid[i+1,j]==0))
+         isempty <- T
+       else if ((i<n)&&(j<n)&&(sgrid[i+1,j+1]==0))
+         isempty <- T
+       x$empty[ispos] <- isempty
+     }
+  }
+  return(x)
+}
+
+#d <- read.table(file=paste0("/Users/nbennett/CloudStation/MasterThesis/",
+#                            "software/rnaicell/data.txt"), sep="\t",
+#                comment.char="", quote="", as.is=T, header=F, skip=1,
+#                col.names=c("Well", "CellID", "NSize", "NP2A", "X", "Y",
+#                            "CSize", "CMean", "CStd", "NMean", "NStd",
+#                            "COverexp", "CBgMean", "CBgStd", "Position",
+#                            "Cell", "Expression"))
+#d <- d[(d$Cell==1),]
+#d <- d[,which(names(d) %in% c("Well", "X", "Y"))]
+#saveRDS(d, paste0("/Users/nbennett/CloudStation/MasterThesis/report/data/",
+#                  "scf-intro/theirData.rds"))
+
+data <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/theirData.rds"))
+
+tim1 <- system.time(d2 <- kdens(data))
+tim2 <- system.time(d2 <- cellcounts(d2))
+tim3 <- system.time(d <- edgepos(d2,n=15))
+@
+
+\newcommand{\knitrScfRnaicellTotal}{\SI{\Sexpr{round(tim1["elapsed"] + tim2["elapsed"] + tim3["elapsed"], digits=2)}}{\second}}
+\newcommand{\knitrScfRnaicellEdgepos}{\SI{\Sexpr{round(tim3["elapsed"], digits=2)}}{\second}}
+\newcommand{\knitrScfRnaicellPercentage}{\Sexpr{round(100 * tim3["elapsed"] / (tim1["elapsed"] + tim2["elapsed"] + tim3["elapsed"]), digits=1)}\%}
+\newcommand{\knitrScfRnaicellCellnoMean}{\Sexpr{round(mean(unique(d2$cellno)))}}
+\newcommand{\knitrScfRnaicellCellnoSd}{\Sexpr{round(sd(unique(d2$cellno)))}}

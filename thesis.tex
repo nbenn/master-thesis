@@ -29,6 +29,10 @@
 %% capable, so you may want to use 'latin1' instead.
 \usepackage[utf8]{inputenc}
 
+%% to allow cloring in code listings
+\usepackage[dvipsnames]{xcolor}
+
+
 %% This changes default fonts for both text and math mode to use Herman Zapfs
 %% excellent Palatino font.  Do not change this.
 \usepackage[sc]{mathpazo}
@@ -71,17 +75,18 @@
 %% This MUST be loaded after varioref, which is loaded in 'extrapackages'
 %% above.  We just load it last to be safe.
 \usepackage{hyperref}
-\definecolor{Blue}{rgb}{0,0,0.8}
-\definecolor{Red}{rgb}{0.7,0,0}
+\definecolor{hrlink}{rgb}{0.192, 0.494, 0.8}
+\definecolor{hrcite}{rgb}{0.192, 0.494, 0.8}
+\definecolor{hrurl}{rgb}{0.69, 0.353, 0.396}
 \hypersetup{
   %hyperindex,
   colorlinks={true},
   %pagebackref,
   linktocpage,
   plainpages={false},
-  linkcolor={Blue},
-  citecolor={Blue},
-  urlcolor={Red},
+  linkcolor={hrlink},
+  citecolor={hrlink},
+  urlcolor={hrurl},
   pdfstartview={Fit},
   pdfview={XYZ null null null}
 }
