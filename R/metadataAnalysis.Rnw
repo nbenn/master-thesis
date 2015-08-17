@@ -1,0 +1,114 @@
+<<scf-metadat-analysis, eval=TRUE, echo=FALSE, results='hide', message=FALSE>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+
+pasteAnd <- function(x) {
+  if(length(x) == 1) 
+    return(paste0("\\mintinline{text}{", x, "}"))
+  else if (length(x) == 2)
+    return(paste0(paste0("\\mintinline{text}{", x, "}"), collapse=" and "))
+  else {
+    comma <- paste0(paste0("\\mintinline{text}{", x[-length(x)], "}"),
+                    collapse=", ")
+    last  <- paste0("\\mintinline{text}{", x[length(x)], "}")
+    return(paste0(comma, " and ", last))
+  }
+}
+
+config <- configGet()
+files <- list.files(paste0(config$dataStorage$metaDir, "/Aggregates"), 
+                    full.names=TRUE)
+all <- lapply(files, read.delim, stringsAsFactors=FALSE)
+
+unions <- Reduce(union, lapply(all, names))
+
+whohaswhat <- lapply(all, function(x, unions) {
+  unions %in% names(x)
+}, unions)
+whohaswhat <- data.frame(do.call(cbind, whohaswhat))
+rownames(whohaswhat) <- unions
+colnames(whohaswhat) <- basename(files)
+sums <- apply(whohaswhat, 1, sum)
+whohaswhat <- cbind(sums, whohaswhat)
+
+all <- do.call(rbind.fill, all)
+
+# no information in PlateType
+unique(all$PlateType)
+
+# 87% of plates are unknown, still, can be included
+unique(all$PLATE_QUALITY_STATUS)
+sum(all$PLATE_QUALITY_STATUS == "UNKNOWN")/nrow(all)
+sum(all$PLATE_QUALITY_STATUS == "GOOD")/nrow(all)
+sum(all$PLATE_QUALITY_STATUS == "BAD")/nrow(all)
+sum(all$PLATE_QUALITY_STATUS == "WARNING")/nrow(all)
+
+# won't be included
+unique(all$PLATE_QUALITY_DESCRIPTION)
+
+# won't be included, 92% screening plate, rest checker board
+unique(all$PLATE_TYPE)
+sum(all$PLATE_TYPE == "ScreeningPlate")/nrow(all)
+sum(all$PLATE_TYPE == "CheckerBoard")/nrow(all)
+sum(all$PLATE_TYPE == "MockPlate")/nrow(all)
+
+# won't be included unclear importance
+unique(all$BATCH)
+sum(all$BATCH == "unknown")/nrow(all)
+
+# no information
+unique(all$ExperimentType)
+
+# include
+unique(all$GENESET)
+sum(all$GENESET == "Genome")/nrow(all)
+sum(all$GENESET == "Kinome")/nrow(all)
+
+# unclear if technical or biological, almost all are 1 or 2
+unique(all$REPLICATE)
+sum(all$REPLICATE == 5)/nrow(all)
+
+# skip, as we already have plate quality
+unique(all$WELL_QUALITY_STATUS)
+sum(all$WELL_QUALITY_STATUS == "UNKNOWN")/nrow(all)
+sum(all$WELL_QUALITY_STATUS == "WARNING")/nrow(all)
+sum(all$WELL_QUALITY_STATUS == "BAD")/nrow(all)
+
+# ID_manufacturer seems to dominate ID in information content
+# what is going on in the remaining 5k rows?
+tmp <- all[all$ID != all$ID_manufacturer,]
+sum(tmp$ID == "none")/nrow(tmp)
+(tmp <- tmp[tmp$ID != "none",])
+tmp
+length(unique(all$ID_manufacturer))
+
+# not worth including
+unique(all$Name_alternatives)
+sum(all$Name_alternatives == "none")/nrow(all)
+
+# not worth including
+table(all$siRNA_error)
+
+# unclear meaning
+table(all$siRNA_number)
+
+# little information
+unique(all$Concentration)
+sum(all$Concentration == "none")/nrow(all)
+
+# no information
+unique(all$Seeded.cell.number)
+
+sort(unique(all$dInfectionDT_eCount))
+sum(is.nan(all$dInfectionDT_eCount))
+sum(is.na(all$dInfectionDT_eCount))
+@
+
+\newcommand{\knitrScfMetadatNumCol}{\Sexpr{sum(whohaswhat$sums == length(files))}}
+\newcommand{\knitrScfMetadatPlateQualityStat}{\Sexpr{pasteAnd(unique(all$PLATE_QUALITY_STATUS))}}
+\newcommand{\knitrScfMetadatPlateQualityFrac}{\Sexpr{round(100 * sum(all$PLATE_QUALITY_STATUS == "UNKNOWN")/nrow(all))}\%}
+\newcommand{\knitrScfMetadatPlateTypes}{\Sexpr{pasteAnd(unique(all$PLATE_TYPE))}}
+\newcommand{\knitrScfMetadatSpaces}{\Sexpr{pasteAnd(unique(all$Space))}}
+\newcommand{\knitrScfMetadatGeneset}{\Sexpr{pasteAnd(unique(all$GENESET))}}
+\newcommand{\knitrScfMetadatLibrary}{\Sexpr{pasteAnd(unique(all$LIBRARY))}}
+\newcommand{\knitrScfMetadatWellQualityStat}{\Sexpr{pasteAnd(unique(all$WELL_QUALITY_STATUS))}}
+\newcommand{\knitrScfMetadatWellQualityFrac}{\Sexpr{round(100 * sum(all$WELL_QUALITY_STATUS == "UNKNOWN")/nrow(all))}\%}

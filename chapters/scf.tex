@@ -1,5 +1,5 @@
 \chapter{R Package singleCellFeatures}
-\label{sec:singleCellFeatures}
+\label{ch:singlecellfeatures}
 
 The format in which CellProfiler feature data is stored is only of limited suitability for exploratory data analysis. CellProfiler was originally implemented in the proprietary MATLAB language but has recently been ported to Python as version 2.x, in order to move away from the drawbacks of relying on a closed-source, commercial interpreter. Unfortunately, InfectX workflows are all based on CellProfiler 1.x and there are no current plans for updating to version 2.x. Consequently, all available single cell feature data is stored as MATLAB (Level 5) MAT-files.
 
@@ -16,6 +16,7 @@ Much effort during development of singleCellFeatures was spent for ensuring the 
 \input{R/scf-intro/getData}
 \input{R/scf-intro/plot}
 
+\label{ex:efficiency}
 As proposed by \cite{Knapp2011} and \cite{Snijder2012}, the population context of each cell may significantly influence some morphological properties, confound phenotypic information that is measured during feature extraction and therefore has to be accounted for. They propose several features that may act as proxies to characterize aspects of population context, one of which is whether a cell is located towards the border of a colony or is surrounded by cells in all directions. In order to approximate this information from location data, an image is divided into 2-dimensional bins or facets and the number of cells per bin is counted. Cells that are located adjacent to one or more bins that are empty are considered edge cells and cells surrounded by non-empty bins are center cells. Figure \ref{fig:scf-intro_plot} visualizes the concept by color-coding facets according to the number of non-empty neighbors.
 
 \begin{rlisting}{Calculation of population context features as implemented by \citeauthor{Knapp2011}.}{In order to detect whether a cell is located towards the border of a colony or is surrounded by neighboring cells, each well is divided into 2-dimensional bins and the number of cells per bin is counted. As implemented by \citeauthor{Knapp2011}, all bins are iterated, each of the 8 possible directions is checked for an empty neighbor and the corresponding binary value is saved to the current group of cells.}{edgepos}{p}
@@ -45,12 +46,107 @@ Such time-savings might not look that significant at first sight. But within the
 \input{R/scf-intro/fullPlate}
 When looking at runtimes of the original implementation obtained for benchmarking (\knitrScfBenchmarkEdgeTotal) and for a single execution on the supplied exemplary dataset (\knitrScfRnaicellEdgepos) side by side, a large discrepancy stands out. The two values are not directly comparable, as they are created with individual binning and differently sized datasets. But instead of explaining the divergence, these factors separate the two values even further, as the benchmarked time was obtained using a dataset roughly ten times larger and 6-fold more bins (225 versus 1296). Running the code of \citeauthor{Knapp2011} with InfectX data, as to be expected, takes significantly longer and determining cell position within colony for a single location feature over an entire plate is estimated to run for \knitrScfFullPlateRnaicellTime.\footnote{Due to the long running time, not all wells are processed, but \knitrScfFullPlateNSamp\ wells are randomly sampled and the mean per well is extrapolated to the full plate. The wells are \knitrScfFullPlateSampWell\ of plate J107-2C.} The exact same results can be computed within \knitrScfFullPlateMyTime\ by the code integrated in singleCellFeatures through vectorization as discussed previously and by splitting the data into wells.
 
-Listing \ref{lst:edgepos} does not entirely reproduce the code of \citeauthor{Knapp2011}, but constitutes a simplified version intended for highlighting the importance of vectorization and adapted for comparison with the optimized variant. Originally, the nested for-loops iterating the bins (lines 6--12 and 14--37), are enclosed by an additional for-loop, iterating the wells. Data is stored as a large dataframe and all operations are performed on full-length vectors. The enormous number of comparisons resulting from this setup leads to serious performance issues, which are amplified when increasing the number of cells from \tilde 180000 to \tilde 1000000 per plate. Such observations, along with other considerations lead to development of a more sophisticated data structure for storing single cell feature data (see section \ref{sec:s3-objects}), which splits the data into smaller units and consequently eliminates constant comparisons against well indices for per-well operations.
+Listing \ref{lst:edgepos} does not entirely reproduce the code of \citeauthor{Knapp2011}, but constitutes a simplified version intended for highlighting the importance of vectorization and adapted for comparison with the optimized variant. Originally, the nested for-loops iterating the bins (lines 6--12 and 14--37), are enclosed by an additional for-loop, iterating the wells. Data is stored as a large dataframe and all operations are performed on full-length vectors. The enormous number of comparisons resulting from this setup leads to serious performance issues, which are amplified when increasing the number of cells from $\sim 180000$ to $\sim 10^6$ per plate. Such observations, along with other considerations lead to development of a more sophisticated data structure for storing single cell feature data (see section \ref{sec:s3-objects}), which splits the data into smaller units and consequently eliminates constant comparisons against well indices for per-well operations.
 
-The following sections discuss some design aspects and implementation issues of singleCellFeatures, beginning with data structures developed for representing single cell feature data, continuing with how data is acquired and locally cached, management of metadata and concluding with some tools for manipulating datasets and providing the data to third-party tools. This architectural overview is complemented by a more practical section in appendix \ref{ch:scf-manual}.
+The following sections discuss some design aspects and implementation issues of singleCellFeatures, beginning with data structures developed for representing single cell feature data, continuing with how data is acquired and locally cached, management of metadata and concluding with some tools for manipulating datasets and providing the data to third-party tools. This architectural overview is complemented by a more practical section in appendix \ref{ch:scf-manual}. For all coding, the style guide outlined in \cite{Wickham2014} was followed and \cite{Wickham2015} served as an invaluable reference, along with the extensive documentation supplied by \cite{RCoreTeam2015}. Package documentation is in-source with \mintinline{bash}{.Rd} files generated by roxygen2 \citep{Wickham2015a}.
 
-\section{S3 Objects}
+\section{S3 Classes}
 \label{sec:s3-objects}
+\Gls{oop} in R can be achieved by any one of the three distinct object systems S3, S4 and \glspl{rc}. While the RC system resembles the \gls{oop} style most people coming from languages such as Java or C++ are familiar with, by implementing message-passing, features such as mutability (in-place modification of objects) and pass-by-reference semantics violate common expectations of R users. S3 and S4 objects are built on the concept of generic function \gls{oop}, which does not associate methods with classes, but employs a special type of function, called a generic function, that is responsible for method dispatch. Of the two, S3 classes are more loosely organized, lacking the formal definitions of the S4 system which can describe both representation and (multiple) inheritance. Furthermore, S4 objects are capable of multiple dispatch and all code used for creating and manipulating S4 objects is not part of base R but supplied by the methods package, which introduces a new operator, $@$, for accessing object slots.
+
+Much base functionality in R is implemented using S3 classes, including lm and glm objects, the support for which has been available to R from its very beginning. The methods package for S4 objects is attached by default since version 1.7.0, but fewer packages make use of the newer syntax, examples include the base package stats4 and CRAN packages Matrix and lme4. Bioconductor packages on the other hand are frequently designed on top of S4 classes. \Gls{rc} was only introduced with R 2.12 as part of the methods package and therefore currently does not enjoy widespread adoption. The limitations of S3 were found to be unproblematic for the planned feature set of singleCellFeatures and due to the attractive simplicity of this scheme, several objects are implemented as S3 classes.
+
+\subsection{Metadata Objects}
+\input{R/metadataAnalysis}
+Metadata is extracted from aggregate files (see section \ref{sec:update-metadata}) and used to generate both plate-level and well-level metadata objects. These consist of key-value pairs stored as lists and accompany all plate-level and well-level data objects generated by singleCellFeatures. The R class attribute names are \mintinline{r}{PlateMeta data} or \mintinline{r}{WellMetadata} and both are associated with a superordinate object name \mintinline{r}{Metadata} in order to simplify method dispatch in cases where a function is able to operate on both object types. Table \ref{tab:plate-metadata} shows the 12 slots along with short descriptions that constitute a \mintinline{r}{PlateMetadata} object, while table \ref{tab:well-metadata} does the same for an object of type \mintinline{r}{WellMetadata} (20 key-value pairs in total). Several slots, namely \mintinline{r}{plate.barcode}, \mintinline{r}{plate.quality}, \mintinline{r}{experiment.name}, \mintinline{r}{experiment.pathogen}, \mintinline{r}{experiment.geneset} and \mintinline{r}{experiment.library}, are redundant and therefore only listed in table \ref{tab:plate-metadata}.
+
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{0.2em}
+\begin{table}
+  \centering
+  \caption[Key-value pairs constituting the \mintinline{r}{PlateMetadata} structure.]{\mintinline{r}{PlateMetadata} structures consist of 12 key-value pairs intended to capture all relevant plate-wide metadata.}
+  \label{tab:plate-metadata}
+  \footnotesize
+  \begin{tabular}{L{0.25\linewidth}L{0.7\linewidth}}
+    Key name &
+      Description \\
+    \hline 
+    \mintinline{r}{plate.barcode} &
+      The unique identifier assigned to every plate, for example \mintinline{text}{KB02-1L}. \\
+    \mintinline{r}{plate.quality} &
+      Plate quality descriptors are \knitrScfMetadatPlateQualityStat, but currently most (\knitrScfMetadatPlateQualityFrac) are assigned the label \mintinline{text}{UNKNOWN}. \\
+    \mintinline{r}{plate.type} &
+      Possible values for plate type are \knitrScfMetadatPlateTypes\ and different types are characterized by their control layout. \\
+    \mintinline{r}{experiment.space} &
+      The first hierarchy level of data organization in openBIS. Current spaces are \knitrScfMetadatSpaces \\
+    \mintinline{r}{experiment.group} &
+      The group level is used to sort data according to pathogen (e.g. \mintinline{text}{ADENO_TEAM}). \\
+    \mintinline{r}{experiment.name} &
+      At the experiment level, data is grouped into screens. An example value is \mintinline{text}{ADENO-DP-K1}. \\
+    \mintinline{r}{experiment.pathogen} &
+      While the pathogen is already encoded in the openBIS hierarchy of InfectX, this is not necessarily so. In case of a different setup, the treatment applied to the screen can be saved separately. \\
+    \mintinline{r}{experiment.geneset} &
+      Different sets of genes are investigated throughout all screens and possible values are \knitrScfMetadatGeneset. \\
+    \mintinline{r}{experiment.replicate} &
+      Designates the replicate number of the current plate (see table \ref{tab:infectx-replicates}). \\
+    \mintinline{r}{experiment.library} &
+      Manufacturers that provided \gls{sirna} reagents to infectX are \knitrScfMetadatLibrary. \\
+    \mintinline{r}{experiment.batch} &
+      Alphanumeric identifier for the batch in which the current plate was put through the wet-lab procedure. \\
+    \mintinline{r}{counts.quantiles} &
+      The lower and upper 5\% quantiles for cell counts over all 3456 images of the plate, determined in order to detect bad wells. \\
+    \hline 
+  \end{tabular}
+\end{table}
+
+\begin{table}
+  \centering
+  \caption[Metadata key-value pairs that make up \mintinline{r}{WellMetadata} objects.]{Analogously to \mintinline{r}{PlateMetadata} objects, \mintinline{r}{WellMetadata} classes consist of several key-value pairs. All previously explained slots that also appear in both \mintinline{r}{Metadata} definitions are excluded from this overview (\mintinline{r}{plate.barcode}, \mintinline{r}{plate.quality}, \mintinline{r}{experiment.name}, \mintinline{r}{experiment.pathogen}, \mintinline{r}{experiment.geneset} and \mintinline{r}{experiment.library}). Please refer to table \ref{tab:plate-metadata} for more information.}
+  \label{tab:well-metadata}
+  \footnotesize
+  \begin{tabular}{L{0.25\linewidth}L{0.7\linewidth}}
+    Key name &
+      Description \\
+    \hline 
+    \mintinline{r}{well.row} &
+      Alphabetic index of the current well row (possible values are A through P). \\
+    \mintinline{r}{well.col} &
+      Integer-valued column index of the current well (possible values are 1--24). \\
+    \mintinline{r}{well.index} &
+      Well indices are calculated from row and column location and represent linearized, row-major well positions within plates. \\
+    \mintinline{r}{well.type} &
+      Descriptor for the type of well, the most important of which include \mintinline{text}{SIRNA}, \mintinline{text}{POOLED_SIRNA} and \mintinline{text}{CONTROL}. \\
+    \mintinline{r}{well.quality} &
+     Possible values for this field are \knitrScfMetadatWellQualityStat, while most wells currently are set to \mintinline{text}{UNKNOWN} (\knitrScfMetadatWellQualityFrac). \\
+    \mintinline{r}{gene.name} &
+      Gene symbol corresponding to the targeted gene \citep{Gray2013}. \\
+    \mintinline{r}{gene.id} &
+      Entrez Gene ID of the targeted gene \citep{Maglott2011}. \\
+    \mintinline{r}{sirna.name} &
+      The \gls{sirna} catalog ID as specified by the manufacturer. \\
+    \mintinline{r}{sirna.sequence} &
+      Full sequence of the 5'-3' \gls{sirna} antisense (guide) strand added to the current well. \\
+    \mintinline{r}{sirna.seed} &
+      The seed sequence (nucleotides 2--9 from the 5' end) of the 5'-3' \gls{sirna} guide strand. \\
+    \mintinline{r}{sirna.target} &
+      Sense sequence of the \gls{sirna} target. \\
+    \mintinline{r}{counts.cells} &
+      The cell count of the current well. \\
+    \mintinline{r}{counts.pathogen} &
+      Count of recognized pathogen objects (in \textit{Bartonella} screens, the number of invasomes). \\
+    \mintinline{r}{counts.infection} &
+      Number of infected cells according to \gls{dtis}. \\
+    \hline 
+  \end{tabular}
+\end{table}
+
+Having metadata structures available alongside the objects holding single cell features facilitates manipulation of the data as all relevant information is bundled and does not have to be managed separately by the user. Furthermore, information stored in \mintinline{r}{well.type} can be used for normalization (sometimes it is desirable to only normalize non-control wells) and fields like \mintinline{r}{gene.name}, \mintinline{r}{gene.id} or \mintinline{r}{sirna.name} are used often for selecting the desired subset of data. The two slots \mintinline{r}{plate.quality} and especially \mintinline{r}{well.quality} hold promise for automatically discarding bad data, but current annotation levels leave much to be desired (\knitrScfMetadatPlateQualityFrac\ and \knitrScfMetadatWellQualityFrac, respectively, are labeled as \mintinline{text}{UNKNOWN}) due to the large amount of manual labor that is involved. Perhaps, if some form of automatic quality assessment is developed or if the results from focus detection are utilized to enhance data quality comments, these fields could be put to use.
+
+Originally, inspired by the cellHTS2 package, it was planned to use public databases for collecting further metadata, such as gene ontology, chromosomal location, gene function summaries and homology. The bioconductor package biomaRt \citep{Durinck2005,Durinck2009} can be used to query several web services, including Ensembl, Uniprot and Reactome with gene IDs \citep{Maglott2011} and retrieve gene annotations. Furthermore, \gls{sirna} sequences could be used for investigating \glspl{ote} and developing methods in order to correct for such effects. Unfortunately, time constrains so far have prevented such ideas from being explored further.
+
+\subsection{Data Objects}
+Central to the presented R package are data structures that hold single cell feature data. Instead of just storing all data as a large \mintinline{r}{data.frame} as in RNAither, a more complex scheme was developed that represents the physical hierarchy of \gls{hts} datasets. This has both the advantage of presenting an intuitive structure of the data that can easily be navigated and efficiency benefits, as selecting cells from a well does not involve $10^6$ comparisons, but selecting a slot from a list structure of length 384 (for consequences of the former approach, see the introductory example staring on page \pageref{} ).
+% PlateData, WellData, ImageData
 
 \begin{figure}
   \centering
@@ -127,8 +223,14 @@ The following sections discuss some design aspects and implementation issues of 
   \label{fig:scf-platedata}
 \end{figure}
 
-\section{Data Acquisition}
+\subsection{Auxiliary Objects}
+%PlateAggregate, MatData, PlateLocation, WellLocation
+
+\section{Data Import}
+\label{sec:data-import}
 % include integrity check
 \section{Metadata Management}
+\label{sec:metadata-management}
+
 \section{Data Manipulation}
 % add, remove, melt
