@@ -1,0 +1,11 @@
+<<hooks, echo=FALSE>>=
+source("knitrListingHooks.R")
+@
+
+<<scf-pigz, eval=TRUE, echo=FALSE, message=FALSE, results='asis'>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+config <- configGet()
+source(paste0(config$singleCellFeatures$sourceDir,
+              "/R/utilPigz.R"),
+       echo=TRUE, max.deparse.length=Inf)
+@

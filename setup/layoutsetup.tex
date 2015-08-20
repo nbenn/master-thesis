@@ -204,9 +204,9 @@
   number within=chapter,
   list inside=codelist
 ]{rlisting}[4]{%
-  list text={#1},
-  title={\renewcommand{\baselinestretch}{1.00}\footnotesize\textbf{Listing \thetcbcounter}: #2},
-  label={lst:#3},
+  list text={#2},
+  title={\renewcommand{\baselinestretch}{1.00}\footnotesize\textbf{Listing \thetcbcounter}: #3},
+  label={lst:#4},
   fonttitle=\sffamily,
   enhanced,
   frame hidden,
@@ -226,8 +226,8 @@
   top=3mm,         % space at beginning of main
   bottom=3mm,      % space at end of main
   leftupper=6mm,   % space to the left of main
-  float={#4},
-  breakable
+  breakable,
+  #1
 }
 \definecolor{mintbg}{rgb}{0.95,0.95,0.95}
 \newminted[rflow]{r}{%

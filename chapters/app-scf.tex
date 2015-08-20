@@ -36,7 +36,7 @@ options(singleCellFeatures.configPath = "path/to/your/config.yaml")
 \end{rflow}
 
 \input{R/configGenerator}
-\begin{rlisting}{Structure of the configuration file for singleCellData.}{In order for singleCellData to be correctly configured for a given system, several settings can be adjusted through a yaml-based configuration file.}{config}{t}
+\begin{rlisting}{float=t}{Structure of the configuration file for singleCellData.}{In order for singleCellData to be correctly configured for a given system, several settings can be adjusted through a yaml-based configuration file.}{config}
   \inputminted[fontsize=\footnotesize,linenos,numbersep=4pt,style=knitr]{yaml}{data/config.yaml}
 \end{rlisting}
 
@@ -44,7 +44,7 @@ The configuration file structure is shown in listing \ref{lst:config}. The two e
 
 \section{Metadata Databases}
 \label{sec:update-metadata}
-Metadata files are used in two separate contexts, the first being generation of lookup tables for dataset searches and feature availability checks (see section \ref{sec:metadata-management}), while the second is involved with compilation of relevant metadata upon import of new data (see section \ref{sec:data-acquisition}). Three different types of CSV-based files are required, a plate database, feature lists and aggregate files, creation and storage of which is described in the following paragraphs.
+Metadata files are used in two separate contexts, the first being generation of lookup tables for dataset searches and feature availability checks and the second is involved with compilation of relevant metadata upon import of new data (see section \ref{sec:data-access}). Three different types of CSV-based files are required, a plate database, feature lists and aggregate files, creation and storage of which is described in the following paragraphs.
 
 For production use of singleCellFeatures, only aggregate files are required, as the other two file types are available in processed form as package data files, distributed with the package. All the metadata contained in aggregate files could unfortunately not be supplied directly with the package due to large size and more importantly, because they hold information that currently may not be released to the public as a whole (e.g. sequences of all \glspl{sirna} used throughout all screens, only a subset of which is currently published).
 
@@ -59,6 +59,7 @@ In openBIS, choose \mintinline{text}{Browse > Data Set Search}, select the drop-
 The file is expected to be named as \mintinline{text}{HCS_ANALYSIS_CELL_ FEATURES_CC_MAT.tsv} and be located directly at the path specified as \mintinline{yaml}{metaDir}. The corresponding database for the R package is located in the package \mintinline{text}{/data} directory, is saved as \mintinline{text}{/plateDatabase.rda} and the object that is attached when calling \mintinline{text}{data(plateDatabase)} in R is named \mintinline{text}{plate.database}. The table contains columns \mintinline{text}{Barcode}, \mintinline{text}{Space}, \mintinline{text}{Group}, \mintinline{text}{Experiment} and \mintinline{text}{DataID}, which for each barcode, defines the location of associated single cell feature datasets within openBIS and the local cache hierarchy, which mirrors the structure on openBIS.
 
 \subsection{Feature Lists}
+\label{sec:feature-lists}
 For most of the time during development of singleCellFeatures, work on storage infrastructure at the University of Basel introduced issues when downloading datasets that could lead to features missing from the downloaded data without the user being warned about this. A simple fix is provided in the form of a feature list database that specifies a set of features that are expected to be present for each pathogen. This approach will report both false positives (features that are expected but not actually available for the given dataset) and false negatives (features that are not expected but still available), as the set of available features not only depends on pathogen, but also on the state of the analysis pipeline used for feature extraction.
 
 A more sophisticated solution involves querying the metadata database of openBIS for all feature files per plate and the increased granularity would consequently eliminate false reports. Such an approach was contemplated but as of yet could not be implemented due to time constraints.
@@ -80,3 +81,62 @@ Many different types of aggregate files are available from the InfectX openBIS i
 Aggregate files are expected to reside in a subdirectory under \mintinline{yaml}{metaDir}, called \mintinline{text}{Aggregates} and follow the naming pattern \mintinline{text}{Pathogen Report_*.csv}, where the pathogen name is specified in camel case and the specification of openBIS document ID following an underline is optional (e.g. \mintinline{text}{AdenoReport_20150522-0936.csv}). These files are large (up to \SI{200}{\mega\byte}) and constitute of rows representing wells corresponding to screens of a given patho\-gen and 55 columns, of which \mintinline{text}{Barcode}, \mintinline{text}{BATCH}, \mintinline{text}{eCount_oCells}, \mintinline{text}{Experiment}, \mintinline{text}{GENESET}, \mintinline{text}{Group}, \mintinline{text}{ID}, \mintinline{text}{ID_openBIS}, \mintinline{text}{LIBRARY}, \mintinline{text}{Name}, \mintinline{text}{PATHOGEN}, \mintinline{text}{PLATE_QUALITY_ STATUS}, \mintinline{text}{PLATE_TYPE}, \mintinline{text}{REPLICATE}, \mintinline{text}{Seed_sequence_antisense_5_3}, \mintinline{text}{Sequence_ antisense_5_3}, \mintinline{text}{Sequence_target_sense_5_3}, \mintinline{text}{Space}, \mintinline{text}{WELL_QUALITY_STATUS}, \mintinline{text}{WellColumn}, \mintinline{text}{WellRow} and \mintinline{text}{WellType} are relevant to singeCellFeatures. Please refer to section \ref{sec:metadata-objects} for more information on the individual columns.
 
 The corresponding lookup tables store the columns \mintinline{text}{Barcode}, \mintinline{text}{WellRow}, \mintinline{text}{Well Column}, \mintinline{text}{WellType}, \mintinline{text}{ID_openBIS}, \mintinline{text}{ID} and \mintinline{text}{Name} as \mintinline{text}{wellDatabasePathogen.rda} where the pathogen name is spelled in camel case (for example \mintinline{text}{wellDatabase Adeno.rda}) and the data frame in R is called \mintinline{text}{well.database.pathogen} where the pathogen name is in lowercase letters (e.g. \mintinline{text}{well.database.adeno}). The primary purpose of well-level metadata lookup tables is fast searching, as constant loading of large pathogen-level aggregate files is time consuming. A further type of aggregate-derived files are plate metadata caches. These are saved alongside the directory structure that organizes downloaded data and their naming scheme follows \mintinline{text}{barcode_metadata.rds} (e.g. \mintinline{text}{J101-2C_metadata.rds}). Plate-level metadata caches consist of all columns available in aggregate files and the 384 rows corresponding to the given plate and again constitute an optimization mechanism for reducing the time required for serving complete \mintinline{text}{Data} objects.
+
+\section{Dataset search}
+\label{sec:dataset-search}
+Two functions for searching datasets are available, \mintinline{text}{findPlates} and \mintinline{text}{findWells}, both of which return lists of respective \mintinline{text}{DataLocation} objects. The arguments common to both functions along are \mintinline{text}{pathogens}, \mintinline{text}{experiments}, \mintinline{text}{plates}, \mintinline{text}{well. types}, \mintinline{text}{contents}, \mintinline{text}{id.openBIS}, \mintinline{text}{id.infx}, \mintinline{text}{name} and \mintinline{text}{verbose}. All, except for the last parameter, which is a logical value for increased verbosity, can accept vector valued arguments that are matched against corresponding metadata columns. Please refer to table \ref{tab:dataset-search} for more details on how values are matched and which metadata columns (see tables \ref{tab:plate-metadata} and \ref{tab:well-metadata}) are involved. 
+
+\renewcommand{\arraystretch}{1.6}
+\setlength{\tabcolsep}{0.2em}
+\begin{table}
+  \centering
+  \caption[Arguments accepted by dataset search functions.]{Two functions for identifying datasets of interest are available, \mintinline{text}{findPlates} and \mintinline{text}{findWells}. The first set of parameters is available to both functions, while the three arguments separated at the bottom can only be specified in \mintinline{text}{findWells}. The column specifying targeted metadata fields is referring to names explained in tables \ref{tab:plate-metadata} and \ref{tab:well-metadata}.}
+  \label{tab:dataset-search}
+  \footnotesize
+  \begin{tabular}{L{0.25\linewidth}L{0.25\linewidth}L{0.45\linewidth}}
+    Parameter name &
+      Metadata column &
+      Description \\
+    \hline 
+    \mintinline{text}{pathogens = NULL} &
+      \mintinline{text}{experiment.group} &
+      Vector of strings, case insensitive, matched by adding the suffix \mintinline{text}{_TEAM} to the input. \\
+    \mintinline{text}{experiments = NULL} &
+      \mintinline{text}{experiment.name} &
+      Vector of strings, applied as individual case insensitive regular expressions. \\
+    \mintinline{text}{plates = NULL} &
+      \mintinline{text}{plate.barcode} &
+      Vector of strings, case sensitive, matched exactly. \\
+    \mintinline{text}{well.types = NULL} &
+      \mintinline{text}{well.type} &
+      Vector of strings, applied as individual case insensitive regular expressions. \\
+    \mintinline{text}{contents = NULL} &
+      \mintinline{text}{sirna.name}, \mintinline{text}{gene.id} or \mintinline{text}{gene.name} &
+      Vector of strings, case insensitive, each string is matched against any of the three columns. \\
+    \mintinline{text}{id.openBIS = NULL} &
+      \mintinline{text}{sirna.name} &
+      Vector of strings, applied as individual case insensitive regular expressions. \\
+    \mintinline{text}{id.infx = NULL} &
+      \mintinline{text}{gene.id} &
+      Vector of strings, applied as individual case insensitive regular expressions. \\
+    \mintinline{text}{name = NULL} &
+      \mintinline{text}{gene.name} &
+      Vector of strings, applied as individual case insensitive regular expressions. \\
+    \mintinline{text}{verbose = FALSE} &
+      -- &
+      Logical value indicating whether to produce more verbose output. \\
+    \hline 
+    \mintinline{text}{well.rows = NULL} &
+      \mintinline{text}{well.row} &
+      Vector of single characters ($\in \{ A, B, \dotsc, P \} \land \allowbreak \{ a, b, \dotsc, p \}$), matched exactly. \\
+    \mintinline{text}{well.cols = NULL} &
+      \mintinline{text}{well.col} &
+      Vector of single integers ($\in \{ 1, 2, \dotsc, 24 \}$), matched exactly. \\
+    \mintinline{text}{well.names = NULL} &
+      \mintinline{text}{well.row} and \mintinline{text}{well.col} &
+      Vector of strings ($\in \{ A1, A2, \dotsc, A24, B1, \dotsc, \allowbreak P24 \}$), matched exactly. \\
+    \hline 
+  \end{tabular}
+\end{table}
+
+In order to achieve quick lookups, not the metadata files themselves are subject to search, but rather an indexed version in the form of a plate database (see section \ref{sec:plate-database}) and pathogen specific well databases (see section \ref{sec:aggregate-files}). This reduces the time frame required for performing searches considerably, especially in pathogen spanning cases, as the relevant data files that have to be loaded are 1--\SI{3}{\mega\byte}, which corresponds to a 100-fold reduction in size, and therefore can be attached instantly.

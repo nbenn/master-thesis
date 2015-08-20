@@ -1,0 +1,20 @@
+<<hooks, echo=FALSE>>=
+knit_hooks$set(chunk = function(x, options) x)
+knit_hooks$set(source = function(x, options) {
+  paste0("\\begin{rflow}\n", x, "\n\\end{rflow}\n")
+})
+@
+
+<<scf-findGet-demo, eval=TRUE, echo=-1, message=FALSE>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+time <- system.time({
+  plates <- findPlates(contents="MTOR",
+                       experiments="brucella-du-k[12]")
+  wells  <- findWells(contents=c("MTOR", "SCRAMBLED"),
+                      plates=unlist(plates))
+  data   <- getSingleCellData(wells)})
+@
+\newcommand{\knitrScfFindGetDemoTime}{\SI{\Sexpr{round(time["elapsed"])}}{\second}}
+\newcommand{\knitrScfFindGetDemoSize}{\SI{\Sexpr{round(object.size(data)/1024^3, digits=2)}}{\giga\byte}}
+\newcommand{\knitrScfFindGetDemoLengthW}{\Sexpr{length(wells)}}
+\newcommand{\knitrScfFindGetDemoLengthP}{\Sexpr{length(plates)}}

@@ -19,7 +19,7 @@ Much effort during development of singleCellFeatures was spent for ensuring the 
 \label{ex:efficiency}
 As proposed by \cite{Knapp2011} and \cite{Snijder2012}, the population context of each cell may significantly influence some morphological properties, confound phenotypic information that is measured during feature extraction and therefore has to be accounted for. They propose several features that may act as proxies to characterize aspects of population context, one of which is whether a cell is located towards the border of a colony or is surrounded by cells in all directions. In order to approximate this information from location data, an image is divided into 2-dimensional bins or facets and the number of cells per bin is counted. Cells that are located adjacent to one or more bins that are empty are considered edge cells and cells surrounded by non-empty bins are center cells. Figure \ref{fig:scf-intro_plot} visualizes the concept by color-coding facets according to the number of non-empty neighbors.
 
-\begin{rlisting}{Calculation of population context features as implemented by \citeauthor{Knapp2011}.}{In order to detect whether a cell is located towards the border of a colony or is surrounded by neighboring cells, each well is divided into 2-dimensional bins and the number of cells per bin is counted. As implemented by \citeauthor{Knapp2011}, all bins are iterated, each of the 8 possible directions is checked for an empty neighbor and the corresponding binary value is saved to the current group of cells.}{edgepos}{p}
+\begin{rlisting}{float=p}{Calculation of population context features as implemented by \citeauthor{Knapp2011}.}{In order to detect whether a cell is located towards the border of a colony or is surrounded by neighboring cells, each well is divided into 2-dimensional bins and the number of cells per bin is counted. As implemented by \citeauthor{Knapp2011}, all bins are iterated, each of the 8 possible directions is checked for an empty neighbor and the corresponding binary value is saved to the current group of cells.}{edgepos}
 \input{R/scf-intro/edgepos}
 \end{rlisting}
 
@@ -29,7 +29,7 @@ Code listing \ref{lst:edgepos} is taken from the implementation developed by \ci
 These [population context feature] computations require considerable amounts of memory, and will take some time. This must be done for each of the input files, and will produce an output file containing the input data plus computed population features.
 \end{quote}
 
-\begin{rlisting}{A more efficient implementation of calculating population context features, developed for singleCellFeatures.}{Due to the larger number of cells per well and the increase in image resolution as compared to data used in \cite{Knapp2011}, calculation of border/center population context features have to be carried out in a more efficient manner, which can be accomplished by fully vectorizing the problem.}{facetBorder}{p}
+\begin{rlisting}{float=p}{A more efficient implementation of calculating population context features, developed for singleCellFeatures.}{Due to the larger number of cells per well and the increase in image resolution as compared to data used in \cite{Knapp2011}, calculation of border/center population context features have to be carried out in a more efficient manner, which can be accomplished by fully vectorizing the problem.}{facetBorder}
 \input{R/scf-intro/facetBorder}
 \end{rlisting}
 
@@ -141,7 +141,7 @@ Metadata is extracted from aggregate files (see section \ref{sec:aggregate-files
   \end{tabular}
 \end{table}
 
-Having metadata structures available alongside the objects holding single cell features facilitates manipulation of the data as all relevant information is bundled and does not have to be managed separately by the user. Furthermore, information stored in \mintinline{text}{well.type} can be used for normalization (sometimes it is desirable to only normalize non-control wells) and fields like \mintinline{text}{gene.name}, \mintinline{text}{gene.id} or \mintinline{text}{sirna.name} are used often for selecting the desired subset of data. The two slots \mintinline{text}{plate.quality} and especially \mintinline{text}{well.quality} hold promise for automatically discarding bad data, but current annotation levels leave much to be desired (\knitrScfMetadatPlateQualityFrac\ and \knitrScfMetadatWellQualityFrac, respectively, are labeled as \mintinline{text}{UNKNOWN}) due to the large amount of manual labor that is involved. Perhaps, if some form of automatic quality assessment is developed or if the results from focus detection are utilized to enhance data quality comments, these fields could be put to use.
+Having metadata structures available alongside the objects holding single cell features facilitates manipulation of the data as all relevant information is bundled and does not have to be managed separately by the user. Furthermore, information stored in \mintinline{text}{well.type} can be used for normalization (sometimes it is desirable to only normalize non-control wells) and fields like \mintinline{text}{gene.name}, \mintinline{text}{gene.id} or \mintinline{text}{sirna.name} are used often for selecting the desired subset of data. The two slots \mintinline{text}{plate.quality} and especially \mintinline{text}{well.quality} hold promise for automatically discarding bad data, but current annotation levels leave much to be desired (\knitrScfMetadatPlateQualityFrac\ and \knitrScfMetadatWellQualityFrac, respectively, are labeled as \mintinline{text}{UNKNOWN}) due to the large amount of manual labor that is involved. Perhaps, if some form of automatic quality assessment is developed or if the results from focus detection are utilized to enhance data quality comments, these fields could be put to better use.
 
 Originally, inspired by the cellHTS2 package, it was planned to use public databases for collecting further metadata, such as gene ontology, chromosomal location, gene function summaries and homology. The bioconductor package biomaRt \citep{Durinck2005,Durinck2009} can be used to query several web services, including Ensembl, Uniprot and Reactome with gene IDs \citep{Maglott2011} and retrieve gene annotations. Furthermore, \gls{sirna} sequences could be used for investigating \glspl{ote} and developing methods in order to correct for such effects. Unfortunately, time constrains so far have prevented such ideas from being explored further.
 
@@ -236,11 +236,12 @@ One obvious advantage of the proposed data representation is storage efficiency 
 In retrospect, it is debatable whether spiting data into images is sensible or creates unnecessary computational overhead in traversing nested lists. At the time of original implementation it was unclear if all images could be treated equally and having this level of granularity available seemed important. With access to some practical experience in working with such structures, this feature may not be worth the complexity it entails. Splitting the data at well level, however has proven to be worthwhile.
 
 \subsection{Auxiliary Objects}
+\label{sec:auxiliary-objects}
 Several additional S3 objects are implemented in an auxiliary capacity. Both \mintinline{text}{PlateLocation} and \mintinline{text}{WellLocation} classes serve to communicate the identity and location of datasets, while \mintinline{text}{PlateAggregate} and \mintinline{text}{MatData} objects are used for caching purposes.
 
 Objects representing data locations are simple key-value lists that are instantiated with a barcode in case of \mintinline{text}{PlateLocation} or a barcode and a row\slash column specification for \mintinline{text}{WellLocation} objects. Subsequent population of slots \mintinline{text}{space}, \mintinline{text}{group} and \mintinline{text}{experiment} is performed by lookup of the information in the \mintinline{text}{plate.database} table (see section \ref{sec:plate-database}), which is an optimization measure necessary to speed up creation times severely hampered by retrieving the values from large aggregate files. The information contained in \mintinline{text}{DataLocation} (the class attribute to specify any of the two location types) objects uniquely specifies where the described dataset is located on openBIS and in local file-system cache and they are mainly used for unifying package-internal communication.
 
-\begin{rlisting}{Exemplary application of \mintinline{text}{DataLocation} objects.}{Mostly used for internal communication of dataset identity and location both within openBIS and the local file system, \mintinline{text}{DataLocation} objects simplify certain tasks such as lookup of cache files.}{getCacheFilenameData}{t}
+\begin{rlisting}{float=t}{Exemplary application of \mintinline{text}{DataLocation} objects.}{Mostly used for internal communication of dataset identity and location both within openBIS and the local file system, \mintinline{text}{DataLocation} objects simplify certain tasks such as lookup of cache files.}{getCacheFilenameData}
 \input{R/getCacheFilename}
 \end{rlisting}
 
@@ -248,19 +249,150 @@ Before introduction of \mintinline{text}{DataLocation} objects, a fair amount of
 
 The two remaining auxiliary objects are both used for caching purposes. Due to the narrow purpose of \mintinline{text}{DataLocation} a lookup table containing all required information can be created, that remains small enough to be loaded quickly. This is not possible for creating metadata objects, as most aggregate file columns are required for this process. In order to prevent repeated loading of these large files (100--\SI{200}{\mega\byte}, plate-level excerpts are cached as \mintinline{text}{PlateAggregate} objects whenever first accessed. The resulting files are small (\tilde \SI{100}{\kilo\byte}) and can be attached quickly. The data structure is simple, containing of two slots \mintinline{text}{plate} and \mintinline{text}{data}, the former holding a \mintinline{text}{PlateLocation} object and the latter a \mintinline{text}{data.frame} storing the relevant 384 rows of the corresponding aggregate file.
 
-Finally, \mintinline{text}{MatData} is a type of \mintinline{text}{Data} object, that can be though of as a precursor to a \mintinline{text}{PlateData} object. The reason for its existence lies in the dynamic nature of this project. Many parts of singleCellFeatures evolved considerably and constant change poses problems for cached data structures. Originally, \mintinline{text}{PlateData} objects themselves were saved to the local file system but whenever their implementation was modified, all instances had to be invalidated and rebuilt (which an the beginning took on the order of \SI{45}{\minute}). In order to improve the situation, not \mintinline{text}{PlateData} are written to disk, but a data structure that holds all MATLAB feature data in a large nested list, as it is imported into R. Two slots are available to a \mintinline{text}{MatData} object, one called \mintinline{text}{meta} and intended for holding a \mintinline{text}{PlateMetadata} object and the oder is named \mintinline{text}{data} and stores all single cell features.
+Finally, \mintinline{text}{MatData} is a type of \mintinline{text}{Data} object, that can be though of as a precursor to a \mintinline{text}{PlateData} object. The reason for its existence lies in the dynamic nature of this project. Many parts of singleCellFeatures evolved considerably and constant change poses problems for cached data structures. Originally, \mintinline{text}{PlateData} objects themselves were saved to the local file system but whenever their implementation was modified, all instances had to be invalidated and rebuilt (which initially took \tilde\SI{45}{\minute} per plate). In order to improve the situation, not \mintinline{text}{PlateData} are written to disk, but a data structure that holds all MATLAB feature data in a large nested list, as it is imported into R. Two slots are available to a \mintinline{text}{MatData} object, one called \mintinline{text}{meta} and intended for holding a \mintinline{text}{PlateMetadata} object and the oder is named \mintinline{text}{data} and stores all single cell features.
 
-This successfully addresses the outlined problem, since the raw data will not change frequently (it still can occur that for example new features are developed\footnote{The system is build with a fair amount of flexibility, as there are methods available for adding new features to existing \mintinline{text}{MatData} structures, including automatic invalidation of downstream well caches. Therefore, extraction of new features does not require the rebuild of whole \mintinline{text}{MatData} objects.}, or better segmentation is employed), but introduces a new issue: build up of \mintinline{text}{PlateData} objects from \mintinline{text}{MatData} has to be reasonably fast due to this being the first step in every interactive session. Some aspects of how this is achieved is discussed in section \ref{sec:data-import}.
+This successfully addresses the outlined problem, since the raw data will not change frequently (it still can occur that for example new features are developed\footnote{The system is build with a fair amount of flexibility, as there are methods available for adding new features to existing \mintinline{text}{MatData} structures, including automatic invalidation of downstream well caches. Therefore, extraction of new features does not require the rebuild of whole \mintinline{text}{MatData} objects.}, or better segmentation is employed), but introduces a new issue: build up of \mintinline{text}{PlateData} objects from \mintinline{text}{MatData} has to be reasonably fast due to this being the first step in every interactive session. Some aspects of how this is achieved is discussed in section \ref{sec:data-access}.
 
-None of these auxiliary data structures were implemented as S3 objects for simply defining a set of fields, but much rather for their capability of using generic functions that specify how a specific procedure is applied to the different object variants. While this by itself is not an indispensable feature, as one could simple choose different but related names for the set of procedures, it is greatly appreciated for helping in organizing code into functional units.
+None of these auxiliary data structures were implemented as S3 objects for simply defining a set of fields, but much rather for their capability of using generic functions that specify how a specific procedure is applied to the different object variants. While this by itself is not an indispensable feature, as one could simple choose different but related names for the set of procedures, it is greatly appreciated for helping to organize code into functional units.
 
-\section{Data Import}
-\label{sec:data-import}
+\section{Data Access}
+\label{sec:data-access}
+The core capability of singleCellFeatures is seamlessly providing the user with single cell data and doing this within time-frames that are suitable for interactive usage. As already discussed in the introduction to this chapter, some form of local caching is necessary to to meet these goals, as downloading data from openBIS and especially loading a large number of MATLAB \mintinline{text}{.mat} files into R takes a considerable amount of time.
 
+Several tools were developed, beginning with search capabilities in order to locate the datasets of interest, followed by a set of functions that sort the queried data into units such that fetching is as economical as possible thusly minimizes waiting times and finally trigger retrieval from a multilevel cache system. All of this is handled in the background with no user intervention required. The following short example is intended for highlighting the effectiveness of the proposed system.
 
-% include integrity check
-\section{Metadata Management}
-\label{sec:metadata-management}
+\input{R/findGet-demo}
+
+In order to retrieve data from all plates containing wells with \gls{sirna} directed against \gls{mtor}, a list of \mintinline{text}{PlateLocations} is generated by \mintinline{text}{findPlates}. Acting on that structure, \mintinline{text}{findWells} selects all wells containing scrambled control \gls{sirna}, as well as \gls{mtor} knockdown wells and returns a list of \mintinline{text}{WellLocations}. Retrieving the resulting \knitrScfFindGetDemoLengthW\ wells, spread over \knitrScfFindGetDemoLengthP\ plates (\knitrScfFindGetDemoSize\ of data), is accomplished within \knitrScfFindGetDemoTime. In this case, all well data was read from cache, but apart from an increase in runtime, the same code snippet can be used irrespective of local cache state and will produce identical results. Figuring out how to proceed most efficiently in any case is handled by singleCellFeatures.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[%
+    decision style/.style={%
+      diamond, draw=#1, on grid, thick, fill=#1!70, inner sep=2pt, aspect=2, 
+      text=white, text width=5em, text centered, font=\footnotesize
+    },
+    block style/.style={%
+      rectangle, draw=#1, on grid, thick, fill=#1!70, rounded corners,
+      minimum height=3em, inner sep=4pt, minimum width=7em, text=white,
+      text width=5em, text centered, font=\footnotesize
+    },
+    cloud style/.style={%
+      ellipse, draw=#1, on grid, thick, fill=#1!70, minimum height=3em,
+      minimum width=6em, inner sep=2pt, text=white, text width=5em,
+      text centered, font=\footnotesize
+    },
+    line style/.style={%
+      draw, -latex'
+    }
+  ]
+  % Place nodes
+  \node [cloud style=SeaGreen] (dataLoc) {%
+    List of \mintinline{text}{DataLocation} objects};
+  \node [block style=SeaGreen, left = 3.75cm of dataLoc] (find) {%
+    Find data (wells, plates)};
+  \node [block style=Turquoise, right = 3.75cm of dataLoc] (sort) {%
+    Sort \mintinline{text}{DataLocations} by plate};
+  \node [decision style=Turquoise, below = 2.5cm of dataLoc] (onlyWell) {%
+    Were only cached wells requested?};
+  \node [cloud style=Turquoise, below = 2.5cm of find] (done) {%
+    Add to results};
+  \node [block style=Turquoise, below = 2.5cm of sort] (iterate) {%
+    Iterate plates};
+  \node [decision style=BurntOrange, below = 2.5cm of iterate] (plateCache) {%
+    Does \mintinline{text}{MatData} cache exist?};
+  \node [decision style=BurntOrange, below = 2.5cm of plateCache] (matFiles) {%
+    Are \mintinline{text}{.mat} files present?};
+  \node [block style=BurntOrange, below = 2.5cm of matFiles] (download) {%
+    Download data from openBIS};
+  \node [block style=BurntOrange, left = 3.75cm of matFiles] (import) {%
+    Import \mintinline{text}{.mat} data into R, save
+    \mintinline{text}{MatData} cache};
+  \node [cloud style=BurntOrange, left = 3.75cm of plateCache] (plateData) {%
+    Build \mintinline{text}{PlateData} object};
+  \node [decision style=Turquoise, left = 3.75cm of plateData] (wellReq) {%
+    Were any uncached wells requested?};
+  \node [block style=Turquoise, left = 3.75cm of import] (wellCache) {%
+    Extract wells, cache \mintinline{text}{WellData} objects};
+  % Draw edges
+  \path [line style] (find) -- (dataLoc);
+  \path [line style] (dataLoc) -- (sort);
+  \path [line style] (sort) -- (iterate);
+  \path [line style] (iterate) -- (onlyWell);
+  \path [line style] (done.north) |-(0cm,-1.25cm)-| (iterate.north);
+  \path [line style] (onlyWell) |-(0cm,-3.75cm)-| node[pos=0.25,above]{%
+    no}(plateCache);
+  \path [line style] (onlyWell) -- node[above]{yes}(done);
+  \path [line style] (plateCache) -- node[right]{no}(matFiles);
+  \path [line style] (matFiles) -- node[right]{no}(download);
+  \path [line style] (download) -| (import);
+  \path [line style] (matFiles) -- node[above]{yes}(import);
+  \path [line style] (plateCache) -- node[above]{yes}(plateData);
+  \path [line style] (import) -- (plateData);
+  \path [line style] (plateData) -- (wellReq);
+  \path [line style] (wellReq) -- node[right]{no}(done);
+  \path [line style] (wellReq) -- node[right]{yes}(wellCache);
+  \path [line style] (wellCache.west) |-(-5.75cm,-7.5cm)|- (done.west);
+  \end{tikzpicture}
+  \caption[Simplified view of the steps involved in loading single cell data.]{Three separate procedures are involved in loading single cell data. First, the functions \mintinline{text}{findPlates} and \mintinline{text}{findWells} can be used to run queries and retrieve a list of \mintinline{text}{DataLocation} objects (green) which is passed on to the function \mintinline{text}{getSingleCellData} (blue). Data requests are sorted according to plate and the list of plates is iterated. Dependent on request and availability of caches, \mintinline{text}{DataLocation} objects are assembled (orange) and returned to the calling function. This diagram represents a simplified view and several additional features complicate the underlying logic. For example, only a subset of features can be requested, in which case, writing of well caches has to be handled separately. Furthermore, checks for data completeness and consistency are employed that may alter the outlined execution path and mechanisms for recovery from unsuccessful imports are also in place but not shown.}
+  \label{fig:scf-data-import}
+\end{figure}
+
+The most important steps in this procedure are visualized in figure \ref{fig:scf-data-import}. For sake of brevity, several aspects that complicate the logic underlying data access are omitted from the diagram. Some examples include recovery from failed downloads or imports, checks for completeness and consistency of the fetched data, issues involving metadata and the ability to only retrieve a subset of single cell feature, which requires special attention to down-stream caching. Color coding corresponds to the functional units searching (green), ordering the query and executing individual fetches (blue), as well as building the required data structures (orange). 
+
+Searching relies on search indexes that are stored as a plate database and pathogen specific well databases in order to be carries out quickly and economically. These lookup tables are derived from metadata contained in aggregate files and are described in detail in sections \ref{sec:plate-database} and \ref{sec:aggregate-files}. Further information regarding search functionality, such as arguments recognized by the two functions and how exactly search strings are matched is available in section \ref{sec:dataset-search}. The resulting list of \mintinline{text}{DataLocation} objects is passed to the function \mintinline{text}{getSingleCellData}, which acts as a conduit between searches and fetches.
+
+The inquiry has to be ordered plate wise, in case uncached wells are sought from different plates. If such requests are carried out interleaved, large plate caches are read redundantly, entailing unnecessary overhead. The plates involved are iterated and it is checked if only cached wells are requested, in which case they are read from disk and added to the result structure. If uncached wells need to be made available or the whole plate is solicited, the comprising \mintinline{text}{PlateData} object has to be built, the particularities which (orange nodes in figure \ref{fig:scf-data-import}) will be explored throughout the following paragraphs. Finally, if only wells were requested, they are extracted from the \mintinline{text}{PlateData} structure and added to the list of results and if the complete plate data is of interest it is returned as well.
+
+Green and blue nodes in figure \ref{fig:scf-data-import} can be bypassed entirely if only few single cell data structures are of interest. Instantiating a single \mintinline{text}{WellData} object, for example, that is not cached, will trigger the build up of a \mintinline{text}{PlateData} structure, followed by the extraction of that well. This, of course is inefficient, if multiple wells of the same plate are needed, as the plate structure is repeatedly created and discarded. In such a scenario, the functions described above can be utilized, or \mintinline{text}{PlateData} object itself can be instantiated, following well extraction initiated by the user (via the functionality provided by \mintinline{text}{extractWells}). The remainder of the current section will focus on topics revolving around data provisioning itself (orange nodes in figure \ref{fig:scf-data-import}).
+
+\paragraph{Data download.}
+Fetching data from openBIS, in case neither corresponding MATLAB files, nor a \mintinline{text}{MatData} cache file exists,\footnote{A third scenario that will trigger data download is manual override. If, for some reason cached data gets corrupted, or if a newer version of a dataset is available on openBIS, the user can choose to re-download individual plates. In addition, removal of all caches can be triggered, but for most circumstances this presents too drastic a measure.} is performed by issuing a system call and running the Java command line executable that is supplied with openBIS. Currently, three different types of files can be downloaded
+
+\begin{center}
+\mintinline{text}{HCS_ANALYSIS_CELL_FEATURES_CC_MAT}
+\mintinline{text}{HCS_ANALYSIS_CELL_DECTREECLASSIFIER_MAT}
+\mintinline{text}{HCS_ANALYSIS_CELL_THRESHOLDEDINFECTIONSCORING_MAT}
+\end{center}
+
+and the downloading routine can be run in two different modes, one targeting single cell feature files (filtering for the first file type, \mintinline{text}{FEATURES_CC}), while the other is intended for fetching \gls{dtis} results and prefers \mintinline{text}{DECTREECLASSIFIER} but falls back to \mintinline{text}{THRESHOLDEDINFECTIONSCORING} when the former is not available. The two types of infection scores represent two generations of \gls{dtis} procedures (distinct from \gls{svm} based scoring procedures which were used before) and while the newer files are available for many plates, there are some that have not yet been updated. The downloaded set of files can further be refined by supplying a regular expression that is passed on the Java utility, but this will prevent downstream caches from being created. All \mintinline{text}{.mat} files are saved to a temporary location within the directory structure managed by singleCellFeatures.
+
+\paragraph{Data import.}
+Following completion of all download tasks, the resulting list of files is read into R using the function \mintinline{text}{readMat} of R.matlab \citep{Bengtsson2015}. For unknown reasons this function sometimes fails to import a file,\footnote{%
+Failure is rare and does not seem to be dependent on file-level corruption, as retrying the same file usually resolves the problem. Furthermore, so far, no patterns could be made out, in that affected files appear to be somewhat random. The issue was not investigated further as a pragmatic approach resolved the problem.}
+which is caught, the affected file is saved into a special directory and import is allowed to continue. Due to this being the most time-consuming step in data provisioning, the results are stored as \mintinline{text}{MatData} caches and functionality for updating the data structure as opposed to completely rebuilding it, has been implemented. The function \mintinline{text}{rebuildCache} automatically retries files that failed during initial import and is capable of re-downloading individual features from openBIS that are missing from the \mintinline{text}{MatData} structure without user intervention.\footnote{%
+Missingness currently is determined by comparison to a pathogen specific list of features. While being a very simple approach, it may lead to false positives (features that are indicated to be missing but do not exist), as well as false negatives (features that are present but indicated to be superfluous), as the set of features is not only pathogen specific, but also dependent on the analysis pipeline version. Improvements are feasible but not implemented due to time constraints (see section \ref{sec:feature-lists} for more information).}
+Furthermore, the location of manually downloaded files can be specified in order for them to be added to the data structure and down stream caches of \mintinline{text}{WellData} structures are automatically removed whenever the \mintinline{text}{MatData} object is rewritten, as they are no longer valid.
+
+Upon successful assembly of a \mintinline{text}{MatData} object, it is written to disk. Due to the large size of these objects (a typical plate is \tilde \SI{8}{\giga\byte} in size) good and efficient compression is essential both from a perspective of economically utilizing storage space and from the viewpoint of time. All major compression programs (bzip2, gzip, xz and zip) offer a parameter to adjust the speed\slash file size trade-off (usually an integer between 1 and 9) and a high compression ration entails a significant time penalty. For storage of \mintinline{text}{MatData} objects, smallest file sizes were obtained using xz with flags \mintinline{text}{-9} or \mintinline{text}{-e}.
+
+\begin{rlisting}{float=t}{Wrapper around pigz in order to speed up compression times for \mintinline{text}{MatData} objects.}{Compression with base library functions is not sufficiently performant, leading to the implementation of functions wrapping around \mintinline{text}{readRDS}\slash\mintinline{text}{saveRDS} that are capable of exploiting parallelized compression programs. The best overall compromise between compression\slash decompression speed and file size was obtained with pigz at compression setting \mintinline{text}{-9}.}{pigz}
+\input{R/pigz}
+\end{rlisting}
+
+While slightly longer compression times might be worth the savings in storage space, the time required for decompression is critical, as it will be the first step of every analysis procedure. Unfortunately, retrieval of highly compressed xz files is too slow for this application. Moreover, parallelized implementations lbzip2, p7zip, PBZIP2, pigz and xz with option \mintinline{text}{-T} were tested and and the best overall compromise is achieved using pigz with option \mintinline{text}{-9}, as shown in code listing \ref{lst:pigz}. Typical file sizes using this procedure are 1.5--\SI{2}{\giga\byte} for a complete \mintinline{text}{MatData} object.
+
+After the plate cache file is written, all successfully read \mintinline{text}{.mat} files are deleted and whenever a the cache is read from disk, it is checked for feature completeness and the user is informed of deviations from the expected state.
+
+\paragraph{Creation of data structures.}
+Irrespective of whether a given plate is already in cache or is requested for the first time, every \mintinline{text}{PlateData} structure is built from a \mintinline{text}{MatData} object. As mentioned in section \ref{sec:auxiliary-objects}, the motivation behind this is creating independence between the implementation of \mintinline{text}{PlateData} structures and the data itself and consequently no longer invalidating cached plate data by making changes to its representation. This requires the conversion of \mintinline{text}{MatData} into \mintinline{text}{PlateData} to be reasonably fast and much effort was invested in reducing the amount of time needed for this step.
+
+The critical step in this process is creating the individual \mintinline{text}{ImageData} objects from the list structure resembling how single cell features are produced by CellProfiler. Listing \ref{lst:splitImages} displays a segment of the code involved and while it might appear cluttered at first sight and the context of many variables is unclear, it is reproduced in order to highlight some important aspects. At this point in execution, among other things, the features have been sorted into groups according to their dimensions. While every feature is represented by a list containing as many slots as there are images on a plate and each slot holds a further list structure, the length of this nested list is used for sorting. Single element objects are grouped into \mintinline{text}{vec} and handled by the code in lines 3--11, lists with multiple scalar elements are added to \mintinline{text}{mat} and treated by lines 12--28, while entries that constitute of a further nesting level are stored in \mintinline{text}{lst} and dealt with by lines 29--69. With this structure established, the outermost \mintinline{text}{apply}-type function sets up an index that moves through all lists simultaneously and in each step, the data corresponding to the given image is extracted and molded into an \mintinline{text}{ImageData} structure.
+
+\afterpage{\clearpage\begin{rlisting}{enlarge bottom finally by=0.75cm, nofloat}{An excerpt of the code resposible for converting \mintinline{text}{MatData} into \mintinline{text}{PlateData} objects.}{Due to the heterogeneity of InfectX datasets, build up of \mintinline{text}{PlateData} structure is fairly involved, as many edge cases have to be handled. Furthermore, every instantiation of a \mintinline{text}{PlateData} object is preceded by the conversion from a \mintinline{text}{MatData} structure, requiring quick turnover. This code excerpt show the section responsible for building \mintinline{text}{ImageData} objects from a nested list structure akin to what is produced by CellProfiler, by moving through all lists simultaneously and in building an image data object in every iteration. The three sections \mintinline{text}{vec}, \mintinline{text}{mat} and \mintinline{text}{lst} correspond to different typed of features that are grouped by their dimensions.}{splitImages}
+\input{R/splitImages}
+\end{rlisting}}
+
+Features, that are scalar-valued with respect to images have to be saved into a \mintinline{text}{data.frame}, as they typically present a mixture of numerical and character data. In order to speed up assembly, several checks are omitted that are performed by default when creating a \mintinline{text}{data.frame}. The largest type of features is vector valued at image level and therefore presents the most attractive target for optimization. Originally, here too, \mintinline{text}{data.frames} were created (one for each object group identified by their number, usually cells and pathogens), but switching to matrices, improved timings considerably. Special care has to be taken to ensure the correct dimensions of the resulting objects, prevent instances with only one member from being turned into vectors, as well as provide matrices with zero rows and a named column dimension in cases where no object is present. This level of consistency is important to reduce the amount of downstream code dedicated to checking dimensions and handling special cases. Furthermore, the use of \mintinline{text}{vapply} instead of \mintinline{text}{lapply} in line 15 yields a critical performance improvement.
+
+Finally, features that consist of nested lists at cell level are handled either by building adjacency matrices in case of neighbor features or by preserving their nested structure and attaching them as-is. Identification of neighbor features, unfortunately, constitutes one of the rare occurrences of resorting to hard-coded name-matching. This feature type is stored as a list with one slot per cell, containing a list of indices corresponding to all cells that have been identified as neighbors. The code in line 36 converts this information into row pointers and together with the vectorized form of all indices, this can be directly used to create a sparse matrix in \gls{crs} format. The same matrix is reused for PercentTouchingNeighbors but instead of binary values, nonzero elements are assigned the corresponding percentages (line 64). The resulting data in \mintinline{text}{vec}, \mintinline{text}{mat} and \mintinline{text}{lst} is used to build one \mintinline{text}{ImageData} object per iteration, which is returned.
+
+The reordering of data that is performed in this code segment requires roughly double the memory of a complete plate dataset, restricting usafe of singleCellFeatures to hardware with upwards of \SI{16}{\giga\byte} of RAM available. Some attempts were made at reducing the memory footprint which theoretically need not be as high. Whenever an \mintinline{text}{ImageData} object is instantiated, the corresponding raw data could be evicted from memory, cutting maximal memory usage back in half. Unfortunately such schemes so far have been met with significant performance impairments, leading to acceptance of memory limitations for the time being.
+
+There are many more issues that have to be handled when building \mintinline{text}{PlateData} objects from single cell features, due to considerable heterogeneity among InfectX datasets. One small example is that there is no way of knowing whether 6 or 9 images are available per well other than looking at the length of feature lists (2304 slots correspond to 6 images and 3456 slots are obtained with 9 images). There is, however another factor that can influence list length, as CellProfiler omits empty slots at the end. Taken together this means that the number of slots alone cannot be used to deduce the number of images per well with certainty. Of course, a simple heuristic resolves the issue, as it is very unlikely that more than 1000 images on a plate are empty, but such aspects have to be dealt with nevertheless.\footnote{As a matter of personal opinion, I find the benefits of saving minute amounts of storage by occasionally omitting a handful of empty list slots at the end of some feature vectors to be clearly offset by the amount of code needed to handle resulting corner cases.} 
 
 \section{Data Manipulation}
+Functionality surrounding manipulation of singleCellFeature data objects can be divided into n categories: augmentation functions used to generate new or modified data from existing features, extraction and cleaning functions which serve to distill the data and remove unneeded bulk, validation functions that check completeness and consistency of the data, as well as utility functions that serve small, specialized purposes, examples of which are conversion functions (e.g. data objects into data location objects), visualization procedures and getter functions (e.g. feature names, barcode, etc.). 
 % add, remove, melt
+
+\section{Additional Functionality}

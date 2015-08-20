@@ -1,0 +1,74 @@
+\begin{rcode}
+data$data <- plyr::llply(1:tot.nimgs, function(ind, data, name,
+                                               n.imgs, quants, counts) {
+  if(length(data$vec) > 0) {
+    vec <- lapply(data$vec, function(group, ind) {
+      return(data.frame(lapply(group, function(feature, i) {
+        return(feature[[i]])
+      }, ind), stringsAsFactors=FALSE, check.names=FALSE, check.rows=FALSE))
+    }, ind)
+  } else {
+    vec <- NULL
+  }
+  if(length(data$mat) > 0) {
+    mat <- lapply(data$mat, function(group, ind) {
+      n.rows <- length(group[[1]][[ind]])
+      grp <- vapply(group, function(feature, i) {
+        return(unlist(feature[i]))
+      }, double(n.rows), ind)
+      names <- colnames(grp)
+      if(is.null(names)) names <- names(grp)
+      n.cols <- length(names)
+      dim(grp) <- c(n.rows, n.cols)
+      colnames(grp) <- names
+      rownames(grp) <- NULL
+      return(grp)
+    }, ind)
+  } else {
+    mat <- NULL
+  }
+  if(length(data$lst) > 0) {
+    lst <- mapply(function(group, gname, ind) {
+      if(gname == "IdentityOfNeighbors") {
+        return(lapply(group, function(feature, i) {
+          # build sparse adjacency matrices
+          l <- length(feature[[i]])
+          if(l > 1) {
+            p <- c(0, cumsum(sapply(feature[[i]],
+                             function(x) length(x[[1]]))))
+            j <- unlist(feature[[i]])
+            return(sparseMatrix(j=j, p=p, dims=c(l, l)))
+          } else return(NULL)
+        }, ind))
+      } else if(gname == "PercentTouchingNeighbors") {
+        return(lapply(group, function(feature, i) {
+          if(length(feature[[i]]) > 1) return(unlist(feature[[i]]))
+          else return(NULL)
+        }, ind))
+      } else {
+        return(lapply(group, function(feature, i) return(feature[i]), ind))
+      }
+    }, data$lst, names(data$lst), list(ind=ind), SIMPLIFY=FALSE)
+  } else {
+    lst <- NULL
+  }
+  if(!is.null(lst$PercentTouchingNeighbors) & 
+     !is.null(lst$IdentityOfNeighbors)) {
+    lst$PercentTouchingNeighbors <- mapply(function(feat, fname, mats) {
+      object <- unlist(strsplit(fname, 
+                                "Neighbors.PercentTouchingNeighbors"))[2]
+      mat <- mats[[grep(paste0("Neighbors.IdentityOfNeighbors", object),
+                        names(mats))]]
+      if(is.null(mat)) {
+        return(feat)
+      } else {
+        return(sparseMatrix(j=mat@i, p=mat@p, x=feat, dims=dim(mat),
+               index1=FALSE))
+      }
+    }, lst$PercentTouchingNeighbors, names(lst$PercentTouchingNeighbors),
+       list(mats=lst$IdentityOfNeighbors), SIMPLIFY = FALSE)
+  }
+  return(ImageData(name, ind, n.imgs, quants, counts[ind], vec, mat, lst))
+}, data$data, getBarcode(plate), n.imgs, data$meta$counts.quantiles,
+cell.counts, .progress=progress.bar)
+\end{rcode}

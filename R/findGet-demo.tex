@@ -1,0 +1,15 @@
+
+
+\begin{rflow}
+time <- system.time({
+  plates <- findPlates(contents="MTOR",
+                       experiments="brucella-du-k[12]")
+  wells  <- findWells(contents=c("MTOR", "SCRAMBLED"),
+                      plates=unlist(plates))
+  data   <- getSingleCellData(wells)})
+\end{rflow}
+
+\newcommand{\knitrScfFindGetDemoTime}{\SI{44}{\second}}
+\newcommand{\knitrScfFindGetDemoSize}{\SI{1.22}{\giga\byte}}
+\newcommand{\knitrScfFindGetDemoLengthW}{104}
+\newcommand{\knitrScfFindGetDemoLengthP}{8}
