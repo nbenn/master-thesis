@@ -1,0 +1,23 @@
+\begin{rcode}
+convertToPlateLocation <- function(x) {
+  UseMethod("convertToPlateLocation", x)
+}
+
+convertToPlateLocation.DataLocation <- function(x) {
+  barcode <- getBarcode(x)
+  return(PlateLocation(barcode))
+}
+
+convertToPlateLocation.Data <- function(x) {
+  barcode <- getBarcode(x)
+  return(PlateLocation(barcode))
+}
+
+convertToPlateLocation.PlateAggregate <- function(x) {
+  return(x$plate)
+}
+
+convertToPlateLocation.default <- function(x) {
+  stop("can only deal with PlateData/MatData/WellLocation objects.")
+}
+\end{rcode}

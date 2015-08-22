@@ -1,16 +1,17 @@
 \begin{rcode}
 data$data <- plyr::llply(1:tot.nimgs, function(ind, data, name,
                                                n.imgs, quants, counts) {
+  # image level data features
   if(length(data$vec) > 0) {
-    vec <- lapply(data$vec, function(group, ind) {
-      return(data.frame(lapply(group, function(feature, i) {
-        return(feature[[i]])
-      }, ind), stringsAsFactors=FALSE, check.names=FALSE, check.rows=FALSE))
-    }, ind)
+    vec <- data.frame(lapply(data$vec, function(feature, i) {
+      return(feature[[i]])
+    }, ind), stringsAsFactors=FALSE, check.names=FALSE, check.rows=FALSE)
   } else {
     vec <- NULL
   }
+  # scalar valued single cell level data
   if(length(data$mat) > 0) {
+    # subgroups corresponding to image objects with differing counts
     mat <- lapply(data$mat, function(group, ind) {
       n.rows <- length(group[[1]][[ind]])
       grp <- vapply(group, function(feature, i) {
@@ -27,6 +28,7 @@ data$data <- plyr::llply(1:tot.nimgs, function(ind, data, name,
   } else {
     mat <- NULL
   }
+  # vector valued single cell data
   if(length(data$lst) > 0) {
     lst <- mapply(function(group, gname, ind) {
       if(gname == "IdentityOfNeighbors") {
@@ -42,6 +44,7 @@ data$data <- plyr::llply(1:tot.nimgs, function(ind, data, name,
         }, ind))
       } else if(gname == "PercentTouchingNeighbors") {
         return(lapply(group, function(feature, i) {
+          # only return percentage values
           if(length(feature[[i]]) > 1) return(unlist(feature[[i]]))
           else return(NULL)
         }, ind))
@@ -52,6 +55,7 @@ data$data <- plyr::llply(1:tot.nimgs, function(ind, data, name,
   } else {
     lst <- NULL
   }
+  # match pairs of features for generating percentage adjacency matrices
   if(!is.null(lst$PercentTouchingNeighbors) & 
      !is.null(lst$IdentityOfNeighbors)) {
     lst$PercentTouchingNeighbors <- mapply(function(feat, fname, mats) {

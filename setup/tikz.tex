@@ -7,30 +7,47 @@
 
 \tikzset{
   every node/.style={
-    font=\scriptsize
+    font=\footnotesize
   },
   decision/.style n args={2}{
     shape=rectangle,
     minimum height=0.85cm,
     text width=4.5cm,
     text centered,
-    draw,
-    label={[xshift=2cm,yshift=-0.7cm]left:#1},
-    label={[xshift=-2cm,yshift=-0.7cm]right:#2},
+    draw=MidnightBlue,
+    thick,
+    fill=MidnightBlue!70,
+    text=white,
+    label={[xshift=2cm,yshift=-0.8cm]left:#1},
+    label={[xshift=-2cm,yshift=-0.8cm]right:#2},
   },
-  outcome/.style={
+  infected/.style={
     shape=ellipse,
     fill=gray!15,
-    draw,
+    draw=OrangeRed,
+    thick,
+    fill=OrangeRed!70,
+    text=white,
+    minimum height=0.85cm,
+    text width=1cm,
+    text centered
+  },
+  healthy/.style={
+    shape=ellipse,
+    fill=gray!15,
+    draw=PineGreen,
+    thick,
+    fill=PineGreen!70,
+    text=white,
     minimum height=0.85cm,
     text width=1cm,
     text centered
   },
   decision tree/.style={
     edge from parent path={
-      (\tikzparentnode.south) -- ++(0,-0.5cm) -| (\tikzchildnode.north)
+      (\tikzparentnode.south) -- ++(0,-0.65cm) -| (\tikzchildnode.north)
     },
     sibling distance=3.5cm,
-    level distance=1.5cm
+    level distance=1.75cm
   }
 }

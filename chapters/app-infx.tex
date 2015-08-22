@@ -40,14 +40,14 @@ The decision trees for adenovirus and \textit{Bartonella} are shown in section~\
   \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen}
 }
 [decision tree]
-child { node [outcome] { infected } }
+child { node [infected] { infected } }
 child { node [decision={$> 0.055$}{$\le 0.055$}] { 
-\texttt{PeriNuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
-  child { node [outcome] { infected } }
+\texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
+  child { node [infected] { infected } }
   child { node [decision={$> 0.075$}{$\le 0.075$}] { 
   \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen} }
-    child { node [outcome] { infected } }
-    child { node [outcome] { not infected } }
+    child { node [infected] { infected } }
+    child { node [healthy] { not infected } }
   }
 };
 
@@ -63,14 +63,14 @@ child { node [decision={$> 0.055$}{$\le 0.055$}] {
   \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrInlC}
 }
 [decision tree]
-child { node [outcome] { infected } }
+child { node [infected] { infected } }
 child { node [decision={$> 0.15$}{$\le 0.15$}] { 
-\texttt{PeriNuclei.Intensity\_MeanIntensity\_\\CorrInlC} } 
-  child { node [outcome] { infected } }
+\texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrInlC} } 
+  child { node [infected] { infected } }
   child { node [decision={$> 0.12$}{$\le 0.12$}] { 
-  \texttt{Nuclei.Intensity\_UpperQuartileIntensity\_\\CorrInlC} }
-    child { node [outcome] { infected } }
-    child { node [outcome] { not infected } }
+  \texttt{Nuclei.Intensity\_UpperQuartile-\\Intensity\_CorrInlC} }
+    child { node [infected] { infected } }
+    child { node [healthy] { not infected } }
   }
 };
 
@@ -83,17 +83,17 @@ child { node [decision={$> 0.15$}{$\le 0.15$}] {
 \begin{tikzpicture}
 
 \node [decision={$> 0.085$}{$\le 0.085$}] { 
-  \texttt{Nuclei.Intensity\_MeanUpperTenPercent-\\Intensity\_CorrPathogen}
+  \texttt{Nuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen}
 }
 [decision tree]
-child { node [outcome] { infected } }
+child { node [infected] { infected } }
 child { node [decision={$> 0.090$}{$\le 0.090$}] { 
 \texttt{PeriNuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen} } 
-  child { node [outcome] { infected } }
+  child { node [infected] { infected } }
   child { node [decision={$> 0.125$}{$\le 0.125$}] { 
-  \texttt{VoronoiCells.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen} }
-    child { node [outcome] { infected } }
-    child { node [outcome] { not infected } }
+  \texttt{VoronoiCells.Intensity\_MeanUpper-\\TenPercentIntensity\_CorrPathogen} }
+    child { node [infected] { infected } }
+    child { node [healthy] { not infected } }
   }
 };
 
@@ -105,15 +105,15 @@ child { node [decision={$> 0.090$}{$\le 0.090$}] {
   \centering
   \begin{tikzpicture}
     \node [decision={$> 0.085$}{$\le 0.085$}] { 
-      \texttt{Cells.Intensity\_SubCell-\\BacteriaMeanIntensity\_CorrPathogen}
+      \texttt{Cells.Intensity\_SubCellBacteria-\\MeanIntensity\_CorrPathogen}
     }
     [decision tree]
     child { node [decision={$< 2$}{$\ge 2$}] { 
       \texttt{Cells.AreaShape\_SubCellBacteria-\\Area\_CorrPathogen} }
-      child { node [outcome] { infected } }
-      child { node [outcome] { not infected } }
+      child { node [infected] { infected } }
+      child { node [healthy] { not infected } }
     }
-    child { node [outcome] { not infected } };
+    child { node [healthy] { not infected } };
   \end{tikzpicture}
   \caption[Decision tree for \textit{Salmonella} infection scoring.]{Decision tree for \textit{Salmonella} infection scoring. For a cell being considered infected, not only does the threshold for pathogen intensity throughout the cell need be exceeded but the bacteria also have to be sufficiently aggregated.}
   \label{fig:dectree-salmonella}
@@ -127,11 +127,11 @@ child { node [decision={$> 0.090$}{$\le 0.090$}] {
   \texttt{Nuclei.Intensity\_MeanIntensity\_\\Corr1Pathogen}
 }
 [decision tree]
-child { node [outcome] { infected } }
+child { node [infected] { infected } }
 child { node [decision={$> 0.050$}{$\le 0.050$}] { 
-\texttt{PeriNuclei.Intensity\_MeanIntensity\_\\Corr1Pathogen} } 
-  child { node [outcome] { infected } }
-  child { node [outcome] { not infected } }
+\texttt{PeriNuclei.Intensity\_\\MeanIntensity\_Corr1Pathogen} } 
+  child { node [infected] { infected } }
+  child { node [healthy] { not infected } }
 };
 
 \end{tikzpicture}

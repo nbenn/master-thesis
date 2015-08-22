@@ -1,0 +1,49 @@
+<<scf-heatmap, eval=TRUE, echo=FALSE, message=FALSE, fig.width=12, fig.height=8, out.width=".95\\linewidth", fig.align="center", fig.cap="Several visualization procedures are integrated with singelCellFeatures. In this example, the median of the feature Nuclei.AreaShape\\_Area is shown on a logarithmic scale. Two parameters of \\mintinline{text}{plateHeatmap} are functions so that the user can customize both, how data per well is summarized and on what scale colors are determined. The plate is J101-2C (wells C1, L2, C23 and L24 contain cell killer \\gls{kif11} \\gls{sirna}).", fig.scap="An example heatmap plot as produced by \\mintinline{text}{plateHeatmap}.">>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(gtable))
+options(singleCellFeatures.progressBars = "none")
+
+data <- PlateData(PlateLocation("J101-2C"))
+plot <- plateHeatmap(data, "Nuclei.AreaShape_Area", median, log,
+                     colors=brewer.pal(9, "YlGnBu")[3:9])
+plot$scales$scales[[3]]$name <- paste0("Median of Nuclei.AreaShape_Area on ",
+                                       "log scale  ")
+plot <- plot +
+  theme(plot.title=element_blank(),
+        text=element_text(size=18),
+        axis.text.y=element_text(hjust=0.5),
+        legend.position="bottom",
+        panel.border=element_blank(),
+        panel.grid=element_blank(),
+        legend.key.height=unit(1,"cm"),
+        legend.key.width=unit(1.25,"cm")) +
+  geom_rect(xmin = 0.5, xmax = 24.5, ymin = 0.5, ymax = 16.5,
+            fill=NA, color=gray(0.3), size=0.5)
+# Get the gtable
+gt <- ggplotGrob(plot)
+
+# Get the position of the panel in the layout
+panel <-c(subset(gt$layout, name=="panel", se=t:r))
+
+# Get the row number of the bottom axis in the layout
+rn <- which(gt$layout$name == "axis-b")
+
+# Extract the axis (tick marks and axis text from the gtable)
+axis.grob <- gt$grobs[[rn]]
+axisb <- axis.grob$children[[2]]  # Two children - get the second
+
+# Reverse the grobs and the heights
+axisb$heights <- rev(axisb$heights)
+axisb$grobs <- rev(axisb$grobs)
+#axisb$grobs[[2]]$y <- axisb$grobs[[2]]$y - unit(1, "npc") + unit(0.15, "cm")
+
+# Add a new row to gt, and add the revised axisb grob to the new row.
+gt <- gtable_add_rows(gt, gt$heights[gt$layout[rn, ]$l], panel$t-1)
+gt <- gtable_add_grob(gt, axisb, l = panel$l, t = panel$t, r = panel$r)
+
+# Remove the row containing the bottom axis
+gt <- gt[-(panel$b+2),]
+
+# Draw it
+grid.draw(gt)
+@

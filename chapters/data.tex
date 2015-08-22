@@ -285,7 +285,7 @@ In the above example, the measured objects are cells, the feature is of intensit
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]{segmentation}
-  \caption[Object detection of nuclei, perinuclei, voronoi cells and cell bodies along with potential pitfalls.]{Object identification is started with easily recognizable nuclei, which become primary objects and serving as basis for detecting secondary objects. Problems with nuclei detection include superfluous splitting (a) and failure to separate some touching objects (c). Mostly results are acceptable and some touching nuclei are correctly separated (b). Perinuclei extend the nuclear border and therefore suffer from problems introduced in nuclear recognition. Further issues include overlap with extracellular space (d) and small perinuclear area in densely populated areas (e). Voronoi cells further extend the nuclear area and often grow beyond cell boundaries (f). Finally, cell segmentation is a hard problem due to irregular shapes, variability in size and inhomogeneities in actin distribution (h). Results suffer from falsely identified nuclei (g and i).}
+  \caption[Object detection of nuclei, perinuclei, Voronoi cells and cell bodies along with potential pitfalls.]{Object identification is started with easily recognizable nuclei, which become primary objects and serving as basis for detecting secondary objects. Problems with nuclei detection include superfluous splitting (a) and failure to separate some touching objects (c). Mostly results are acceptable and some touching nuclei are correctly separated (b). Perinuclei extend the nuclear border and therefore suffer from problems introduced in nuclear recognition. Further issues include overlap with extracellular space (d) and small perinuclear area in densely populated areas (e). Voronoi cells further extend the nuclear area and often grow beyond cell boundaries (f). Finally, cell segmentation is a hard problem due to irregular shapes, variability in size and inhomogeneities in actin distribution (h). Results suffer from falsely identified nuclei (g and i).}
   \label{fig:segmentation}
 \end{figure}
 
@@ -415,23 +415,28 @@ All texture measurements are either based on Haralick features \citep{Haralick19
   \end{bmatrix}
 \end{equation}
 
-Element $p(i,j)$ is calculated by counting the number of times, a pixel with value $i$ is adjacent to a pixel with value $j$, divided by the total number of comparisons. Consequently, $p(i,j)$ can be thought of as representing a probability. Moreover, assuming 8-connectivity, 4 different types of adjacency are possible: horizontal, vertical, top left to bottom right diagonal and top right to bottom left antidiagonal, yielding 4 co-occurrence matrices $G_k, k\in\{1,2,3,4\}$. 14 statistics were developed by \citeauthor{Haralick1973}, 13 of which are included with CellProfiler:
+Element $p(i,j)$ is calculated by counting the number of times, a pixel with value $i$ is adjacent to a pixel with value $j$, divided by the total number of comparisons. Consequently, $p(i,j)$ can be thought of as representing a probability. Moreover, assuming 8-connectivity, 4 different types of adjacency are possible: horizontal, vertical, top left to bottom right diagonal and top right to bottom left antidiagonal, yielding 4 co-occurrence matrices $G_k, k\in\{1,2,3,4\}$. First, some notation to more compactly represent statistics developed by \citeauthor{Haralick1973}:
 
 %% TODO: either cite webpage or rewrite paragraph
 
+\begin{gather*}
 \begin{align*}
 p_x(i) &= \sum_{j=1}^{n} p(i,j), & p_y(j) &= \sum_{i=1}^{n} p(i,j), \\
 p_{x+y}(k) &= \mathop{\sum_{i=1}^{n}\sum_{j=1}^{n}}_{i+j=k} p(i,j), &
   p_{x-y}(k) &= \mathop{\sum_{i=1}^{n}\sum_{j=1}^{n}}_{\lvert i-j\rvert=k} p(i,j), \\
-  \mu_x &= \Erw[p_x], & \mu_y &= \Erw[p_y], \\
-  \sigma_x &= \sqrt{\Var(p_x)}, & \sigma_y &= \sqrt{\Var(p_y)}, \\
+%  \mu_x &= \Erw[p_x], & \mu_y &= \Erw[p_y], \\
+%  \sigma_x &= \sqrt{\Var(p_x)}, & \sigma_y &= \sqrt{\Var(p_y)}, \\
   HX &= -\sum_{i=1}^{n} p_x(i) \log\left(p_x(i)\right), &
   HY &= -\sum_{i=1}^{n} p_y(i) \log\left(p_y(i)\right),
-\end{align*}
-\begin{align*}
+\end{align*}\\
+\begin{split}
   HXY1 &= -\sum_{i=1}^{n} \sum_{j=1}^{n} p(i,j) \log\left(p_x(i)p_y(j)\right), \\
   HXY2 &= -\sum_{i=1}^{n} \sum_{j=1}^{n} p_x(i)p_y(j) \log\left(p_x(i)p_y(j)\right)
-\end{align*}
+\end{split}
+\end{gather*}
+
+Means and standard deviations of $p_x$ and $p_y$ are represented by $\mu_x$, $\mu_y$, $\sigma_x$ and $\sigma_y$, respectively, while $HX$ and $HY$ are the entropies of $p_x$ and $p_y$. Of the 14 features developed by  \citeauthor{Haralick1973}, 13 are included with CellProfiler:
+
 \begin{align}
 \text{AngularSecondMoment} & &
   f_1 &= \sum_{i=1}^n \sum_{j=1}^n p(i,j)^2 \\
@@ -484,14 +489,14 @@ Classification by an \gls{svm} yields the $(p-1)$-dimensional hyperplane from $p
       \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}
     }
     [decision tree]
-    child { node [outcome] { infected } }
+    child { node [infected] { infected } }
     child { node [decision={$> 0.085$}{$\le 0.085$}] { 
-    \texttt{PeriNuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
-      child { node [outcome] { infected } }
+    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
+      child { node [infected] { infected } }
       child { node [decision={$> 0.115$}{$\le 0.115$}] { 
       \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
-        child { node [outcome] { infected } }
-        child { node [outcome] { not infected } }
+        child { node [infected] { infected } }
+        child { node [healthy] { not infected } }
       }
     };
   \end{tikzpicture}
@@ -510,25 +515,25 @@ Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies
       \texttt{Invasomes.Intensity\_MaxIntensity\_\\Corr1Pathogen}
     }
     [decision tree]
-    child { node [outcome] { infected } }
+    child { node [infected] { infected } }
     child { node [decision={$> 0.075$}{$\le 0.075$}] { 
     \texttt{Invasomes.Intensity\_MeanIntensity\_\\Corr1Pathogen} } 
-      child { node [outcome] { infected } }
+      child { node [infected] { infected } }
       child { node [decision={$> 0.085$}{$\le 0.085$}] { 
       \texttt{Invasomes.Intensity\_UpperQuartile-\\Intensity\_Corr1Pathogen} }
-        child { node [outcome] { infected } }
+        child { node [infected] { infected } }
         child { node [decision={$> 12.00$}{$\le 12.00$}] { 
         \texttt{Invasomes.AreaShape\_Area} }
           child { node [decision={$< 1000$}{$\ge 1000$}] { 
             \texttt{Invasomes.AreaShape\_Area} }
             child { node [decision={$< 0.060$}{$\ge 0.060$}] { 
-              \texttt{Invasomes.RadialDistribution\_FracAtD\_\\Corr1Actin\_1} }
-              child { node [outcome] { infected } }
-              child { node [outcome] { not infected } }
+              \texttt{Invasomes.RadialDistribution\_\\FracAtD\_Corr1Actin\_1} }
+              child { node [infected] { infected } }
+              child { node [healthy] { not infected } }
             }
-            child { node [outcome] { not infected } }
+            child { node [healthy] { not infected } }
           }
-          child { node [outcome] { not infected } }
+          child { node [healthy] { not infected } }
         }
       }
     };
@@ -537,7 +542,13 @@ Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies
   \label{fig:dectree-bartonella}
 \end{figure}
 
-One mode of pathogen entry in \textit{Bartonella} infection is via specialized invasome structures which can be described by an actin ring surrounding a large bacterial aggregate. These structures are detected on the actin channel, currently with a fair amount of false positives. Therefore, the pathogen channel intensity is taken into account by thresholding maximum, mean and upper quartile pathogen intensities within all invasome structures while remaining false positives are excluded based on size and radial distribution of actin intensity. Cells that contain one or more invasome structures that meet the criteria depicted in figure \ref{fig:dectree-bartonella} are considered infected. The remaining decision trees are shown in section \ref{sec:app-dectree}
+One mode of pathogen entry in \textit{Bartonella} infection is via specialized invasome structures which can be described by an actin ring surrounding a large bacterial aggregate. These structures are detected on the actin channel, currently with a fair amount of false positives. Therefore, the pathogen channel intensity is taken into account by thresholding maximum, mean and upper quartile pathogen intensities within all invasome structures while remaining false positives are excluded based on size and radial distribution of actin intensity. Cells that contain one or more invasome structures that meet the criteria depicted in figure \ref{fig:dectree-bartonella} are considered infected.
+
+The remaining decision trees are shown in section \ref{sec:app-dectree} but will be described here. \textit{Brucella} infection scoring is based on \gls{gfp} mean intensities across the objects, Nuclei, PeriNucle and Cell body, which captures the typical infection pattern of large micro colonies spread throughout the cell accurately. In \textit{Listeria} on the other hand, pathogen presence is evaluated though measuring bacterially secreted InlC on the Cy3 channel. The employed proxy depends on the amount of pathogen that is present and accumulates in the perinuclear region. Measurements used are mean nuclear intensity, mean perinuclear intensity and nuclear upper quartile intensity.
+
+The infection pattern for rhinovirus is characterized by cytoplasmic vial factories and virions are identified though stained anti-mouse \gls{igg}, measured on the \gls{gfp} channel. Targeted features are mean upper ten percent intensities in nuclei, perinuclei and Voronoi cells. For \textit{Shigella} screens, a strand incapable of \gls{abm} was employed (\textDelta\textit{vir}G), leading to accumulation of micro colonies in nuclear vicinity. Expression of pathogen marker DsRed, a form of \gls{rfp}, only occurs intracellularly, therefore alleviating the problem of including extracellular objects.
+
+\Gls{dtis} in the remaining two pathogens is even simpler, requiring only two features each. \textit{Salmonella} screens depend on SubCellBacteria object segmentation, for which mean intensity and area features are relevant. The strain used for screening contains a \gls{gfp} expressing plasmid that is controlled by an SPI2 (ssaG)-dependent promoter. Therefore only intracellular bacteria are measured, allowing for reliable infection scoring.
 
 %% TODO: add descriptions of infection patterns of the remaining pathogens
 %% TODO: add shigella dectree
