@@ -30,7 +30,7 @@ All liquid handing stages of infection, fixation, and immunofluorescence stainin
 
 \section{Decision Trees for Infection Scoring}
 \label{sec:app-dectree}
-The decision trees for adenovirus and \textit{Bartonella} are shown in section~\ref{sec:infection-scoring} while the ones corresponding to the remaining pathogens (\textit{Brucella}, \textit{Listeria}, rhinovirus, \textit{Salmonella} and vaccinia virus) follow. Please refer to section~\ref{sec:infection-scoring} for more information of infection scoring.
+The decision trees for adenovirus and \textit{Bartonella} are shown in section~\ref{sec:infection-scoring} while the ones corresponding to the remaining pathogens (\textit{Brucella}, \textit{Listeria}, rhinovirus, \textit{Salmonella} and vaccinia virus) follow. Please refer to section~\ref{sec:infection-scoring} for more information of infection scoring, including descriptions of infection patterns upon which these decision trees are based. Table \ref{tab:dectree-thresh} shows the different thresholds that currently are in use. Due to several experimental parameters affecting intensity measurements, such as age of microscope lamp, plate position in imaging queue or quality of staining, plate-wise adjustments are necessary in some instances. Several plates can be subjected to the same values, but over all datasets, some variation exists. The values used for decision trees represent the respectively most widely used combination of parameters.
 
 \begin{figure}[b]
 \centering
@@ -141,9 +141,9 @@ child { node [decision={$> 0.050$}{$\le 0.050$}] {
 \renewcommand{\arraystretch}{1.1}
 \setlength{\tabcolsep}{0.4em}
 \begin{table}
-  \centering
   \caption[Different threshold values used for \gls{dtis}.]{\Gls{dtis} requires plate-wise adjustments of threshold values. Usually, a set of thresholds can be applied to multiple plates, but overall, several sets are needed, except in \textit{Bartonella} screens.}
   \label{tab:dectree-thresh}
   \footnotesize
+  \vspace{3.6cm}
   \input{R/dectree-thresh}
 \end{table}

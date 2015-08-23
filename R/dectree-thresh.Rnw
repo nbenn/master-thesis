@@ -84,39 +84,39 @@ single.tab$Pathogen <- newrownames
 newcolnames <- lapply(colnames(single.tab), function(x) {
   if(x == "Pathogen") return("")
   if(x == "Nuclei.Intensity_MeanIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{Nuclei.Intensity_Mean-\\\\",
+    return(paste0("\\parbox{0.17cm}{\\texttt{Nuclei.Intensity_Mean-\\\\",
                   "Intensity_CorrPathogen}}"))
   if(x == "PeriNuclei.Intensity_MeanIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{PeriNuclei.Intensity_Mean-\\\\",
+    return(paste0("\\parbox{0.17cm}{\\texttt{PeriNuclei.Intensity_Mean-\\\\",
                   "Intensity_CorrPathogen}}"))
   if(x == "Cells.Intensity_MeanIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{Cells.Intensity_Mean-\\\\",
+    return(paste0("\\parbox{0.17cm}{\\texttt{Cells.Intensity_Mean-\\\\",
                   "Intensity_CorrPathogen}}"))
   if(x == "Nuclei.MeanIntensity_CorrInlC")
-    return("\\parbox{4.3cm}{\\texttt{Nuclei.MeanIntensity_\\\\CorrInlC}}")
+    return("\\parbox{0.17cm}{\\texttt{Nuclei.MeanIntensity_\\\\CorrInlC}}")
   if(x == "Nuclei.UpperQuartileIntensity_CorrInlC")
-    return(paste0("\\parbox{4.3cm}{\\texttt{Nuclei.UpperQuartile-\\\\",
+    return(paste0("\\parbox{0.17cm}{\\texttt{Nuclei.UpperQuartile-\\\\",
                   "Intensity_CorrInlC}}"))
   if(x == "PeriNuclei.MeanIntensity_CorrInlC")
-    return("\\parbox{4.3cm}{\\texttt{PeriNuclei.MeanIntensity_\\\\CorrInlC}}")
+    return("\\parbox{0.17cm}{\\texttt{PeriNuclei.MeanIntensity_\\\\CorrInlC}}")
   if(x == "Nuclei.Intensity_MeanUpperTenPercentIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{Nuclei.Intensity_MeanUpper",
+    return(paste0("\\parbox{0.17cm}{\\texttt{Nuclei.Intensity_MeanUpper",
                   "Ten-\\\\PercentIntensity_CorrPathogen}}"))
   if(x == "PeriNuclei.Intensity_MeanUpperTenPercentIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{PeriNuclei.Intensity_",
+    return(paste0("\\parbox{0.17cm}{\\texttt{PeriNuclei.Intensity_",
                   "MeanUpper-\\\\TenPercentIntensity_CorrPathogen}}"))
   if(x == "VoronoiCells.Intensity_MeanUpperTenPercentIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{VoronoiCells.Intensity_",
+    return(paste0("\\parbox{0.17cm}{\\texttt{VoronoiCells.Intensity_",
                   "MeanUpper-\\\\TenPercentIntensity_CorrPathogen}}"))
   if(x == "Cells.Intensity_SubCellBacteriaMeanIntensity_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{Cells.Intensity_SubCell",
+    return(paste0("\\parbox{0.17cm}{\\texttt{Cells.Intensity_SubCell",
                   "Bacteria-\\\\MeanIntensity_CorrPathogen}}"))
   if(x == "Cells.AreaShape_SubCellBacteriaArea_CorrPathogen")
-    return(paste0("\\parbox{4.3cm}{\\texttt{Cells.AreaShape_SubCell-\\\\",
+    return(paste0("\\parbox{0.17cm}{\\texttt{Cells.AreaShape_SubCell-\\\\",
                   "BacteriaArea_CorrPathogen}}"))
 })
 newcolnames <- gsub("_", "\\\\_", newcolnames)
-newcolnames <- paste("\\rotatebox{90}{", newcolnames, "}", sep="")
+newcolnames <- paste("\\rotatebox{60}{", newcolnames, "}", sep="")
 colnames(single.tab) <- newcolnames
 
 print(xtable(single.tab), include.rownames=FALSE,
