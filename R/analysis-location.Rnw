@@ -1,0 +1,9 @@
+<<scf-findGet-demo, eval=TRUE, echo=-1, message=FALSE>>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+
+data <- PlateData(PlateLocation("J110-2D"))
+data <- augmentImageLocation(data)
+data <- augmentCordinateFeatures(data, center.dist=TRUE)
+
+molten <- meltData(data)
+@

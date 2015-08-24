@@ -1,9 +1,140 @@
 \chapter{Data Analysis}
 \label{ch:data-analysis}
 
-The initial goal of this project was concerned with 
+The initial goal of this project was concerned with modeling different infection patterns as influenced by \gls{sirna} mediated gene knockdown. By fitting a \gls{glm} model, using the large set of available cellular features, described in section \ref{sec:scf-data}, as predictor variables and the membership to one of two wells as binary response, it was conjectured to be possible to determine a subset of influential features. Unfortunately, to present data, this has not been possible.
 
+In order the make the substantial amount of single cell data, obtained from several large-scale, high throughput \gls{sirna} screens performed by the InfectX consortium, available to an environment for statistical analysis, an R packages was developed, which is described in chapter \ref{ch:singlecellfeatures}. Building on this crucial piece of infrastructure, the current chapter will explore some of the data analysis that was performed, beginning a short introduction into the models used and continuing with preliminary findings that motivate the investigation of possible normalization schemes. A final outlook on possible improvements will conclude this chapter.
+
+\section{Statistical Models}
+Many algorithms for binary classification exist, including decision trees, \glspl{svm}, Bayesian networks, neural networks and \glspl{glm}, some of which have been encountered in previous sections due to their application in infection scoring (see section \ref{sec:infection-scoring}). As neither prediction not classification per se are of main interest, binary logistic regression presents an attractive method due to availability of extensive coefficient and model statistics. Therefore, modeling of \gls{sirna} effects on cellular features is performed, using the glm function provided by the R stats package \citep{RCoreTeam2015}, as well as glmnet belonging to the CRAN package of the same name \citep{Friedman2010a}.
+
+A great many binary comparisons are possible with the given datasets. In order to focus on wells where there is reason to assume they might be biologically interesting, the $n \choose 2$ possible combinations of wells (within a single plate, \tilde 70000 pairs can be formed), are narrowed down using a \gls{pmm} as derived by \cite{Ramo2014}. Of the resulting hit list, several genes are selected and compared to wells containing scrambled \gls{sirna} reagents, which should provide a good choice for establishing background levels. A possible alternative are mock controls but owing to the complete absence of \gls{sirna} molecules, the difference in treatment of cells is only increased and hence it can be conjectured that they provide inferior comparisons.
+
+\subsection{Generalized Linear Models}
+Modeling the relationship among variables is one of the most important applications of statistical theory. The study of regression analysis (and the closely related notion of correlation) started to form towards the end of the 19th century with Sir Francis Galton's study of height heredity in humans and his observation of regression towards the mean. Over the next few years, Udny Yule and Karl Pearson cast the developed concepts into precise mathematical formulation, in turn building on work performed by Adrien-Marie Legendre and Carl Friedrich Gauss who developed the method of least squares almost a century earlier \citep{Allen1997}.
+
+A multiple linear regression model can be written in matrix-vector form as
+\begin{equation}
+  y = X \beta + \epsilon \label{eq:lin-reg}
+\end{equation}
+where $y \in \R^n$ is the vector of observations on the dependent variable, the design matrix $X \in \R^{n \times p}$ contains data on the independent variables, $\beta \in \R^p$ is the $p$-dimensional parameter vector and the error term $\epsilon \in \R^n$ captures effects not modeled by the regressors.
+
+In order to find unknown coefficients $\beta_i$, the ordinary least squares estimator minimizes the residual sum of squares, the squared differences between observed responses and their predictions according to the linear model.
+\begin{subequations}
+\begin{align}
+  \Hbeta &= \argmin_{\beta} \norm{y - X \beta}^2 \\
+         &= (X^T X)^{-1} X^T y \label{eq:ols-estimate}
+\end{align}
+\end{subequations}
+Some assumptions are typically associated with linear regression models that yield desirable attributes for the estimates. None of these restrictions are imposed on the explanatory variables; they can be continuous or discrete and combined as well as transformed arbitrarily. Furthermore, in practice, it is irrelevant whether the covariates are treated as random variables or as deterministic constants. With exception of the field of econometrics it appears that the majority of literature adheres to the latter interpretation and therefore, statements will not explicitly be conditional on covariate values.
+\begin{description}
+  \item[Linearity.] The relationship between dependent and independent variables is assumed to be linear (after suitable transformations) and individual effects additive. If this cannot be satisfied, a linear model is not suitable.
+  \item[Full rank.] For the matrix $X^T X$ to be invertible, it has to have full rank $p$. Therefore $n \leq p$ and all covariates must be linearly independent.
+  \item[Exogeneity.] All independent variables should be known exactly i.e. contain no measurement or observation errors as only the mean squared error of the dependent variable is minimized. Additionally, all important causal factors have to be included in the model. Exogeneity implies $\Erw[\epsilon_i] = 0 \forall i$, as well no correlation between regressors and error terms \citep{Hayashi2000}.
+  \item[Spherical errors.] This includes both homoscedasticity or constant error variance, $\Erw[\epsilon_i^2] = \sigma^2 \forall i$, and uncorrelated errors $\Erw[\epsilon_i \epsilon_j] = 0 \forall i \neq j$. These two conditions can be written more compactly as $\Var(\epsilon) = \sigma^2I_{n \times n}$.
+  \item[Normality.] For the estimated coefficients to gain some additional desirable characteristics, it can be required that the errors $\epsilon_i$ be jointly normally distributed. Together with the above restrictions on expectation and variance, this yields $\epsilon \sim \N_n(0, \sigma^2 I_{n \times n})$.
+\end{description}
+
+Violations of these assumptions have varying consequences. In situations of perfect collinearity, the ordinary least squares estimator $\Hbeta$ as defined in \eqref{eq:ols-estimate} does not exist. Recovering such a situation is possible by using a generalized matrix inverse (for example the Moore--Penrose pseudoinverse) or by dropping the corresponding variables. High correlation inflates coefficient variances, which may be countered by employing a regularization scheme like ridge regression. Omitting a variable that is both correlated with dependent variables and has an effect on the response (a nonzero true coefficient) will introduce bias in the parameters. The method of instrumental variables can help to produce an unbiased estimator.
+
+The assumption of spherical errors ensures that the least squares estimator is the best linear unbiased estimator in the sense that it has minimal variance among all linear unbiased estimators. Heteroscedasticity and autocorrelation do not yield biased coefficient estimates but can introduce bias in \gls{ols} estimates of variance, causing inaccurate standard errors. Such a situation calls for generalized least squares estimation, for example weighted least squares when the data is not homoscedastic ($\sigma^2$ is vector-valued but off-diagonal elements of $\Var(\epsilon)$ are zero), or feasible generalized least squares which can be applied in case of heteroscedasticity and\slash or correlation between errors. Whenever the condition of spherical errors does not hold, \gls{ols} is inefficient and generalized least squares estimators have smaller variance.
+
+Finally, normality provides the framework necessary for applying common hypothesis testing, yielding t-statistics, p-values and confidence intervals for coefficients, as well as an F-statistic for the model as a whole. Furthermore, under normality assumptions, the \gls{ols} estimator and \gls{mle} coincide. Quantile regression and other forms of robust regression, such as M estimators may restore validity of inference when errors do not follow a normal distribution.
+
+Modeling data to a dichotomous response variable with \gls{ols} methodology, while readily possible, often is a bad choice due to violations of several of the above assumptions. First of all, normal distributions are continous with support $x \in \R$ and thusly a categorical variable cannot be normally distributed. Homoscedasticity does not hold as well as can easily be seen in a geometric argument: any line with nonzero slope, fitted to a set of $Y$ with $Y_i \in \{0,1\}$, will produce residuals that vary linearly. Finally and perhaps most importantly, a linear model is unsuitable due to there being no constraints on the range of fitted values. While this could be dealt with, the concept of additivity within this context raises questions of its own when fitted values are thought of as probabilities. Linear behavior throughout the range of 0 (impossible) to 1 (certain) makes no sense for most practical applications, as typically, some flattening is expected when approaching either end of the spectrum.
+
+In view of the above considerations it becomes clear that some sort of extension to ordinary linear regression in needed in order to deal with binary response variables. A theory, unifying several previously separately treated statistical models, including linear regression, \gls{anova}, logistic regression, Poisson regression and multinomial response, as \acrfullpl{glm}, was developped by John Nelder and Robert Wedderburn in the early 1970's \citep{Nelder1972}.
+
+In order to accommodate the newly added extensions, the classical linear model is rewritten as
+
+\begin{equation}
+  \Erw[Y] = \mu \text{ where } \mu = X \beta,
+\end{equation}
+
+yielding a three-part specification, consisting of
+
+\begin{enumerate}[label=(\alph*)]
+  \item the \textit{random component}; $Y$ is distributed according to a member of the exponential family,\footnote{Many of the most commonly used distributions belong to the exponential family, including but not restricted to Bernoulli, binomial, Poisson, exponential and normal distributions. Common to all members, the probability density function can be written as
+  \begin{equation}
+    f(x;\theta) = h(x) e^{\theta^\intercal T(x)-A(\theta)}
+  \end{equation}
+  where $\theta$ is the vector of paramteters, $T(x)$ the vector of sufficient statistics, $A(\theta)$ the cumulant generating function and $h(x)$ the base measure. In case of the Bernoulli distribution
+  \begin{equation}
+    f(k;p) = p^k (1-p)^{1-k}
+  \end{equation}
+  this gives $h(k) = 1$ $T(k) = k$, $\theta = \log\frac{p}{1-p}$ and $A(\theta) = \log(1+e^\theta)$. Restricting \glspl{glm} to exponential family distributions makes it possible to stay within the framework of maximum likelihood parameter estimations, as this yields the best parameter estimator with respect to minimal variance.}
+  \item the \textit{systematic component}; a linear predictor is given by $\eta = X\beta$,
+  \item and the \textit{link} between random and systematic components, expressed as the link function $g(\cdot)$, such that $\eta = g(\mu)$; in case of normally distributed Y, $\mu = \eta$ (identity link).
+\end{enumerate}
+
+\renewcommand{\arraystretch}{2}
+\setlength{\tabcolsep}{0.2em}
+\begin{table}
+  \centering
+  \caption[Link functions of common univariate distributions of the exponential family.]{Common univariate distributions of the exponential family alongside mean and canonical link functions.}
+  \label{tab:glm-links}
+  \footnotesize
+  \begin{tabular}{L{0.18\linewidth}L{0.18\linewidth}L{0.18\linewidth}L{0.18\linewidth}L{0.18\linewidth}}
+    Distribution &
+      Support &
+      Link name &
+      Link function &
+      Mean function \\
+    \hline 
+    Normal &
+      $(-\infty, +\infty)$ &
+      identity &
+      $\eta = \mu$ &
+      $\mu = X\beta$\\
+    Poisson &
+      $\{0, 1, 2, \dotsc\}$ &
+      log &
+      $\eta = \log(\mu)$ &
+      $\mu = e^{X\beta}$\\
+    Binomial &
+      $\{0, 1, \dotsc, N\}$ &
+      logit &
+      $\eta = \log\left(\frac{\mu}{1-\mu}\right)$ &
+      $\mu = \frac{e^{X\beta}}{1+e^{X\beta}}$\\
+    Gamma &
+      $(0, +\infty)$ &
+      reciprocal &
+      $\eta = -\mu^{-1}$ &
+      $\mu = -(X\beta)^{-1}$\\
+    Inverse Gaussian &
+      $(0, +\infty)$ &
+      inverse squared &
+      $\eta = -\mu^{-2}$ &
+      $\mu = (-2X\beta)^{-1/2}$\\
+  \end{tabular}
+\end{table}
+
+A suitable link function for binomially distributed response, as discussed above, is required to map the unit interval onto the whole real line and preferably has a sigmoid shape in order accurately describe increasingly likely as well as increasingly unlikely events. Three functions are often considered within this context, the most predominant of which is shown in table \ref{tab:glm-links}.
+
+\begin{enumerate}[label=(\alph*)]
+  \item \textit{logit}
+  \begin{equation}
+    \eta = \log\left(\frac{\mu}{1-\mu}\right),
+  \end{equation}
+  \item \textit{probit}
+  \begin{equation}
+    \eta = \Phi^{-1}(\mu),
+  \end{equation}
+  with $\Phi(\cdot)$ denoting the cumulative distribution function of the normal distribution,
+  \item and \textit{complementary log-log}
+  \begin{equation}
+    \eta = \log\left(-\log(1-\mu)\right).
+  \end{equation}
+\end{enumerate}
+
+\subsection{Regularization}
+\subsection{Parallel Mixed Model}
+
+\input{R/pmm}
+
+% anna hitlist
 \section{Preliminary Findings}
+% glm perfect separation, bootstrapped stuff
 \section{Data Normalization}
-\section{Modeling Approach}
+%\section{Modeling Approach}
 \section{Outlook and Conclusion}
