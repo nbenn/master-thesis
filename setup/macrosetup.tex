@@ -50,6 +50,9 @@
 \newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
 \makeatother
 
+%% add number in stared align environment
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
 %% Special characters for number sets, e.g. real or complex numbers.
 \newcommand{\C}{\mathbb{C}}
 \newcommand{\K}{\mathbb{K}}
@@ -90,6 +93,7 @@
 \newcommand{\epsfCfileRot}[3][-90]{\centerline{\epsFracFileRot[#1]{#2}{#3}}}%
 \makeatother
 
+\DeclareMathOperator{\fdr}{fdr}
 \DeclareMathOperator{\logit}{logit}
 \DeclareMathOperator{\med}{med}
 \DeclareMathOperator{\median}{median}
