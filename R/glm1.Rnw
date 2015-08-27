@@ -1,0 +1,157 @@
+<<analysis-glm1, eval=TRUE, echo=FALSE, results='asis', message=FALSE, warning=FALSE>>=
+runPcaGlm <- function(data, response, act="H6", ctrl="H2", include=0.9) {
+  response <- ifelse(well.name == act, "act", "scr")
+  indices  <- which(well.name == act | well.name == ctrl)
+  data     <- data[indices,]
+  response <- as.factor(response[indices])
+  keep     <- apply(data, 2, function(col) return(var(col) > 0))
+  data     <- data[,keep]
+
+  pca    <- prcomp(data, scale.=TRUE)
+  cumvar <- cumsum(pca$sdev^2 / sum(pca$sdev^2))
+  cutoff <- min(which(cumvar > include))
+  dat.pc <- cbind(data.frame(pca$x[,1:cutoff]), response)
+  samp1  <- sample(which(dat.pc$response == "act"),
+                   sum(dat.pc$response == "act")/5)
+  samp2  <- sample(which(dat.pc$response == "scr"),
+                   sum(dat.pc$response == "scr")/5)
+  sample <- c(samp1, samp2)
+  model  <- tryCatch({ 
+    res <- glm("response ~ .", binomial, dat.pc[-sample,])
+    list(mod=res, sep=FALSE)
+  }, warning = function(w) {
+    res <- glm("response ~ .", binomial, dat.pc[-sample,])
+    list(mod=res, sep=TRUE)
+  })
+  predi  <- as.factor(round(predict(model$mod, newdata=dat.pc[sample,],
+                                    type="response")))
+  levels(predi) <- c("act", "scr")
+  cm <- compareModeltoTruth(predi, as.factor(dat.pc[sample,]$response))
+  glm <- list(sep=model$sep, aic=model$mod$aic,
+              deviance.res=model$mod$deviance,
+              deviance.null=model$mod$null.deviance,
+              df.res=model$mod$df.residual, df.null=model$mod$df.null)
+  return(c(cm, glm))
+}
+
+fmt   <- function(x) {
+  res <- sapply(x, function(y) {
+    if(is.na(y)) return("\\multicolumn{1}{c}{--}") 
+    else return(paste0("\\multicolumn{1}{r}{", prettyNum(y, digits=2), "}"))
+  })
+  return(res)
+}
+
+pasteAnd <- function(x) {
+  if(length(x) == 0) return("")
+  if(length(x) == 1) return(paste0(x))
+  else if (length(x) == 2)
+    return(paste0(paste0(x), collapse=" and "))
+  else {
+    comma <- paste0(paste0(x[-length(x)]),
+                    collapse=", ")
+    last  <- paste0(x[length(x)])
+    return(paste0(comma, " and ", last))
+  }
+}
+
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(reshape2))
+suppressPackageStartupMessages(library(tables))
+options(singleCellFeatures.progressBars = "none")
+
+data   <- PlateData(PlateLocation("J110-2D"))
+molten <- meltData(data)
+molten <- moveFeatures(molten, from=c("Well.Type", "Well.Gene_Name"),
+                       to="Cells")
+
+well.name <- molten$Well.Name
+well.type <- molten$Well.Type
+gene.name <- molten$Well.Gene_Name
+
+keep   <- unique(unlist(lapply(c(".AreaShape_", ".Intensity_", ".Texture_"),
+                             grep, names(molten), value=TRUE)))
+molten <- molten[,keep]
+keep   <- apply(molten, 2, function(col) {
+  return(sum(!is.finite(col)) < (length(col) / 10))
+})
+molten <- molten[,keep]
+keep   <- apply(molten, 1, function(row) {
+  return(sum(!is.finite(row)) == 0)
+})
+molten <- molten[keep,]
+keep   <- apply(molten, 2, function(col) {
+  return(var(col) > 0)
+})
+molten <- molten[,keep]
+keep   <- apply(molten, 2, function(col) {
+  return(diff(quantile(col, probs=c(0.001, 0.999))) > 0)
+})
+molten <- molten[,keep]
+
+scra <- lapply(findWells(contents="SCRAMBLED", plate=getBarcode(data)),
+               getWellName)
+mtor <- lapply(findWells(contents="MTOR", plate=getBarcode(data)), getWellName)
+tgf1 <- lapply(findWells(contents="TGFBR1", plate=getBarcode(data)),
+               getWellName)
+ripk <- lapply(findWells(contents="RIPK4", plate=getBarcode(data)),
+               getWellName)
+pik3 <- lapply(findWells(contents="PIK3R3", plate=getBarcode(data)),
+               getWellName)
+
+comp <- lapply(c(scra[5], mtor, tgf1, ripk, pik3),
+               function(x, scra, data, resp) {
+  res <- lapply(scra, function(y, data, resp, well) {
+    if(y == well) return(NA)
+    else return(runPcaGlm(data, resp, well, y))
+  }, data, resp, x)
+  names(res) <- scra
+  return(res)
+}, scra, molten, well.name)
+names(comp) <- c("Scrambled", "MTOR", "TGFBR1", "RIPK4", "PIK3R3")
+
+perfect.sep <- lapply(comp, function(row) {
+  res <- sapply(row, function(x) {
+    if(is.na(x[1])) return(NA)
+    else return(x$sep)
+  })
+  return(res)
+})
+l_ply(perfect.sep, function(x) message(pasteAnd(x)))
+
+table <- lapply(comp, function(row) {
+  res <- lapply(row, function(x) {
+    if(is.na(x[1])) return(c(NA, NA, NA, NA, NA)) 
+    return(c(x$deviance.null - x$deviance.res, x$df.null - x$df.res,
+             x$aic, x$ACC, x$MCC))
+  })
+  res <- data.frame(do.call(cbind, res))
+  res <- cbind(c("g.deviance", "g.df", "g.aic", "t.accuracy", "t.mcc"), res)
+  names(res)[1] <- "rf2"
+  return(res)
+})
+
+rf1 <- rep(names(table), each=5)
+table <- do.call(rbind, table)
+table <- cbind(rf1, table)
+table <- melt(table)
+
+tabl  <- tabular(Heading()*RowFactor(rf1, spacing = 1)*
+                 Heading()*RowFactor(rf2, 
+                         levelnames=c("AIC",
+                                      "\\textDelta\\textsubscript{deviance}",
+                                      "\\textDelta\\textsubscript{df}",
+                                      "Accuracy", "MCC")) ~ 
+                 Heading()*Factor(variable)*
+                 Heading()*Format(fmt())*(value)*
+                 Heading()*(mean), 
+        data = table)
+latex(tabl, options=list(toprule=""))
+
+@
+
+%\newcommand{\knitrDataGlm1PerSepScram}{\Sexpr{pasteAnd(names(perfect.sep$Scrambled)[which(perfect.sep$Scrambled)])}}
+%\newcommand{\knitrDataGlm1PerSepMtor}{\Sexpr{pasteAnd(names(perfect.sep$MTOR)[which(perfect.sep$MTOR)])}}
+%\newcommand{\knitrDataGlm1PerSepTgfbr1}{\Sexpr{pasteAnd(names(perfect.sep$TGFBR1)[which(perfect.sep$TGFBR1)])}}
+%\newcommand{\knitrDataGlm1PerSepRipk4}{\Sexpr{pasteAnd(names(perfect.sep$RIPK4)[which(perfect.sep$RIPK4)])}}
+%\newcommand{\knitrDataGlm1PerSepPik3r3}{\Sexpr{pasteAnd(names(perfect.sep$PIK3R3)[which(perfect.sep$PIK3R3)])}}

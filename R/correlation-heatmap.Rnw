@@ -1,0 +1,59 @@
+<<analysis-correlation, eval=TRUE, echo=FALSE, message=FALSE, fig.width=12, fig.height=13, fig.align="center", fig.cap="A heatmap representation of the correlation matrix obtained by sampling 10\\% of single cell feature data available for plate J110-2D illustrates severe correlation among many features that is typical for all datasets. This comes as no surprise due to the redundancy in measured features. The three diagonal blocks correspond to three groups of features, \\textit{AreaShape}, \\textit{Intensity} and \\textit{Texture}.", fig.scap="Heatmap representation of correlation among single cell features.">>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(reshape2))
+suppressPackageStartupMessages(library(grid))
+options(singleCellFeatures.progressBars = "none")
+
+data   <- PlateData(PlateLocation("J110-2D"))
+molten <- meltData(data)$mat$Cells
+
+keep   <- unique(unlist(lapply(c(".AreaShape_", ".Intensity_", ".Texture_"),
+                               grep, names(molten), value=TRUE)))
+molten <- molten[,keep]
+keep   <- apply(molten, 2, function(col) {
+  return(sum(!is.finite(col)) < (length(col) / 10))
+})
+molten <- molten[,keep]
+keep   <- apply(molten, 1, function(row) {
+  return(sum(!is.finite(row)) == 0)
+})
+molten <- molten[keep,]
+keep   <- apply(molten, 2, function(col) {
+  return(var(col) > 0)
+})
+molten <- molten[,keep]
+keep   <- apply(molten, 2, function(col) {
+  return(diff(quantile(col, probs=c(0.001, 0.999))) > 0)
+})
+molten <- molten[,keep]
+
+subset <- sample.int(nrow(molten), nrow(molten)/10)
+corr   <- melt(cor(molten[subset,]))
+corr$Var1 <- factor(corr$Var1, ordered=TRUE)
+corr$Var2 <- factor(corr$Var2, ordered=TRUE)
+
+myPalette <- colorRampPalette(rev(brewer.pal(11, "RdBu")), space="Lab")
+breaks <- c(1,
+            floor(median(which(grepl(".AreaShape_", names(molten))))),
+            min(which(grepl(".Intensity_", names(molten)))),
+            floor(median(which(grepl(".Intensity_", names(molten))))),
+            min(which(grepl(".Texture_", names(molten)))),
+            floor(median(which(grepl(".Texture_", names(molten))))),
+            ncol(molten))
+names  <- c("", "AreaShape", "", "Intensity", "", "Texture", "")
+ggplot(data=corr) +
+  geom_tile(aes(x=as.numeric(Var1), y=Var2, fill=value)) +
+  scale_fill_gradientn(name="Correlation among features  ",
+                       colours=myPalette(100),
+                       breaks=c(-1, -0.5, 0, 0.5, 1)) +
+  theme(text=element_text(size=18),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title=element_blank(),
+        legend.position="bottom",
+        legend.key.height=unit(1,"cm"),
+        legend.key.width=unit(1.25,"cm")) +
+  scale_x_discrete(breaks=breaks, labels=names)
+
+@
+
