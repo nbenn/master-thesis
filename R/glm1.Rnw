@@ -141,7 +141,7 @@ tabl  <- tabular(Heading()*RowFactor(rf1, spacing = 1)*
                          levelnames=c("AIC",
                                       "\\textDelta\\textsubscript{deviance}",
                                       "\\textDelta\\textsubscript{df}",
-                                      "Accuracy", "MCC")) ~ 
+                                      "Acc", "Mcc")) ~ 
                  Heading()*Factor(variable)*
                  Heading()*Format(fmt())*(value)*
                  Heading()*(mean), 
@@ -151,7 +151,7 @@ latex(tabl, options=list(toprule=""))
 @
 
 %\newcommand{\knitrDataGlm1PerSepScram}{\Sexpr{pasteAnd(names(perfect.sep$Scrambled)[which(perfect.sep$Scrambled)])}}
-%\newcommand{\knitrDataGlm1PerSepMtor}{\Sexpr{pasteAnd(names(perfect.sep$MTOR)[which(perfect.sep$MTOR)])}}
+%\newcommand{\knitrDataGlm1PerSepMtor}{\Sexpr{pasteAnd(names(perfect.sep$MTOR)[which(perfect.sep$MTOR)])}} 
 %\newcommand{\knitrDataGlm1PerSepTgfbr1}{\Sexpr{pasteAnd(names(perfect.sep$TGFBR1)[which(perfect.sep$TGFBR1)])}}
 %\newcommand{\knitrDataGlm1PerSepRipk4}{\Sexpr{pasteAnd(names(perfect.sep$RIPK4)[which(perfect.sep$RIPK4)])}}
 %\newcommand{\knitrDataGlm1PerSepPik3r3}{\Sexpr{pasteAnd(names(perfect.sep$PIK3R3)[which(perfect.sep$PIK3R3)])}}
