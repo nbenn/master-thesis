@@ -1,0 +1,59 @@
+<<data-location-trend, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=6, out.width=".95\\linewidth", fig.align="center", fig.cap="In order to illustrate the relationship between object location and feature values, a thinned out scatterplot (only a randomly sampled 1\\% of datapoints are shown) of mean actin intensity against distance from image cetner is reproduced alognside a trendline as calculated by gam of the CRAN mgcv package. An approximately linear trend is discernible which can be found in many feature types.", fig.scap="Scatterplot visualization showing mean actin intensity against object distance from image center alongside a trend line.">>=
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(scales))
+options(singleCellFeatures.progressBars = "none")
+
+data <- PlateData(PlateLocation("J110-2D"))
+data <- augmentImageLocation(data)
+data <- augmentCordinateFeatures(data, center.dist=TRUE)
+data <- meltData(data)$mat$Cells
+
+well.name <- data$Well.Name
+well.type <- data$Well.Type
+gene.name <- data$Well.Gene_Name
+
+keep <- unique(unlist(lapply(c(".AreaShape_", ".Intensity_", ".Texture_",
+                               ".Location_Dist_Center_"),
+                             grep, names(data), value=TRUE)))
+data <- data[,keep]
+keep <- apply(data, 2, function(col) {
+  return(sum(!is.finite(col)) < (length(col) / 10))
+})
+data <- data[,keep]
+keep <- apply(data, 1, function(row) {
+  return(sum(!is.finite(row)) == 0)
+})
+data <- data[keep,]
+keep <- apply(data, 2, function(col) {
+  return(var(col) > 0)
+})
+data <- data[,keep]
+keep <- apply(data, 2, function(col) {
+  return(diff(quantile(col, probs=c(0.001, 0.999))) > 0)
+})
+data <- data[,keep]
+
+cell.feats <- grep("^Cells.", names(data), value=TRUE)
+cell.feats <- grep(".Location_", cell.feats, invert=TRUE, value=TRUE)
+cell.feats <- paste0(cell.feats, collapse=" + ")
+mod.img <- lm(paste0("Cells.Location_Dist_Center_Image ~ ", cell.feats), data)
+mod.wel <- lm(paste0("Cells.Location_Dist_Center_Well ~ ", cell.feats), data)
+#summary(mod.img)
+#summary(mod.wel)
+
+set.seed(11)
+thin <- sample.int(nrow(data), nrow(data) / 100)
+ggplot(data[thin,],
+             aes(x=Cells.Location_Dist_Center_Image,
+                 y=Cells.Intensity_MeanIntensity_CorrActin)) +
+  geom_point(aes(alpha = 0.9)) +
+  guides(alpha=FALSE) +
+  stat_smooth(method="gam",colour="red") +
+  theme_bw(base_size = 18) +
+  theme(axis.title.x=element_text(vjust=-0.2),
+        axis.title.y=element_text(vjust=1.4)) +
+  ylim(0.03, 0.13) +
+  xlab("Cell center to image center distance [px]") +
+  ylab("Mean actin intensity for cell objects")
+
+@
