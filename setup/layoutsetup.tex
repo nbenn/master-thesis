@@ -250,3 +250,10 @@
 \setmintedinline[r]{style=knitr, breaklines}
 \setmintedinline[bash]{style=knitr, breaklines}
 \setmintedinline[text]{style=knitr, breaklines}
+
+%% glossaries
+\newglossarystyle{myglstyle}{%
+\setglossarystyle{list}% base this style on the list style
+\renewcommand{\glsgroupskip}{}% make nothing happen
+                              % between groups
+}
