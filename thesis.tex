@@ -9,11 +9,32 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% We use the memoir class because it offers a many easy to use features.
-\documentclass[9pt,b5paper,titlepage]{memoir}
+\documentclass[9pt,a4paper,titlepage,showtrims]{memoir}
+%% use a4 paper, set up smaller page size inside
+\settrimmedsize{22.8cm}{*}{0.7071} % yields 458pt x 648pt
+%% center smaller page on a4 paper
+\setlength{\trimtop}{\stockheight}
+\setlength{\trimedge}{\stockwidth}
+\addtolength{\trimtop}{-\paperheight} % \trimtop  = \stockheight - \paperheight
+\addtolength{\trimedge}{-\paperwidth} % \trimedge = \stockwidth  - \paperwidth
+\settrims{0.5\trimtop}{0.5\trimedge}
+%% set up body size
+\settypeblocksize{459pt}{314pt}{*} % yields 314pt x 460pt
+%% place body on page
+\setlrmargins{70pt}{*}{*}
+\setulmargins{100pt}{*}{*}
+%% finalize layout settings
+\checkandfixthelayout
+%% crop marks
+\quarkmarks
+%% layout package to print current layout (insert \layout in body)
+%\usepackage{layout}
+
 \renewcommand{\baselinestretch}{1.1}
+%% needed for getting around open stream limit
 \usepackage{morewrites}
 
-%% LaTeX Font encoding -- DO NOT CHANGE
+%% LaTeX Font encoding
 \usepackage[T1]{fontenc}
 
 %% Babel provides support for languages.  'english' uses British
