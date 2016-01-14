@@ -1,14 +1,14 @@
 \chapter{Data Analysis}
 \label{ch:data-analysis}
 
-The initial goal of this project was concerned with modeling different infection patterns as influenced through \gls{sirna} mediated gene knockdown. By fitting a \gls{glm} model, using the large set of available cellular features, described in section \ref{sec:scf-data}, as predictor variables and the membership to one of two wells as binary response, it was conjectured that it is possible to determine a subset of most influential features. Unfortunately, to present date, this could not be executed in a sensible manner.
+The initial goal of this master's thesis was concerned with modeling different infection patterns as influenced through \gls{sirna} mediated gene knockdown. By fitting a \gls{glm} model, using the large set of available cellular features, described in section \ref{sec:scf-data}, as predictor variables and the membership to one of two wells as binary response, it was conjectured that it is possible to determine a subset of most influential features. Unfortunately, to present date, this could not be executed in a sensible manner.
 
 In order the make the substantial amount of single cell data, obtained from several large-scale, high throughput \gls{sirna} screens performed by the InfectX consortium, available to an environment for statistical analysis, an R packages was developed, which is described in chapter \ref{ch:singlecellfeatures}. Building on this crucial piece of infrastructure, the current chapter will explore some of the data analysis that was performed, beginning a short introduction into the theory of \glspl{glm} and continuing with preliminary findings that motivate the investigation of desirable normalization schemes. A final outlook on potential improvements will conclude this chapter.
 
 \section{Statistical Models}
-Many algorithms for binary classification exist, including decision trees, \glspl{svm}, Bayesian networks, neural networks and \glspl{glm}, some of which have been encountered in previous sections due to their application in infection scoring (see section \ref{sec:infection-scoring}). As neither prediction not classification per se are of main interest, binary logistic regression presents an attractive method due to availability of extensive coefficient and model statistics. Therefore, modeling of \gls{sirna} effects on cellular features is performed, using the glm function provided by the R stats package \citep{RCoreTeam2015}, as well as glmnet belonging to the CRAN package of the same name \citep{Friedman2010a}.
+Many algorithms for binary classification exist, including decision trees, \glspl{svm}, Bayesian networks, neural networks and \glspl{glm}, some of which have been encountered in previous sections due to their application in infection scoring (see section \ref{sec:infection-scoring}). As neither prediction not classification per se are of main interest, binary logistic regression presents an attractive method due to availability of closed-form coefficient and model statistics. Therefore, modeling of \gls{sirna} effects on cellular features is performed, using the glm function provided by the R stats package \citep{RCoreTeam2015}.
 
-A large number of binary comparisons are possible with the given datasets. In order to focus on attractive wells in the sense that there is reason to assume they might be biologically interesting, the $n \choose 2$ possible combinations of wells (within a single plate, \tilde 70000 pairs can be formed), are narrowed down using a \gls{pmm} as derived by \cite{Ramo2014}. Of the resulting hit list, several genes are selected and compared to wells containing scrambled \gls{sirna} reagents, which should provide a good choice for establishing a background behavior. A possible control alternative are mock wells but owing to the complete absence of \gls{sirna} molecules, the difference in treatment of cells is only increased and hence it can be argued that they provide inferior comparisons.
+A large number of binary comparisons are possible with the given datasets. In order to focus on attractive wells in the sense that there is reason to assume they might be biologically interesting, the $n \choose 2$ possible combinations of wells (within a single plate, where $n=384$, \tilde 70000 pairs can be formed), are narrowed down using a \gls{pmm} as derived by \cite{Ramo2014}. Of the resulting hit list, several genes are selected and compared to wells containing scrambled \gls{sirna} reagents, which should provide a good choice for usage as control. A possible alternative to scrambled experiments are mock wells but owing to the complete absence of \gls{sirna} molecules, the difference in treatment of cells is only increased and hence it can be argued that they provide biased comparisons.
 
 \subsection{Generalized Linear Models}
 Modeling the relationship among variables is one of the most important applications of statistical theory. The study of regression analysis (and the closely related notion of correlation) started to form towards the end of the 19th century with Sir Francis Galton's study of height heredity in humans and his observation of regression towards the mean. Over the next few years, Udny Yule and Karl Pearson cast the developed concepts into precise mathematical formulation, in turn building on work performed by Adrien-Marie Legendre and Carl Friedrich Gauss who developed the method of least squares almost a century earlier \citep{Allen1997}.
@@ -19,36 +19,36 @@ A multiple linear regression model can be written in matrix-vector form as
 \end{equation}
 where $y \in \R^n$ is the vector of observations on the dependent variable, the design matrix $X \in \R^{n \times p}$ contains data on the independent variables, $\beta \in \R^p$ is the $p$-dimensional parameter vector and the error term $\epsilon \in \R^n$ captures effects not modeled by the regressors.
 
-In order to find unknown coefficients $\beta_i$, the ordinary least squares estimator minimizes the residual sum of squares, the squared differences between observed responses and their predictions according to the linear model.
+In order to estimate unknown coefficients $\beta_i$, the ordinary least squares estimator minimizes the residual sum of squares, the squared differences between observed responses and their predictions according to the linear model.
 \begin{subequations}
 \begin{align}
   \Hbeta &= \argmin_{\beta} \norm{y - X \beta}^2 \\
          &= (X^T X)^{-1} X^T y \label{eq:ols-estimate}
 \end{align}
 \end{subequations}
-Some assumptions are typically associated with linear regression models that yield desirable attributes for the estimates. None of these restrictions are imposed on the explanatory variables; they can be continuous or discrete and combined as well as transformed arbitrarily. Furthermore, in practice, it is irrelevant whether the covariates are treated as random variables or as deterministic constants. With exception of the field of econometrics it appears that the majority of literature adheres to the latter interpretation and therefore, statements will not explicitly be conditional on covariate values.
+Some assumptions are typically associated with linear regression models that yield desirable attributes for the estimates (e.g. statistical tests of significance). None of these restrictions are imposed on the explanatory variables; they can be continuous or discrete and combined as well as transformed arbitrarily. Furthermore, in practice, it is irrelevant whether the covariates are treated as random variables or as deterministic constants. With exception of the field of econometrics it appears that the majority of literature adheres to the latter interpretation and therefore, statements will not explicitly be conditional on covariate values.
 \begin{description}
-  \item[Linearity.] The relationship between dependent and independent variables is assumed to be linear (after suitable transformations) and individual effects additive. If this cannot be satisfied, a linear model is not suitable.
+  \item[Linearity.] The relationship between dependent and independent variables is assumed to be linear in coefficients (after suitable transformations of regressors) and individual effects additive. If this cannot be satisfied, a linear model is not suitable.
   \item[Full rank.] For the matrix $X^T X$ to be invertible, it has to have full column rank $p$. Therefore $n \geq p$ and all covariates must be linearly independent.
   \item[Exogeneity.] All independent variables should be known exactly i.e. contain no measurement or observation errors as only the mean squared error of the dependent variable is minimized. Additionally, all important causal factors have to be included in the model. Exogeneity implies $\Erw[\epsilon_i] = 0 \forall i$, as well no correlation between regressors and error terms \citep{Hayashi2000}.
   \item[Spherical errors.] This includes both homoscedasticity or constant error variance, $\Erw[\epsilon_i^2] = \sigma^2 \forall i$, and uncorrelated errors $\Erw[\epsilon_i \epsilon_j] = 0 \forall i \neq j$. These two conditions can be written more compactly as $\Var(\epsilon) = \sigma^2I_{n \times n}$.
   \item[Normality.] For the estimated coefficients to gain some additional desirable characteristics, it can be required that the errors $\epsilon_i$ be jointly normally distributed. Together with the above restrictions on expectation and variance, this yields $\epsilon \mathbin{\sim} \N_n(0, \sigma^2 I_{n \times n})$.
 \end{description}
 
-Violations of these assumptions have varying consequences. In situations of perfect collinearity, the ordinary least squares estimator $\Hbeta$ as defined in \eqref{eq:ols-estimate} does not exist. Recovering such a situation is possible by using a generalized matrix inverse (for example the Moore--Penrose pseudoinverse) or by dropping the corresponding variables. High correlation inflates coefficient variances, which may be countered by employing a regularization scheme like ridge regression. Omitting a variable that is both correlated with dependent variables and has an effect on the response (a nonzero true coefficient) will introduce bias in the parameters. The method of instrumental variables can help to produce an unbiased estimator nonetheless.
+Violations of these assumptions have varying consequences. In situations of perfect collinearity, the ordinary least squares estimator $\Hbeta$ as defined in \eqref{eq:ols-estimate} does not exist. Recovering such a situation is possible by using a generalized matrix inverse (for example the Moore--Penrose pseudoinverse) or by dropping the corresponding variables. High correlation inflates coefficient variances, which may be countered by employing a regularization scheme like ridge regression. Failure to fulfill exogeneity, for example by omitting relevant explanatory variables, leads to regressors that are correlated with the error term, which in turn yields invalid (biased and inconsistent) \gls{ols} estimates. The method of instrumental variables can help to produce an unbiased estimator nonetheless.
 
 The assumption of spherical errors ensures that the least squares estimator is the best linear unbiased estimator in the sense that it has minimal variance among all linear unbiased estimators. Heteroscedasticity and autocorrelation do not yield biased coefficient estimates but can introduce bias in \gls{ols} estimates of variance, causing inaccurate standard errors. Such a situation calls for generalized least squares estimation, for example weighted least squares when the data is not homoscedastic ($\sigma^2$ is vector-valued but off-diagonal elements of $\Var(\epsilon)$ are zero), or feasible generalized least squares which can be applied in case of heteroscedasticity and\slash or correlation between errors. Whenever the condition of spherical errors does not hold, \gls{ols} is inefficient and generalized least squares estimators have smaller variance.
 
 Finally, normality provides the framework necessary for applying common hypothesis testing, yielding t-statistics, p-values and confidence intervals for coefficients, as well as an F-statistic for the model as a whole. Furthermore, under normality assumptions, the \gls{ols} estimator and \gls{mle} coincide. Quantile regression and other forms of robust regression, such as M estimators may restore validity of inference when errors do not follow a normal distribution.
 
-Modeling data to a dichotomous response variable with \gls{ols} methodology, while readily possible, often is a bad choice due to violations of several of the above assumptions. First of all, normal distributions are continous with support $x \in \R$ and thusly a categorical variable cannot be normally distributed. Homoscedasticity does not hold either, as can easily be seen in a geometric argument: any line with nonzero slope, fitted to a set of $Y$ with $Y_i \in \{0,1\}$, will produce residuals that vary linearly. Finally and perhaps most importantly, a linear model is unsuitable due to there being no constraints on the range of fitted values. While this by itself could be dealt with, the concept of additivity within this context raises questions of its own when fitted values are thought of as probabilities. Linear behavior throughout the range of 0 (impossible) to 1 (certain) makes little sense for most practical applications, as typically, some flattening is expected when approaching either end of the spectrum.
+Modeling data to a dichotomous response variable with \gls{ols} methodology, while readily possible, often is a bad choice due to violations of several of the above assumptions. First of all, normal distributions are continous with support $x \in \R$ and thusly a categorical variable cannot be normally distributed. Homoscedasticity does not hold either, as can easily be seen in a geometric argument: any line with nonzero slope, fitted to a set of $Y$ with $Y_i \in \{0,1\}$, will produce residuals that vary linearly. Finally and perhaps most importantly, a linear model is unsuitable due to missing constraints on the range of fitted values. While this by itself could be dealt with, the concept of additivity within this context raises questions of its own when fitted values are thought of as probabilities. Linear behavior throughout the range of 0 (impossible) to 1 (certain) makes little sense for most practical applications, as typically, some flattening is expected when approaching either end of the spectrum.
 
-In view of the above considerations it becomes clear that some sort of extension to ordinary linear regression in needed in order to deal with binary response variables. A theory, unifying several previously separately treated statistical models, including linear regression, \gls{anova}, logistic regression, Poisson regression and multinomial response, as \acrfullpl{glm}, was developped by John Nelder and Robert Wedderburn in the early 1970's \citep{Nelder1972}. Much of this section is based on that work.
+In view of the above considerations it becomes clear that some sort of extension to ordinary linear regression is needed in order to deal with binary response variables. A theory, unifying several previously separately treated statistical models, including linear regression, \gls{anova}, logistic regression, Poisson regression and multinomial response, as \acrfullpl{glm}, was developed by John Nelder and Robert Wedderburn in the early 1970's \citep{Nelder1972}. Much of this section is based on that work.
 
 In order to accommodate the newly added extensions, the classical linear model is rewritten as
 
 \begin{equation}
-  \Erw[Y] = \mu \text{ where } \mu = X \beta,
+  \Erw[Y] = \mu \text{ where } g(\mu) = \eta \text{ and } \eta = X \beta,
 \end{equation}
 
 yielding a three-part specification, consisting of
@@ -58,7 +58,7 @@ yielding a three-part specification, consisting of
   \begin{equation}
     f(x;\theta) = h(x) e^{\theta^\intercal T(x)-A(\theta)}
   \end{equation}
-  where $\theta$ is the vector of paramteters, $T(x)$ the vector of sufficient statistics, $A(\theta)$ the cumulant generating function and $h(x)$ the base measure. In case of the Bernoulli distribution
+  where $\theta$ is the vector of parameters, $T(x)$ the vector of sufficient statistics, $A(\theta)$ the cumulant generating function and $h(x)$ the base measure. In case of the Bernoulli distribution
   \begin{equation}
     f(k;\pi) = \pi^k (1-\pi)^{1-k}\label{eq:bern-pmf}
   \end{equation}
@@ -109,13 +109,13 @@ yielding a three-part specification, consisting of
   \end{tabular}
 \end{table}
 
-Mean and canonical link functions for several common univariate distributions belonging to the exponential family are shown in table \ref{tab:glm-links}. Binary response can be written as 
+Mean and canonical link functions for several common univariate distributions belonging to the exponential family are shown in table \ref{tab:glm-links}. Binary response can be interpreted as 
 \begin{equation}
   Y_i \mathbin{\sim} \Bern(\pi_i)
 \end{equation}
-which implies that
+with
 \begin{equation}
-  \P(Y_i=1) = 1 - \P(Y_i=0) = \pi_i.
+  \pi_i = \P(Y_i=1) = 1 - \P(Y_i=0).
 \end{equation}
 Therefore, $\pi_i$ can be thought of as the probability of one outcome (i.e. success) and its complement ($1-\pi_i$) corresponds to the probability of the other outcome (failure). Each experimental unit that yields one outcome is associated with a vector of independent variables $x_i = (x_{i,1}, x_{i,2}, \dotsc, x_{i,p})$ and the goal of regression in this context becomes modeling the relationship between response probability $\pi_i$ and explanatory variables $x_{i}$. A suitable link function for Bernoulli distributed response, as discussed above, is required to map the unit interval onto the whole real line and preferably be shaped sigmoidally in order accurately describe increasingly likely as well as increasingly unlikely events. Three possibilities are often considered within this context,
 
@@ -146,11 +146,11 @@ and the model is, slightly rearranged, stated as
 
 where $x_i$ is shorthand for the $i$-th row $(x_{i,1}, x_{i,2}, \dotsc, x_{i,p})$ of the design matrix $X$. Consequently, of a unit change in a covariate $x_{i,j}$ will increase the corresponding probability log-odds by a multiplicative factor $\exp(\beta_j)$, as can easily be seen by exponentiating expression \ref{eq:log-model}.
 
-The likelihood of a set of parameter values $\pi$, given the data $y_i$, is equal to the probability of the data, given the parameters. Hence, in a logistic regression model (see expression \ref{eq:bern-pmf} for the probability mass function of a Bernoulli distribution), we have
+The likelihood of a set of parameter values $\pi$, given the data $y$, is equal to the probability of the data, given the parameters. Hence, in a logistic regression model (see expression \ref{eq:bern-pmf} for the probability mass function of a Bernoulli distribution), we have
 
 \begin{subequations}
 \begin{align}
-  L(\beta; y) = \P(y; \beta) &= \prod_{i=1}^n \pi_i^{y_i} (1-\pi_i)^{1-y_i} \label{eq:lik-any} \\
+  L(\beta; y) = \P(y \given \beta) &= \prod_{i=1}^n \pi_i^{y_i} (1-\pi_i)^{1-y_i} \label{eq:lik-any} \\
   &= \prod_{i=1}^n \frac{e^{x_i^\intercal \beta y_i}}{1+e^{x_i^\intercal \beta}} \label{eq:lik-logit}
 \end{align}
 \end{subequations}
@@ -169,12 +169,12 @@ Both expressions \ref{eq:lik-logit} and \ref{eq:loglik-logit} are derived using 
 \Hbeta = \argmax_{\beta} l(\beta; y), 
 \end{equation}
 
-the first derivative of $l(\beta; y)$ with respect to $\beta_j$ in required.
+the first derivative of $l(\beta; y)$ with respect to $\beta_j$ in required:
 
 \begin{subequations}\label{eq:firstder}
 \begin{align}
   \frac{\partial l(\beta)}{\partial \beta_j} &= \sum_{i=1}^n \frac{y_i - \pi_i}{\pi_i (1-\pi_i)} \frac{d \pi_i}{d \eta_i} \frac{\partial \eta_i}{\partial \beta_j} \label{eq:firstder-any} \\
-  &= \sum_{i=1}^n \left(y_i - \frac{e^{x_i^\intercal \beta}}{1+e^{x_i^\intercal \beta}}\right) x_{i,j} \label{eq:firstder-logit}
+  &= \sum_{i=1}^n \left(y_i - \frac{e^{x_i^\intercal \beta}}{1+e^{x_i^\intercal \beta}}\right) x_{i,j} . \label{eq:firstder-logit}
 \end{align}
 \end{subequations}
 
@@ -291,11 +291,11 @@ The three feature groups can easily be spotted as diagonal blocks with high with
 
 \input{R/correlation-heatmap}
 
-In order to deal with this data issue, features are transformed to the coordinate system of \glspl{pc} prior to \gls{glm} model fitting. When employing \gls{pca}, typically the first 10\% of \glspl{pc} capture around 90\% of the overall variance in the data, corroborating the above claim of significant correlation among feature vectors. A further problem that is present in many datasets is that pairs of wells can be perfectly separated. This causes problems in maximum likelihood estimation, as affected coefficients are allowed to grow arbitrarily large, but is not unexpected given the large design space. \Gls{pca} provides a tool for addressing the issue by encouraging only inclusion of a subset of \glspl{pc} and thus reducing dimensionality.
+In order to deal with this data issue, features are transformed to the coordinate system of \glspl{pc} prior to \gls{glm} model fitting. When employing \gls{pca}, typically the first 10\% (or 30--50) of \glspl{pc} capture around 90\% of the overall variance in the data, corroborating the above claim of significant correlation among feature vectors. A further problem that is present in many datasets is that pairs of wells can be perfectly separated. This causes problems in maximum likelihood estimation, as affected coefficients are allowed to grow arbitrarily large, but is not unexpected given the large design space. \Gls{pca} provides a tool for addressing the issue by encouraging only inclusion of a subset of \glspl{pc} and thus reducing dimensionality.
 
-Several \gls{glm} model fits, based on principal component regression are summarized in table \ref{tab:glm-1}. For the same plate is used in figure \ref{fig:analysis-correlation} (J110-2D, \textit{Brucella}, Dharmacon unpooled, replicate 1), well pairs corresponding to the genes identified by \gls{pmm} as down-hits, MTOR (H6) and PIK3R3 (K8), as well as up-hits, RIPK4 (G17) and TGFBR1 (M4), with respect to infection, are formed with all available scrambled wells of the given plate. In order to establish a baseline of sorts, scrambled wells are also paired with each other.
+Several \gls{glm} model fits, based on principal component regression are summarized in table \ref{tab:glm-1}. For the same plate is used in figure \ref{fig:analysis-correlation} (J110-2D, \textit{Brucella}, Dharmacon unpooled, replicate 1), well pairs corresponding to the genes identified by \gls{pmm} as down-hits, MTOR (H6) and PIK3R3 (K8), as well as up-hits, RIPK4 (G17) and TGFBR1 (M4), are formed with all available scrambled wells of the given plate. In order to establish a baseline of sorts, scrambled wells are also paired with each other.
 
-For describing how well the discrepancy between the two input wells is captured, some model characteristics, alongside scores for out-of-sample predictions are reported. The AIC is a goodness of fit estimate, constituting of the maximized log-likelihood $l$, as well as a penalty term for model size $k$, and is defined as
+For describing how well the discrepancy between the two input wells is captured, some model characteristics, alongside scores for predictions, are reported. The AIC is a goodness of fit estimate, constituting of the maximized log-likelihood $l$, as well as a penalty term for model size $k$, and is defined as
 
 \begin{equation}
   \aic = 2k - 2l(\Hpi; y).
@@ -307,13 +307,13 @@ Deviance values require caution when interpreted as a goodness-of-fit criterion,
   D^{(0)}(y; \pi^{(0)}) = 2l(\widetilde{\pi}; y) - 2l(\pi^{(0)}; y),
 \end{equation}
 
-with $\widetilde{\pi}$ denoting the saturated model, and residual deviance
+and residual deviance as
 
 \begin{equation}
   D(y; \Hpi) = 2l(\widetilde{\pi}; y) - 2l(\Hpi; y).
 \end{equation}
 
-The saturated model contains as many parameters as there are data observations ($n$) and consequently represents the maximally possible likelihood. The null model $\pi^{(0)}$ contains only an intercept term (i.e. a single parameter), while the proposed model $\Hpi$ attempts to explain the data using $p+1$ parameters (one for each covariate and an intercept). Finally, the values reported in table \ref{tab:glm-1} as $\Delta\textsubscript{deviance}$ are obtained as
+The saturated model $\widetilde{\pi}$ contains as many parameters as there are data observations ($n$) and consequently represents the maximally possible likelihood. The null model $\pi^{(0)}$ contains only an intercept term (i.e. $y = constant$), while the proposed model $\Hpi$ attempts to explain the data using $p+1$ parameters (one for each covariate and an intercept). Finally, the values reported in table \ref{tab:glm-1} as $\Delta\textsubscript{deviance}$ are obtained as
 
 \begin{equation}
   \Delta\textsubscript{deviance} = D^{(0)}(y; \pi^{(0)}) - D(y; \Hpi),
@@ -331,14 +331,14 @@ Under certain assumptions,\footnote{Deviance is only distributed as $\chi^2$ in 
 \setlength{\tabcolsep}{0.25em}
 \begin{table}
   \centering
-  \caption[\Gls{glm} model summaries based on principal components for several well pairings.]{Summaries of several \gls{glm} models obtained by pairing wells corresponding to the genes MTOR (H6), PIK3R3 (K8), RIPK4 (G17) and TGFBR1 (M4) with all available scrambled wells on the same plate (J110-2D). Comparisons among scrambled wells serve as baseline (the scrambled row corresponds to well G1). Model fit is summarized by \gls{aic}, the difference in deviance and degrees of freedom (both between null and fitted models), as well as out-of-sample prediction scores. The following models suffer from separated data: MTOR (A24, G1, J2), PIK3R3 (E24, G1, G23, H2, L23), RIPK4 (E2, G23, H2, J2, L1) and Scrambled (A24, G23, H24, J24, L23).}
+  \caption[\Gls{glm} model summaries based on principal components for several well pairings.]{Summaries of several \gls{glm} models obtained by pairing wells corresponding to the genes MTOR (H6), PIK3R3 (K8), RIPK4 (G17) and TGFBR1 (M4) with all available scrambled wells on the same plate (J110-2D). Comparisons among scrambled wells serve as baseline (the scrambled row corresponds to well G1). Model fit is summarized by \gls{aic}, the difference in deviance and degrees of freedom (both between null and fitted models), as well as prediction scores. The following models suffer from separated data: MTOR (A24, G1, J2), PIK3R3 (E24, G1, G23, H2, L23), RIPK4 (E2, G23, H2, J2, L1) and Scrambled (A24, G23, H24, J24, L23).}
   \label{tab:glm-1}
   \footnotesize
   \vspace{5px}
   \input{R/glm1}
 \end{table}
 
-Moving along to out-of-sample prediction scores, table \ref{tab:glm-1} shows both accuracy and \gls{mcc} values obtained by separating 20\% of data for each group from training data and evaluating predictions. Accuracy is defined as
+Moving along to prediction scores, table \ref{tab:glm-1} shows both accuracy and \gls{mcc} values obtained by separating 20\% of data for each group from training data and evaluating predictions using test data. Accuracy is defined as
 
 \begin{equation}
   \text{Acc} = \frac{n_{tp} + n_{tn}}{n_p+n_n}
@@ -370,32 +370,38 @@ The large amount of technical variation, coupled with treating biological system
 In order to correct \gls{sirna} data for experimental artifacts at plate and well levels, two schemes have become standard practice, Z-scoring and B-scoring \citep{Malo2006}. The former is widely known (outside the field of \gls{sirna} analysis) and is defined as
 
 \begin{equation}
-  z_i = \frac{x_i - \mu}{\sigma}
+  z_{ij} = \frac{x_{ij} - \mu_j}{\sigma_j}, \; i=1, \dotsc, n \: \text{and} \: j=1, \dotsc, m
 \end{equation}
 
-where $\mu$ represents the mean, $\sigma$ the standard deviation and $x$ the vector of features to be normalized. Applying Z-scoring both centers data around zero and scales dispersion to unit variance. B-scoring is more domain specific and deals with row and column effects that have been discussed previously (e.g. pipetting issues, leading to horizontal patterns or temporal effects such as decay of actin stain intensity, resulting in a vertically oriented gradient, when imaging is performed column-wise). B-scoring can be expressed as
+where $n$ is the number of cells, $m$ the number of features and $x_{.j}$ the data vector of feature j to be normalized, while $\mu_j$ represents the sample mean and $\sigma_j$ the sample standard deviation of feature j, as
 
 \begin{equation}
-  b_{ijp} = \frac{r_{ijp}}{\mad(r)} = \frac{x_{ijp} - (\Hmu_p + \widehat{\alpha}_{ip} + \widehat{\beta}_{jp})}{\mad(r)}
+  \mu_j = \frac{1}{n} \sum_{i=1}^n x_{ij} \; \text{and} \; \sigma_j = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (x_{ij}-\mu_j)^2}.
 \end{equation}
 
-and estimates for row and column effects, $\widehat{\alpha}_{ip}$ and $\widehat{\beta}_{jp}$, respectively, are obtained by fitting a two-way median polish algorithm. Together with an estimate for plate average $\Hmu_p$, these three parameters are used to determine a residual $r_{ijp}$, which divided by the \gls{mad} over the whole plate, yields the B-scored value $b_{ijp}$. Median polishing proceeds by augmenting the plate layout with an additional column and row as
+Applying Z-scoring therefore both centers data around zero and scales dispersion to unit variance. B-scoring is more domain specific and deals with row and column effects that have been discussed previously (e.g. pipetting issues, leading to horizontal patterns or temporal effects such as decay of actin stain intensity, resulting in a vertically oriented gradient, when imaging is performed column-wise). B-scoring can be expressed as
+
+\begin{equation}
+  b_{rcp} = \frac{\epsilon_{rcp}}{\mad(r)} = \frac{x_{rcp} - (\Hmu_p + \widehat{\alpha}_{rp} + \widehat{\beta}_{cp})}{\mad(r)}, \; r=1, \dotsc, N \: \text{and} \: c=1, \dotsc, M,
+\end{equation}
+
+where $N$ is the number of plate rows and $M$ the number of plate columns (in the present setup 16 and 24 respectively). Estimates for row and column effects, $\widehat{\alpha}_{rp}$ and $\widehat{\beta}_{cp}$, are obtained by fitting a two-way median polish algorithm. Together with an estimate for plate average $\Hmu_p$, these three parameters are used to determine a residual $\epsilon_{rcp}$, which divided by the \gls{mad} over the whole plate, yields the B-scored value $b_{rcp}$. Median polishing proceeds by augmenting the plate layout with an additional column and row as
 
 \begin{equation*}
   \begin{array}{cccc|c}
-    r_{1,1,p} & r_{1,2,p} & \cdots & r_{1,24,p} & \alpha_{1,p} \\
-    r_{2,1,p} & r_{2,2,p} & \cdots & r_{2,24,p} & \alpha_{2,p} \\
+    \epsilon_{1,1,p} & \epsilon_{1,2,p} & \cdots & \epsilon_{1,M,p} & \alpha_{1,p} \\
+    \epsilon_{2,1,p} & \epsilon_{2,2,p} & \cdots & \epsilon_{2,M,p} & \alpha_{2,p} \\
     \vdots  & \vdots  & \ddots & \vdots & \vdots \\
-    r_{16,1,p} & r_{16,2,p} & \cdots & r_{16,24,p} & \alpha_{16,p} \\
+    \epsilon_{N,1,p} & \epsilon_{N,2,p} & \cdots & \epsilon_{N,M,p} & \alpha_{N,p} \\
     \hline
-    \beta_{1,p} & \beta_{2,p} & \cdots & \beta_{24,p} & \mu_{p} \\
+    \beta_{1,p} & \beta_{2,p} & \cdots & \beta_{M,p} & \mu_{p} \\
   \end{array}
 \end{equation*}
 
-and initializing the values as $r_{ijp} = x_{ijp}$ and $\alpha_{i,p} = \beta_{j,p} = \mu_p = 0$. A row sweep consists of iterating all rows, calculating the median of $(r_{i,1,p}, r_{i,2,p}, \dotsc, r_{i,24,p})$ for each row $i$, subtracting the resulting value from $(r_{i,1,p}, r_{i,2,p}, \dotsc, r_{i,24,p})$ and adding it to $\alpha_{i,p}$. The same procedure is also applied to the column effect row where the median of $(\beta_{1,p}, \beta_{2,p}, \dotsc, \beta_{24,p}$ is subtracted from $(\beta_{1,p}, \beta_{2,p}, \dotsc, \beta_{24,p}$ and added to $\mu_p$). A column sweep is carried out analogously and the two procedures are alternated until all rows and columns of residuals have median zero, as do the vectors of row and column effects (or fall below a threshold close to zero). Usually only a couple of sweeps in each direction (\tilde 2) are needed and the results are non-unique as they depend on whether row or column sweeps are put first. Furthermore, using means instead of medians yields a least squares decomposition as in two-way \gls{anova} without iteration, which is less robust towards outliers \citep{Brown2004,Venables2002}. The \gls{mad} is defined as
+and initializing the values as $\epsilon_{rcp} = x_{rcp}$ and $\alpha_{rp} = \beta_{cp} = \mu_p = 0$. A row sweep consists of iterating all rows, calculating the median of $(\epsilon_{i,1,p}, \epsilon_{i,2,p}, \dotsc, \epsilon_{i,M,p})$ for each row $i$, subtracting the resulting value from $(\epsilon_{i,1,p}, \epsilon_{i,2,p}, \dotsc, \epsilon_{i,M,p})$ and adding it to $\alpha_{i,p}$. The same procedure is also applied to the column effect row where the median of $(\beta_{1,p}, \beta_{2,p}, \dotsc, \beta_{M,p}$ is subtracted from $(\beta_{1,p}, \beta_{2,p}, \dotsc, \beta_{M,p}$ and added to $\mu_p$). A column sweep is carried out analogously and the two procedures are alternated until all rows and columns of residuals have median zero, as do the vectors of row and column effects (or fall below a threshold close to zero). Usually only a couple of sweeps in each direction (\tilde 2) are needed. The results are non-unique as they depend on whether row or column sweeps are put first. Furthermore, using means instead of medians yields a least squares decomposition as in two-way \gls{anova} without iteration, which is less robust towards outliers \citep{Brown2004,Venables2002}. The \gls{mad} is defined as
 
 \begin{equation}
-  \mad(x) = \median\left(\abs{x_i-\median(x)}\right).
+  \mad(x) = \median\left(\abs{x_k-\median(x)}\right).
 \end{equation}
 
 and therefore provides an estimation of data spread which is more robust towards outliers as other measures of dispersion, such as standard deviation.
@@ -403,7 +409,7 @@ and therefore provides an estimation of data spread which is more robust towards
 While B-scoring has proven to be a capable normalization tool for data coming from a plate reader or phenotypic data like infection scores as generated from InfectX screens, where there is a single value per well to be adjusted for experimental artifacts, the situation for single cell feature data is much more complex. Ideally, Z-scoring and B-scoring are able to correct for issues at plate and well level, but data hierarchy goes beyond that for InfectX datasets. For example, data can be split into images which are captured individually, possibly with different imaging parameters and therefore may require differing treatment.
 
 \subsection{Multivariate Adaptive Regression Splines}
-At cellular level of granularity, an abundance of additional sources of noise may directly be addressed. This includes technical issues, as well as biological variability. Examples for the former are location of cell within well which might be relevant due some degree of curvature of the well bottom, inducing focusing problems towards well borders, or location of cell within image, possibly affecting cellular features due to varying optical properties moving away from the image center (e.g. vignetting, decrease in sharpness, chromatic aberration, etc.). Biological sources of noise are even more plentiful and therefore increasingly harder to address. Obvious targets include general cell state parameters, such as cell cycle stage or whether the cell is apoptotic with the difficulty here being reliably determining these factor variables.
+At cellular level of granularity, an abundance of additional sources of noise may directly be addressed. This includes technical issues, as well as biological variability. Examples for the former are location of cell within the well which might be relevant due some degree of curvature of the well bottom, inducing focusing problems towards well borders, or location of cell within image, possibly affecting cellular features due to varying optical properties moving away from the image center (e.g. vignetting, decrease in sharpness, chromatic aberration, etc.). Biological sources of noise are even more plentiful and therefore increasingly harder to address. Obvious targets include general cell state parameters, such as cell cycle stage or whether the cell is apoptotic with the difficulty here being reliably determining these factor variables.
 
 Work by \citeauthor{Snijder2012} elucidates the importance of cellular population context in cell-to-cell variability. In a comprehensive analysis of virally perturbed \gls{sirna} screens they demonstrate that parameters such as local cell density, population size and cell location within cellular aggregates significantly alter measured phenotypes. Building on these results, \citeauthor{Knapp2011} propose a normalization scheme by fitting a \gls{mars} model to a selection of features that represent the cellular population context (among other technical parameters) and using only the residuals for further analysis.
 
@@ -453,11 +459,11 @@ Implemented as part of singleCellFeatures, are both procedures for applying Z-sc
 
 \input{R/location-trends}
 
-The smaller of the two contains predictors for object location within image and well, in addition to feature specific terms obtained through B-scoring. Motivated by findings as displayed in figure \ref{fig:data-location-trend}, cellular features are normalized using the locations of their respective nuclei. Figure \ref{fig:data-location-trend} shows a scatter-plot of mean actin intensity in cell objects versus their locations measured as Euclidean distance from the image center. The trend line (calculated by the function \mintinline{text}{gam} of the CRAN package mgcv) indicates an approximately linear relationship with negative slope. Such dependencies can reliably be found for most features, both at well and image level and their significance can be established by fitting multiple linear regression models. The resulting p-values for an overwhelming majority of features are highly significant with many below machine accuracy ($<2\cdot10^{-16}$). As this effect constitutes an entirely experimental artifact, it seems reasonable to correct for location with respect to well and image centers.
+The smaller of the two contains predictors for object location within image and well, in addition to feature specific terms obtained through B-scoring. Motivated by findings as displayed in figure \ref{fig:data-location-trend}, cellular features are normalized using the locations of their respective nuclei. Figure \ref{fig:data-location-trend} shows a scatter-plot of mean actin intensity in cell objects versus their locations measured as Euclidean distance from the image center. The trend line (calculated by the function \mintinline{text}{gam} of the CRAN package mgcv) indicates an approximately linear relationship with negative slope. Such dependencies can reliably be found for most features, both at well and image level and their significance can be established by fitting multiple linear regression models. The resulting p-values for an overwhelming majority of features are highly significant, below machine accuracy ($<2\cdot10^{-16}$). As this effect constitutes an entirely experimental artifact, it seems reasonable to correct for location with respect to well and image centers.
 
 Population context normalization additionally includes features for nucleus area, cell count per image, nuclear form factor, cell area, cell density, whether the cell is close to an image border and whether the cell is located at the edge of a colony. \citeauthor{Knapp2011} suggest that the procedure be carried out for a complete screen and while that is not a difficult task for the data they processed (only a single feature, 10-fold fewer cells), it is far more demanding for IndectX data. For an investigation considering only infected cells of a \textit{Brucella}, Dharmacon unpooled screen, this was necessary as only few cells per MTOR well are available which consequently have to be aggregated.
 
-In order for the \gls{mars} procedure to even out technical effects in multiple plate-spanning normalization, it is, at least for the dataset mentioned above, important to center data with respect to plate means prior to fitting the \gls{mars} model, as otherwise results are unsatisfactory (neither row, nor column effects can be completely removed, most probably due to underestimated plate effects). A further issue is that of memory. The entire screen consists of $2 \times 12$ plates which would require on the order of \SI{200}{\giga\byte} for storing the data alone, not taking operational overhead into account. This is infeasible, even for large memory machines. As MTOR wells are located on 8 of the 24 plates, only these were handled jointly.
+In order for the \gls{mars} procedure to even out technical effects as a normalization scheme spanning multiple plates, it is, at least for the dataset mentioned above, important to center data with respect to plate means prior to fitting the \gls{mars} model, as otherwise results are unsatisfactory (neither row, nor column effects can be completely removed, most probably due to underestimated plate effects). A further issue is that of memory. The entire screen consists of $2 \times 12$ plates which would require on the order of \SI{200}{\giga\byte} for storing the data alone, not taking operational overhead into account. This is infeasible, even for large memory machines. As MTOR wells are located on 8 of the 24 plates, only these were handled jointly.
 
 Computationally, two avenues were explored, keeping all data in memory and utilizing disk scratch to lower the astronomical memory requirements of the former approach. Using a reasonably fast permanent storage device such as a \gls{ssd}, screen wide normalization is readily possible on regular desktop machines but frequent data fetching from storage incurs a significant time penalty. Processing 8 plates and \tilde 400 features takes on the order of \SI{36}{\hour}. Handling all data in memory speeds up the process to 6--\SI{8}{\hour}, but handling 8 plates, which alone only require \tilde \SI{60}{\giga\byte}, required a complete \SI{256}{\giga\byte} node of the ETH Euler cluster for processing.
 
@@ -475,7 +481,7 @@ Finally, the two approaches can be coupled by first stabilizing dispersion, foll
 \setlength{\tabcolsep}{0.25em}
 \begin{table}
   \centering
-  \caption[Reiteration of table \ref{tab:glm-1}, using normalized features for \gls{glm} fitting.]{For illustrating the effect of \gls{mars} normalization, using the smaller set of predictors targeted at technical issues only, this table is a reiteration of table \ref{tab:glm-1}, using normalized data instead. All other parameters (i.e. \gls{pca}, 90\% of varaince, etc.) remain. The following models suffer from separated data: MTOR (A24, E2, E24, G1, G23, H2 and J2), PIK3R3 (H2), RIPK4 (A2, E24, G1, G23, H2, J2 and L1), Scrambled (G23 and H2) and TGFBR1 (E2, E24 and H24).}
+  \caption[Reiteration of table \ref{tab:glm-1}, using normalized features for \gls{glm} fitting.]{For illustrating the effect of \gls{mars} normalization, using the smaller set of predictors targeted at technical issues only, this table is a reiteration of table \ref{tab:glm-1}, using normalized data instead. All other parameters (i.e. \gls{pca}, 90\% of variance, etc.) remain. The following models suffer from separated data: MTOR (A24, E2, E24, G1, G23, H2 and J2), PIK3R3 (H2), RIPK4 (A2, E24, G1, G23, H2, J2 and L1), Scrambled (G23 and H2) and TGFBR1 (E2, E24 and H24).}
   \label{tab:glm-2}
   \footnotesize
   \vspace{5px}
