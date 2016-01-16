@@ -30,120 +30,134 @@ All liquid handing stages of infection, fixation, and immunofluorescence stainin
 
 \section{Decision Trees for Infection Scoring}
 \label{sec:app-dectree}
-The decision trees for adenovirus and \textit{Bartonella} are shown in section~\ref{sec:infection-scoring} while the ones corresponding to the remaining pathogens (\textit{Brucella}, \textit{Listeria}, rhinovirus, \textit{Salmonella} and vaccinia virus) follow. Please refer to section~\ref{sec:infection-scoring} for more information of infection scoring, including descriptions of infection patterns upon which these decision trees are based. Table \ref{tab:dectree-thresh} shows the different thresholds that currently are in use. Due to several experimental parameters affecting intensity measurements, such as age of microscope lamp, plate position in imaging queue or quality of staining, plate-wise adjustments are necessary in some instances. Several plates can be subjected to the same values, but over all datasets, some variation exists. The values used for decision trees represent the respectively most widely used combination of parameters.
+The decision trees for adenovirus and \textit{Bartonella} are shown in section~\ref{sec:infection-scoring} while the ones corresponding to the remaining pathogens (\textit{Brucella}, \textit{Listeria}, rhinovirus, \textit{Salmonella} and vaccinia virus) follow. Please refer to section~\ref{sec:infection-scoring} for more information of infection scoring, including descriptions of infection patterns upon which these decision trees are based. The corresponding tables show the different thresholds that currently are in use. Due to several experimental parameters affecting intensity measurements, such as age of microscope lamp, plate position in imaging queue or quality of staining, plate-wise adjustments are necessary in some instances. Several plates can be subjected to the same values, but over all datasets, some variation exists. Accompanying each of the following decision trees is a table holding the currently used sets of decision boundaries alongside a percentage value indicating the coverage of a given parameter set. For \textit{Brucella} and vaccinia, only the 12 most frequent sets are printed, while the lists for the remaining pathogens are exhaustive.
 
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{0.35em}
 \begin{figure}[b]
-\centering
-\begin{tikzpicture}
-
-\node [decision={$> 0.050$}{$\le 0.050$}] { 
-  \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen}
-}
-[decision tree]
-child { node [infected] { infected } }
-child { node [decision={$> 0.055$}{$\le 0.055$}] { 
-\texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
-  child { node [infected] { infected } }
-  child { node [decision={$> 0.075$}{$\le 0.075$}] { 
-  \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen} }
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
+      \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen}
+    }
+    [decision tree]
     child { node [infected] { infected } }
-    child { node [healthy] { not infected } }
-  }
-};
+    child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
+    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
+      child { node [infected] { infected } }
+      child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
+      \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen} }
+        child { node [infected] { infected } }
+        child { node [healthy] { not infected } }
+      }
+    };
+  \end{tikzpicture}
 
-\end{tikzpicture}
-\caption[Decision tree for \textit{Brucella} infection scoring.]{Decision tree for \textit{Brucella} infection scoring. While the first two decisions are modeled to capture what is considered a normal infection pattern, the last split imposes a high threshold for cells that have failed the first two steps to still be considered infected.}
-\end{figure}
+  \vspace{5mm}
+  \footnotesize
+  \input{R/dectree-thresh/dectree-thresh-brucella}
 
-\begin{figure}
-\centering
-\begin{tikzpicture}
-
-\node [decision={$> 0.11$}{$\le 0.11$}] { 
-  \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrInlC}
-}
-[decision tree]
-child { node [infected] { infected } }
-child { node [decision={$> 0.15$}{$\le 0.15$}] { 
-\texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrInlC} } 
-  child { node [infected] { infected } }
-  child { node [decision={$> 0.12$}{$\le 0.12$}] { 
-  \texttt{Nuclei.Intensity\_UpperQuartile-\\Intensity\_CorrInlC} }
-    child { node [infected] { infected } }
-    child { node [healthy] { not infected } }
-  }
-};
-
-\end{tikzpicture}
-\caption[Decision tree for \textit{Listeria} infection scoring.]{The decision tree for \textit{Listeria} infection scoring is based on a channel recording InlC localization and intensity instead of targeting the bacteria themselves.}
-\end{figure}
-
-\begin{figure}
-\centering
-\begin{tikzpicture}
-
-\node [decision={$> 0.085$}{$\le 0.085$}] { 
-  \texttt{Nuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen}
-}
-[decision tree]
-child { node [infected] { infected } }
-child { node [decision={$> 0.090$}{$\le 0.090$}] { 
-\texttt{PeriNuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen} } 
-  child { node [infected] { infected } }
-  child { node [decision={$> 0.125$}{$\le 0.125$}] { 
-  \texttt{VoronoiCells.Intensity\_MeanUpper-\\TenPercentIntensity\_CorrPathogen} }
-    child { node [infected] { infected } }
-    child { node [healthy] { not infected } }
-  }
-};
-
-\end{tikzpicture}
-\caption[Decision tree for rhinovirus infection scoring.]{Decision tree for rhinovirus infection scoring. Using the mean of the uppermost decile of pathogen channel intensity data yields the most table results.}
+  \vspace{5mm}
+  \caption[Decision tree for \textit{Brucella} infection scoring.]{Decision tree for \textit{Brucella} infection scoring. While the first two decisions are modeled to capture what is considered a normal infection pattern, the last split imposes a high threshold for cells that have failed the first two steps to still be considered infected. The list of decision boundaries values is not exhaustive and the remaining 14\% of plates is handled by an additional 29 parameter sets.}
 \end{figure}
 
 \begin{figure}
   \centering
   \begin{tikzpicture}
-    \node [decision={$> 0.085$}{$\le 0.085$}] { 
+    \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
+      \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrInlC}
+    }
+    [decision tree]
+    child { node [infected] { infected } }
+    child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
+    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrInlC} } 
+      child { node [infected] { infected } }
+      child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
+      \texttt{Nuclei.Intensity\_UpperQuartile-\\Intensity\_CorrInlC} }
+        child { node [infected] { infected } }
+        child { node [healthy] { not infected } }
+      }
+    };
+  \end{tikzpicture}
+
+  \vspace{5mm}
+  \footnotesize
+  \input{R/dectree-thresh/dectree-thresh-listeria}
+
+  \vspace{5mm}
+  \caption[Decision tree for \textit{Listeria} infection scoring.]{The decision tree for \textit{Listeria} infection scoring is based on a channel recording InlC localization and intensity instead of targeting the bacteria themselves. Despite the values indicating coverage of each of the parameter sets not summing to unity, the list is exhaustive. The discrepancy is caused by rounding.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
+      \texttt{Nuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen}
+    }
+    [decision tree]
+    child { node [infected] { infected } }
+    child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
+    \texttt{PeriNuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen} } 
+      child { node [infected] { infected } }
+      child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
+      \texttt{VoronoiCells.Intensity\_MeanUpper-\\TenPercentIntensity\_CorrPathogen} }
+        child { node [infected] { infected } }
+        child { node [healthy] { not infected } }
+      }
+    };
+  \end{tikzpicture}
+
+  \vspace{5mm}
+  \footnotesize
+  \input{R/dectree-thresh/dectree-thresh-rhino}
+
+  \vspace{5mm}
+  \caption[Decision tree for rhinovirus infection scoring.]{Decision tree for rhinovirus infection scoring. Using the mean of the uppermost decile of pathogen channel intensity data yields the most stable results.}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
       \texttt{Cells.Intensity\_SubCellBacteria-\\MeanIntensity\_CorrPathogen}
     }
     [decision tree]
-    child { node [decision={$< 2$}{$\ge 2$}] { 
+    child { node [decision={$< \text{B}$}{$\ge \text{B}$}] { 
       \texttt{Cells.AreaShape\_SubCellBacteria-\\Area\_CorrPathogen} }
       child { node [infected] { infected } }
       child { node [healthy] { not infected } }
     }
     child { node [healthy] { not infected } };
   \end{tikzpicture}
-  \caption[Decision tree for \textit{Salmonella} infection scoring.]{Decision tree for \textit{Salmonella} infection scoring. For a cell being considered infected, not only does the threshold for pathogen intensity throughout the cell need be exceeded but the bacteria also have to be sufficiently aggregated.}
+
+  \vspace{5mm}
+  \footnotesize
+  \input{R/dectree-thresh/dectree-thresh-salmonella}
+
+  \vspace{5mm}
+  \caption[Decision tree for \textit{Salmonella} infection scoring.]{Decision tree for \textit{Salmonella} infection scoring. For a cell being considered infected, not only does the threshold for pathogen intensity throughout the cell need be exceeded but the bacteria also have to be sufficiently aggregated. The list of decision boundaries is exhaustive and the sum of coverage percentages overshooting unity is caused by rounding.}
   \label{fig:dectree-salmonella}
 \end{figure}
 
 \begin{figure}
-\centering
-\begin{tikzpicture}
+  \centering
+  \begin{tikzpicture}
+    \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
+      \texttt{Nuclei.Intensity\_MeanIntensity\_\\Corr1Pathogen}
+    }
+    [decision tree]
+    child { node [infected] { infected } }
+    child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
+    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_Corr1Pathogen} } 
+      child { node [infected] { infected } }
+      child { node [healthy] { not infected } }
+    };
+  \end{tikzpicture}
 
-\node [decision={$> 0.045$}{$\le 0.045$}] { 
-  \texttt{Nuclei.Intensity\_MeanIntensity\_\\Corr1Pathogen}
-}
-[decision tree]
-child { node [infected] { infected } }
-child { node [decision={$> 0.050$}{$\le 0.050$}] { 
-\texttt{PeriNuclei.Intensity\_\\MeanIntensity\_Corr1Pathogen} } 
-  child { node [infected] { infected } }
-  child { node [healthy] { not infected } }
-};
-
-\end{tikzpicture}
-\caption[Decision tree for vaccinia virus infection scoring.]{Decision tree for vaccinia virus infection scoring. A separate decision tree for distinguishing primary from secondary infections has been developed but is not shown.}
-\end{figure}
-
-\renewcommand{\arraystretch}{1.1}
-\setlength{\tabcolsep}{0.4em}
-\begin{table}
-  \caption[Different threshold values used for \gls{dtis}.]{\Gls{dtis} requires plate-wise adjustments of threshold values. Usually, a set of thresholds can be applied to multiple plates, but overall, several sets are needed, except in \textit{Bartonella} screens.}
-  \label{tab:dectree-thresh}
+  \vspace{5mm}
   \footnotesize
-  \vspace{3.6cm}
-  \input{R/dectree-thresh}
-\end{table}
+  \input{R/dectree-thresh/dectree-thresh-vaccinia}
+
+  \vspace{5mm}
+  \caption[Decision tree for vaccinia virus infection scoring.]{Decision tree for vaccinia virus infection scoring. A separate decision tree for distinguishing primary from secondary infections has been developed but is not shown. Not all decision boundary values are shown (the remaining 21\% of plates is handled by an additional 21 parameter sets).}
+\end{figure}

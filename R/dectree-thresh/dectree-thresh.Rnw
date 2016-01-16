@@ -1,0 +1,93 @@
+<<dectree-thresh-rest, eval=TRUE, echo=FALSE, message=FALSE, results='hide'>>=
+suppressPackageStartupMessages(library(xtable))
+#data <- read.csv2(paste0("/Users/nbennett/CloudStation/MasterThesis/software",
+#                        "/tginfectx/trunk/screeningBee/Tools/",
+#                        "BeePreAnalysisDaemon/BeeOpenBISMetaData.csv"),
+#                        stringsAsFactors=FALSE)
+#data <- cbind(data$Experiment.Identifier,
+#              data$Sample,
+#              data$Decision.Tree.Infection.Scoring.Threshold)
+#saveRDS(data, paste0(gsub("/R/", "/data/", getwd()), "/dectree-thresh.rds"))
+
+data <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/dectree-thresh.rds"))
+
+data <- data[grepl("^/INFECTX", data[,1]),]
+data <- data[grepl("StandardInfection\\(", data[,3]),][,3]
+
+pathogens <- c("BrucellaNewStandardInfection",
+               "AdenoStandardInfection",
+               "ListeriaStandardInfection",
+               "RhinoStandardInfection",
+               "SalmonellaStandardInfection",
+               "VacciniaStandardInfection")
+features  <- list(
+  c("Nuclei.Intensity_MeanIntensity_CorrPathogen",
+    "PeriNuclei.Intensity_MeanIntensity_CorrPathogen",
+    "Cells.Intensity_MeanIntensity_CorrPathogen"),
+  c("Cells.Intensity_MeanIntensity_CorrPathogen",
+    "PeriNuclei.Intensity_MeanIntensity_CorrPathogen",
+    "Nuclei.Intensity_MeanIntensity_CorrPathogen"),
+  c("Nuclei.MeanIntensity_CorrInlC",
+    "PeriNuclei.MeanIntensity_CorrInlC",
+    "Nuclei.UpperQuartileIntensity_CorrInlC"),
+  c("Nuclei.Intensity_MeanUpperTenPercentIntensity_CorrPathogen",
+    "PeriNuclei.Intensity_MeanUpperTenPercentIntensity_CorrPathogen",
+    "VoronoiCells.Intensity_MeanUpperTenPercentIntensity_CorrPathogen"),
+  c("Cells.Intensity_SubCellBacteriaMeanIntensity_CorrPathogen",
+    "Cells.AreaShape_SubCellBacteriaArea_CorrPathogen"),
+  c("Nuclei.Intensity_MeanIntensity_CorrPathogen",
+    "PeriNuclei.Intensity_MeanIntensity_CorrPathogen")
+)
+names(features) <- pathogens
+
+tables <- lapply(pathogens, function(proc, dat, feat) {
+  selection <- dat[grepl(paste0("^", proc, "\\("), dat)]
+  uniques   <- unique(selection)
+  counts    <- sapply(uniques, function(x, all) {
+    return(sum(all == x))
+  }, selection)
+  counts <- 100 * counts / sum(counts)
+  res <- lapply(uniques, function(r) {
+    split <- unlist(strsplit(r, "\\("))[2]
+    split <- unlist(strsplit(split, "\\)"))[1]
+    split <- unlist(strsplit(split, ","))
+    split <- strsplit(split, ":")
+    values <- sapply(split, function(n) return(n[2]))
+    names(values) <- sapply(split, function(n) return(n[1]))
+    return(values)
+  })
+  feats <- feat[[proc]]
+  res  <- lapply(res, function(r, f) {
+    if(anyNA(r[f])) return(NULL)
+    else return(r[f])
+  }, feats)
+  drop <- sapply(res, is.null)
+  counts <- counts[!drop]
+  res <- do.call(rbind, res)
+  res <- cbind(res, counts)
+  colnames(res) <- c(LETTERS[1:ncol(res)-1], "Abundance")
+  res <- as.matrix(res)
+  mode(res) <- "numeric"
+  res <- res[order(-res[,ncol(res)]),]
+  if(nrow(res) > 12) {
+    res <- res[1:12,]
+  }
+  res <- as.data.frame(res)
+  res$Abundance <- paste0(round(res$Abundance), "\\%")
+  return(t(res))
+}, data, features)
+
+names(tables) <- pathogens
+
+lapply(pathogens, function(patho, tabs) {
+  tab <- tabs[[patho]]
+  nme <- tolower(unlist(strsplit(unlist(strsplit(patho, "StandardInfection")),
+                                 "New")))
+  sink(paste0("dectree-thresh-", nme, ".tex"))
+  print(xtable(tab, align=rep("c", ncol(tab) + 1)),
+        include.colnames=FALSE, floating=FALSE,
+        hline.after=c(0,nrow(tab)), sanitize.text.function=identity)
+  sink()
+}, tables)
+
+@

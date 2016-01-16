@@ -483,29 +483,38 @@ Reliable identification of infection is central to image-based \gls{sirna} scree
 
 Classification by an \gls{svm} yields the $(p-1)$-dimensional hyperplane from $p$-dimensional data points that best separates the data into two groups in the sense that the margin between data and plane is maximized. Sample points that lie on the margin are called support vectors. As a supervised learning procedure, training data has to be available (e.g. obtained by expert labeling) in order to produce a model that can subsequently be used to predict the category of new data instances. CellClassifier, the software used for \gls{svm} classification is described in \cite{Ramo2009}. For pathogens that exhibit a clear binary infection pattern (for example \textit{S}. typhimurium or vaccinia virus), good result can be obtained using this method (\textgreater 99\% accuracy), but whenever the infection phenotype is more gradual (for example \textit{L. monocytogenes}), result are not always satisfactory. For all pathogens, 3--5 features were hand-picked and plate-wise Z-scored prior to \gls{svm} learning.
 
+\input{R/dectree-thresh/dectree-thresh}
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{0.5em}
 \begin{figure}
   \centering
   \begin{tikzpicture}
-    \node [decision={$> 0.075$}{$\le 0.075$}] {
+    \node [decision={$> \text{A}$}{$\le \text{A}$}] {
       \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}
     }
     [decision tree]
     child { node [infected] { infected } }
-    child { node [decision={$> 0.085$}{$\le 0.085$}] { 
+    child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
     \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
       child { node [infected] { infected } }
-      child { node [decision={$> 0.115$}{$\le 0.115$}] { 
+      child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
       \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
         child { node [infected] { infected } }
         child { node [healthy] { not infected } }
       }
     };
   \end{tikzpicture}
-  \caption[Decision tree for adenovirus infection scoring.]{For adenovirus infection scoring, the decision tree classifier checks if enough pathogen is detected within the cell body, the perinuclear region or the nucleus. The threshold decreases as the region of interest concentrates on areas associated which are progressively involved in infection.}
+
+  \vspace{5mm}
+  \footnotesize
+  \input{R/dectree-thresh/dectree-thresh-adeno}
+
+  \vspace{5mm}
+  \caption[Decision tree for adenovirus infection scoring.]{For adenovirus infection scoring, the decision tree classifier checks if enough pathogen is detected within the cell body, the perinuclear region or the nucleus. The threshold decreases as the region of interest concentrates on areas associated which are progressively involved in infection. Due to experimental sources of noise, the set of boundaries has to be determined plate-wise. In case of adenovirus experiments, the three parameter sets shown suffice to cover all currently analyzed plates while yielding satisfactory classification. The last line indicates the coverage of each set of parameters.}
   \label{fig:dectree-adeno}
 \end{figure}
 
-Decision trees are a classification method that can be visualized by a binary tree with internal nodes serving as decisions and external nodes representing outcomes. Logically, this corresponds to a set of AND\slash OR-linked statements and geometrically, the decision boundary is no longer linear (as in the case of \glspl{svm}), but piecewise linear with segments being parallel to the coordinate axes. Applying this scheme to infection classification necessitates defining a set of features and finding suitable thresholds. Once a good model has been identified, application and interpretation are straightforward and results have proven to be reliable. One down-side of \gls{dtis} is that decision thresholds are affected by plate-specific parameters (e.g. quality of staining, microscope illumination) and therefore have to be adjusted on plate-by-plate basis (see table \ref{tab:dectree-thresh} for the different sets of threshold currently used).
+Decision trees are a classification method that can be visualized by a binary tree with internal nodes serving as decisions and external nodes representing outcomes. Logically, this corresponds to a set of AND\slash OR-linked statements and geometrically, the decision boundary is no longer linear (as in the case of \glspl{svm}), but piecewise linear with segments being parallel to the coordinate axes. Applying this scheme to infection classification necessitates defining a set of features and finding suitable thresholds. Once a good model has been identified, application and interpretation are straightforward and results have proven to be reliable. One down-side of \gls{dtis} is that decision thresholds are affected by plate-specific parameters (e.g. quality of staining, microscope illumination) and therefore have to be adjusted on plate-by-plate basis. The parameter sets used are shown as tables accompanying figure \ref{fig:dectree-adeno}, as well as the decision trees visualized in section \ref{sec:app-dectree}. Only the classifier responsible for \textit{Bartonella} infection scoring could be constructed using a single set of boundaries, while yielding good results throughout all corresponding plates. 
 
 Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies across the cell body and concentrates within the nucleus. Strictly dependent on the amount of virus added to the cells, severity of infection is described well by signal intensity on the pathogen channel. The relevant features therefore include \textit{Cells.Intensity\_MeanIntensity\_CorrPathogen}, \textit{PeriNuclei.Intensity\_MeanIn\-tensity\_CorrPathogen} and \textit{Nuclei.Intensity\_MeanIntensity\_CorrPathogen}. The corresponding decision tree is shown in figure \ref{fig:dectree-adeno}.
 
@@ -539,7 +548,7 @@ Adenovirus infection scoring is based on \gls{gfp} signal intensity which varies
       }
     };
   \end{tikzpicture}
-  \caption[Decision tree for \textit{Bartonella} infection scoring.]{Decision tree for \textit{Bartonella} infection scoring. In order to detect bona-fide invasomes, the first three or-linked decisions assemble a list of candidates while the following three and-linked decisions discard some erroneously included instances. In order to obtain the desired cell-based infection score, invasomes are mapped to cellular objects in a subsequent step.}
+  \caption[Decision tree for \textit{Bartonella} infection scoring.]{Decision tree for \textit{Bartonella} infection scoring. In order to detect bona-fide invasomes, the first three or-linked decisions assemble a list of candidates while the following three and-linked decisions discard some erroneously included instances. In order to obtain the desired cell-based infection score, invasomes are mapped to cellular objects in a subsequent step. For \textit{Bartonella}, a single set of decision boundaries was found to provide satisfactory results throughout all analyzed plates.}
   \label{fig:dectree-bartonella}
 \end{figure}
 
