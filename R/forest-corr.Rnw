@@ -1,0 +1,212 @@
+<<forest-corr, eval=TRUE, echo=FALSE, message=FALSE, fig.width=12, fig.height=13, fig.align="center", fig.cap="Heatmap representations of correlation matrices obtained by comparing importance scores of features as determined by random forest analysis. Red shades indicate Pearson correlation while blue shades visualize Spearman's rank correlation coefficients. For each gene and scrambled well, all available 8 replicates of the \\textit{Brucella} Dharmacon unpooled dataset were considered.", fig.scap="Heatmap representations of Pearson and Spearman correlation among feature importance scores obtained by random forest analysis.">>=
+
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(randomForest))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(RColorBrewer))
+suppressPackageStartupMessages(library(reshape2))
+suppressPackageStartupMessages(library(cowplot))
+suppressPackageStartupMessages(library(gtable))
+
+options(singleCellFeatures.progressBars = "none")
+
+fetchData <- function(genes, select.feat, drop.feat, select.norm, drop.norm) {
+  wells <- lapply(genes, function(gene, args, patho, exp) {
+    return(do.call(findWells, gene))
+  })
+  wells <- unlist(wells, recursive=FALSE)
+
+  data <- getSingleCellData(wells)
+  data <- unlist(data, recursive=FALSE)
+  data <- lapply(data, extractFeatures, select=select.feat, drop=drop.feat)
+  data <- lapply(data, augmentAggregate, features=select.norm, drop=drop.norm,
+                 func.aggr="mean")
+  data <- lapply(data, normalizeData, select=select.norm, drop=drop.norm,
+                 values=".", center="_Aggreg_W_mean", scale=NULL)
+
+  data <- lapply(genes, function(gene, dat) {
+    res <- lapply(dat, function(d, key) {
+      if(!is.null(key$contents)) {
+        if(grepl(key$contents, d$meta$gene.name, ignore.case=TRUE)) {
+          tmp <- meltData(d)$mat
+          tmp <- tmp[!sapply(tmp, is.null)]
+          ind <- grepl("_Normed$",
+                       sapply(tmp, function(d) return(names(d)[1])))
+          names(tmp)[ind]  <- paste0(names(tmp)[ind], "_Normalized")
+          names(tmp)[!ind] <- paste0(names(tmp)[!ind], "_Original")
+          return(tmp)
+        } else return(NULL)
+      } else if(!is.null(key$well.names)) {
+        if(key$well.names == paste0(d$meta$well.row, d$meta$well.col)) {
+          tmp <- meltData(d)$mat
+          tmp <- tmp[!sapply(tmp, is.null)]
+          ind <- grepl("_Normed$",
+                       sapply(tmp, function(d) return(names(d)[1])))
+          names(tmp)[ind]  <- paste0(names(tmp)[ind], "_Normalized")
+          names(tmp)[!ind] <- paste0(names(tmp)[!ind], "_Original")
+          return(tmp)
+        } else return(NULL)
+      }
+    }, gene)
+    return(res[!sapply(res, is.null)])
+  }, data)
+  return(data)
+}
+
+runForest <- function(data, random.seed=126) {
+  set.seed(random.seed)
+  res  <- lapply(data, function(gene) {
+    res <- lapply(gene, function(bc) {
+      ind.norm <- grep("_Normalized$", names(bc))
+      ind.orig <- grep("_Original$", names(bc))
+      if(length(ind.orig) > 1) stop("multiple matrices found.")
+      mat <- cbind(bc[[ind.norm]],
+                   as.factor(bc[[ind.orig]]$Cells.Infection_IsInfected))
+      names(mat) <- c(names(bc[[ind.norm]]),
+                      "Cells.Infection_IsInfected")
+      remove <- unlist(lapply(c("^Image.", "^Well", "^Plate"), grep,
+                              names(mat)))
+      if(length(remove) > 0) mat <- mat[,-remove]
+      # remova na cols
+      remove <- which(apply(mat, 2, function(x) sum(is.na(x))) > 1)
+      if(length(remove) > 0) mat <- mat[,-remove]
+      ind.resp <- grep("Cells.Infection_IsInfected", names(mat))
+      form <- as.formula(paste("Cells.Infection_IsInfected", 
+                               paste(names(mat)[-ind.resp], collapse=" + "),
+                         sep=" ~ "))
+      fit <- randomForest(form, data=mat)
+      imp <- importance(fit) # importance of each predictor
+      imp <- imp[order(imp[,1], decreasing=TRUE),]
+      return(list(importance=imp, fit=fit))
+    })
+    imp.individ <- sapply(res, function(x) {
+      return(x[["importance"]][order(names(x[["importance"]]))])
+    })
+    imp.overall <- apply(imp.individ, 1, mean)
+    res[["overall.importance"]] <- sort(imp.overall, decreasing=TRUE)
+    res[["correlation"]] <- list(pearson=cor(imp.individ, method="pearson"),
+                                 spearman=cor(imp.individ, method="spearman"),
+                                 kendall=cor(imp.individ, method="kendall"))
+    res[["data"]] <- gene
+    return(res)
+  })
+}
+
+plates <- sapply(findWells(contents="mtor", experiments="BRUCELLA-DU-K[12]"),
+                 getBarcode)
+genes  <- list(MTOR=list(contents="^mtor$", plates=plates),
+               TGFBR1=list(contents="^tgfbr1$", plates=plates),
+               RIPK4=list(contents="^ripk4$", plates=plates),
+               PIK3R3=list(contents="^pik3r3$", plates=plates),
+               G23=list(well.names="G23", plates=plates),
+               H2=list(well.names="H2", plates=plates),
+               J2=list(well.names="J2", plates=plates),
+               L1=list(well.names="L1", plates=plates))
+
+data <- fetchData(genes=genes,
+                  select.feat=c("^Cells.", "^Nuclei.", "^PeriNuclei.",
+                                "^VoronoiCells."),
+                  drop.feat=c("CorrPathogen", "Bacteria", ".Location_",
+                              "ClosestObjectNumber", "Parent_Nuclei",
+                              ".Parent_ExpandedNuclei"),
+                  select.norm=".", drop.norm=".Infection_")
+
+forest <- runForest(data)
+
+fused.cor <- lapply(forest[c(1,6,2,8,4,7,3,5)], function(x) {
+  res.pears <- matrix(NA, length(x$data), length(x$data))
+  res.spear <- matrix(NA, length(x$data), length(x$data))
+  dat.pears <- x$correlation$pearson
+  dat.spear <- x$correlation$spearman
+  dat.pears <- dat.pears[,order(colnames(dat.pears), decreasing=TRUE)]
+  dat.pears <- dat.pears[order(rownames(dat.pears), decreasing=TRUE),]
+  dat.spear <- dat.spear[,order(colnames(dat.spear), decreasing=TRUE)]
+  dat.spear <- dat.spear[order(rownames(dat.spear), decreasing=TRUE),]
+  for(i in 1:length(x$data)) {
+    for(j in 1:length(x$data)) {
+      if(i < j) res.pears[i,j] <- dat.pears[i,j]
+      else if(i > j) res.spear[i,j] <- dat.spear[i,j]
+    }
+  }
+  nms <- rev(sort(sapply(strsplit(names(x$data), "[.]"), function(x) x[1])))
+  colnames(res.pears) <- colnames(res.spear) <- nms
+  rownames(res.pears) <- rownames(res.spear) <- nms
+  res.pears <- melt(res.pears)
+  res.spear <- melt(res.spear)
+  res.pears$Var1 <- res.spear$Var1 <- ordered(res.pears$Var1, levels=nms)
+  res.pears$Var2 <- res.spear$Var2 <- ordered(res.pears$Var2, levels=nms)
+  return(list(pearson=res.pears, spearman=res.spear))
+})
+
+titles <- c("MTOR (H6)", "Scrambled (H2)", "TGFBR1 (M4)", "Scrambled (L1)",
+            "PIPK3RB (K8)", "Scrambled (J2)", "RIPK4 (G17)", "Scrambled (G23)")
+for(i in 1:length(titles)) {
+  fused.cor[[i]][["title"]] <- titles[i]
+}
+
+extrema <- sapply(fused.cor, function(x) {
+  return(c(max(x$pearson$value, na.rm=TRUE),
+           min(x$pearson$value, na.rm=TRUE),
+           max(x$spearman$value, na.rm=TRUE),
+           min(x$spearman$value, na.rm=TRUE)))
+})
+extrema <- c(max(extrema[1,]), min(extrema[2,]), max(extrema[3,]),
+             min(extrema[4,]))
+reds <- colorRampPalette(brewer.pal(5, "Reds"), space="Lab")
+blus <- colorRampPalette(brewer.pal(5, "Blues"), space="Lab")
+
+plots <- lapply(fused.cor, function(x) {
+  p1 <- ggplot() +
+      geom_tile(data=x$pearson, aes(x=Var1, y=Var2, fill=value)) +
+      scale_fill_gradientn(colours=reds(100), na.value="white",
+                          limits=c(extrema[2], extrema[1]),
+                          name="Pearson correlation") +
+      labs(title=x$title, x=element_blank(), y=element_blank()) +
+      theme(legend.position="none", axis.text.x=element_blank(),
+            axis.ticks.y=element_blank(), axis.ticks.x=element_blank(),
+            axis.line=element_blank(),
+            plot.title=element_text(face="plain", vjust=1))
+  p2 <- ggplot() +
+      geom_tile(data=x$spearman, aes(x=Var1, y=Var2, fill=value)) +
+      scale_fill_gradientn(colours=blus(100), na.value="white",
+                          limits=c(extrema[4], extrema[3]),
+                          name="Spearman correlation") +
+      theme(legend.position="none")
+  p1g <- ggplotGrob(p1)
+  p2g <- ggplotGrob(p2)
+  p1g$grobs[[4]]$children[[2]]$gp$fill[which(lower.tri(matrix(1:64, 8, 8)))] <-
+    p2g$grobs[[4]]$children[[2]]$gp$fill[which(lower.tri(matrix(1:64, 8, 8)))]
+  return(p1g)
+})
+
+p1 <- ggplot() +
+    geom_tile(data=fused.cor[[1]]$pearson, aes(x=Var1, y=Var2, fill=value)) +
+      scale_fill_gradientn(
+        colours=reds(100), na.value="white", limits=c(extrema[2], extrema[1]),
+        name="Pearson correlation", guide=guide_colourbar(
+          title.position="top", title.hjust=0.5,
+          title.theme=element_text(size=14, face="bold", angle=0),
+          label.theme=element_text(size=14, angle=0))) +
+      theme(legend.position="bottom",
+            legend.key.height=unit(0.75,"cm"),
+            legend.key.width=unit(1.5,"cm"))
+p2 <- ggplot() +
+    geom_tile(data=fused.cor[[1]]$spearman, aes(x=Var1, y=Var2, fill=value)) +
+      scale_fill_gradientn(
+        colours=blus(100), na.value="white", limits=c(extrema[4], extrema[3]),
+        name="Spearman correlation", guide=guide_colourbar(
+          title.position="top", title.hjust=0.5,
+          title.theme=element_text(size=14, face="bold", angle=0),
+          label.theme=element_text(size=14, angle=0))) +
+      theme(legend.position="bottom",
+            legend.key.height=unit(0.75,"cm"),
+            legend.key.width=unit(1.5,"cm"))
+l1 <- gtable_filter(ggplotGrob(p1), "guide-box")
+l2 <- gtable_filter(ggplotGrob(p2), "guide-box")
+
+plot <- plot_grid(plotlist=plots, ncol=2, labels=LETTERS[1:length(plots)])
+legn <- plot_grid(NULL, l1, l2, NULL, ncol=4, rel_widths=c(0.74, 1, 1, 0.76))
+plot_grid(plot, legn, ncol=1, rel_heights=c(1, .1))
+
+@
+
