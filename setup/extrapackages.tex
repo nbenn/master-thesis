@@ -9,7 +9,7 @@
 \usepackage{varioref}
 
 %% [OPT] Easily changeable quotes with \enquote{Text}
-%\usepackage[german=swiss]{csquotes}
+\usepackage[german=swiss]{csquotes}
 
 %% [REC] Format dates and time depending on locale
 \usepackage{datetime}
@@ -62,8 +62,45 @@
 %% [REC] Nicer tables.  Read the excellent documentation.
 \usepackage{booktabs}
 
-%% use 'numbers': \usepackage[longnamesfirst,number]{natbib} for [1], [2] 
-\usepackage{natbib}
+%% bibliography related
+\usepackage[natbib,
+  authordate,
+  backend=biber,
+  isbn=false,
+  numbermonth=false]{biblatex-chicago}
+\bibliography{mendeley}
+%% non-utf8 characters imported by mendeley into the bibliography
+\DeclareUnicodeCharacter{2010}{-}
+\DeclareUnicodeCharacter{0301}{/}
+%% hide language field/url in certain types
+\DeclareSourcemap{
+  \maps{
+    \map{
+      \step[fieldset=language, null]
+    }
+    \map{
+      \pertype{article}
+      \pertype{book}
+      \pertype{inbook}
+      \step[fieldset=url, null]
+    }
+  }
+}
+% enable linebreaks after the doi keyword
+\DeclareFieldFormat{doi}{%
+  \textrm{doi}\addcolon\allowbreak
+  \ifhyperref
+    {\href{http://dx.doi.org/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+% settings for linebreak penalties in urls/dois
+\setcounter{biburllcpenalty}{100}
+\setcounter{biburlucpenalty}{200}
+% remove dashes in repeat authors
+\makeatletter
+\AtEveryBibitem{%
+  \global\undef\bbx@lasthash%
+  \clearfield{extrayear}}
+\makeatother
 
 %% glossary/acronyms
 \usepackage[nogroupskip, toc]{glossaries}

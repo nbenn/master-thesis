@@ -39,6 +39,18 @@
   }%
 }
 
+\DeclareCiteCommand{\citeauthorfirstlastyear}
+  {\boolfalse{citetracker}%
+   \boolfalse{pagetracker}%
+   \DeclareNameAlias{labelname}{first-last-year}%
+   \usebibmacro{prenote}}
+  {\ifciteindex
+     {\indexnames{labelname}}
+     {}%
+   \printnames{labelname}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
 %% underscript in text
 \newcommand{\textunderscript}[1]{$_{\text{#1}}$}
 
