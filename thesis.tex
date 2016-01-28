@@ -133,50 +133,15 @@
 \frontmatter
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  Title page                                                             %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\thesistype{Master Thesis}
-\thesisperiod{Spring 2015}
-\thesisauthor{Nicolas Bennett}
-\thesistitle{
-  Analysis of High Content\\
-  RNA Interference Screens\\
-  at Single Cell Level
-}
-\submissiondate{August 25th 2015}
-\mainreader{Prof.\ Dr.\ Peter Bühlmann}
-\alternatereader{Anna Drewek}
-
-\begin{titlingpage}
-  \vspace*{-2cm}
-  \calccentering{\unitlength}
-  \begin{adjustwidth*}{\unitlength-1cm}{-\unitlength-1cm}
-    \maketitle
-  \end{adjustwidth*}
-\end{titlingpage}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Front matter                                                           %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Dedication (optional)
-\vspace*{\stretch{1}}
-%Far and away the best prize that life offers is the chance to work hard at work worth doing. --- \cite{Roosevelt1908} \newline\newline
-%[B]ecause we tend to reward others when they do well and punish them when they do badly, and because there is regression to the mean, it is part of the human condition that we are statistically punished for rewarding others and rewarded for punishing them. --- \cite{Kahneman2012}
-Little strokes\\
-fell great oaks
+\include{titlepage}
 
-\vspace*{\stretch{1}}
-
-%% Preface (optional)
 \cleartorecto
-\addcontentsline{toc}{chapter}{Preface}
 \include{chapters/preface}
 
-%% The abstract of your thesis.  Edit the file as needed.
 \cleartorecto
-\addcontentsline{toc}{chapter}{Abstract}
 \include{chapters/abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,7 +191,7 @@ fell great oaks
 %%%  Bibliography                                                           %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\printbibliography
+\printbibliography[title={Bibliography\label{ch:bibliography}}]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Declaration of originality                                             %%%
