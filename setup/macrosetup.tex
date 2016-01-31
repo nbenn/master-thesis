@@ -1,8 +1,141 @@
 %% Custom commands
 %% ===============
 
-%% enable glossary style to be reversed in select instances
-\newcommand*\glsrev[2][]{%
+%% enable glossary style to have final string inserted in both long and short
+\DeclareDocumentCommand{\acrdbl}{ggo}{%
+  {%
+    \IfNoValueTF {#2} {%
+      \IfNoValueTF {#3} {% label: #1, opts: none, final: none
+        \ifglsused{#1}{% subsequent use
+          \glsdisp{#1}{\glsentryshort{#1}}%
+        }{% first use
+          \glsdisp{#1}{\glsentrylong{#1} (\glsentryshort{#1})}%
+        }%
+      } {% label: #1, opts: none, final: #3
+        \ifglsused{#1}{%  subsequent use
+          \glsdisp{#1}{\glsentryshort{#1}#3}%
+        }{% first use
+          \glsdisp{#1}{\glsentrylong{#1} #3 (\glsentryshort{#1}#3)}%
+        }%
+      }%
+    } {%
+      \IfNoValueTF {#3} {% label: #2, opts: #1, final: none
+        \ifglsused{#2}{%  subsequent use
+          \glsdisp[#1]{#2}{\glsentryshort{#2}}%
+        }{% first use
+          \glsdisp[#1]{#2}{\glsentrylong{#2} (\glsentryshort{#2})}%
+        }%
+      } {% label: #2, opts: #1, final: #3
+        \ifglsused{#2}{% subsequent use
+          \glsdisp[#1]{#2}{\glsentryshort{#2}#3}%
+        }{% first use
+          \glsdisp[#1]{#2}{\glsentrylong{#2} #3 (\glsentryshort{#2}#3)}%
+        }%
+      }%
+    }%
+  }%
+}%
+\DeclareDocumentCommand{\Acrdbl}{ggo}{%
+  {%
+    \IfNoValueTF {#2} {%
+      \IfNoValueTF {#3} {% label: #1, opts: none, final: none
+        \ifglsused{#1}{% subsequent use
+          \glsdisp{#1}{\Glsentryshort{#1}}%
+        }{% first use
+          \glsdisp{#1}{\Glsentrylong{#1} (\glsentryshort{#1})}%
+        }%
+      } {% label: #1, opts: none, final: #3
+        \ifglsused{#1}{%  subsequent use
+          \glsdisp{#1}{\Glsentryshort{#1}#3}%
+        }{% first use
+          \glsdisp{#1}{\Glsentrylong{#1} #3 (\glsentryshort{#1}#3)}%
+        }%
+      }%
+    } {%
+      \IfNoValueTF {#3} {% label: #2, opts: #1, final: none
+        \ifglsused{#2}{%  subsequent use
+          \glsdisp[#1]{#2}{\Glsentryshort{#2}}%
+        }{% first use
+          \glsdisp[#1]{#2}{\Glsentrylong{#2} (\glsentryshort{#2})}%
+        }%
+      } {% label: #2, opts: #1, final: #3
+        \ifglsused{#2}{% subsequent use
+          \glsdisp[#1]{#2}{\Glsentryshort{#2}#3}%
+        }{% first use
+          \glsdisp[#1]{#2}{\Glsentrylong{#2} #3 (\glsentryshort{#2}#3)}%
+        }%
+      }%
+    }%
+  }%
+}%
+\DeclareDocumentCommand{\acrdblpl}{ggo}{%
+  {%
+    \IfNoValueTF {#2} {%
+      \IfNoValueTF {#3} {% label: #1, opts: none, final: none
+        \ifglsused{#1}{% subsequent use
+          \glsdisp{#1}{\glsentryshortpl{#1}}%
+        }{% first use
+          \glsdisp{#1}{\glsentrylongpl{#1} (\glsentryshortpl{#1})}%
+        }%
+      } {% label: #1, opts: none, final: #3
+        \ifglsused{#1}{%  subsequent use
+          \glsdisp{#1}{\glsentryshort{#1}#3\glspluralsuffix}%
+        }{% first use
+          \glsdisp{#1}{\glsentrylongpl{#1} #3 (\glsentryshort{#1}#3\glspluralsuffix)}%
+        }%
+      }%
+    } {%
+      \IfNoValueTF {#3} {% label: #2, opts: #1, final: none
+        \ifglsused{#2}{%  subsequent use
+          \glsdisp[#1]{#2}{\glsentryshortpl{#2}}%
+        }{% first use
+          \glsdisp[#1]{#2}{\glsentrylongpl{#2} (\glsentryshortpl{#2})}%
+        }%
+      } {% label: #2, opts: #1, final: #3
+        \ifglsused{#2}{% subsequent use
+          \glsdisp[#1]{#2}{\glsentryshort{#2}#3\glspluralsuffix}%
+        }{% first use
+          \glsdisp[#1]{#2}{\glsentrylongpl{#2} #3 (\glsentryshort{#2}#3\glspluralsuffix)}%
+        }%
+      }%
+    }%
+  }%
+}%
+\DeclareDocumentCommand{\Acrdblpl}{ggo}{%
+  {%
+    \IfNoValueTF {#2} {%
+      \IfNoValueTF {#3} {% label: #1, opts: none, final: none
+        \ifglsused{#1}{% subsequent use
+          \glsdisp{#1}{\Glsentryshortpl{#1}}%
+        }{% first use
+          \glsdisp{#1}{\Glsentrylongpl{#1} (\Glsentryshortpl{#1})}%
+        }%
+      } {% label: #1, opts: none, final: #3
+        \ifglsused{#1}{%  subsequent use
+          \glsdisp{#1}{\Glsentryshort{#1}#3\glspluralsuffix}%
+        }{% first use
+          \glsdisp{#1}{\Glsentrylongpl{#1} #3 (\Glsentryshort{#1}#3\glspluralsuffix)}%
+        }%
+      }%
+    } {%
+      \IfNoValueTF {#3} {% label: #2, opts: #1, final: none
+        \ifglsused{#2}{%  subsequent use
+          \glsdisp[#1]{#2}{\Glsentryshortpl{#2}}%
+        }{% first use
+          \glsdisp[#1]{#2}{\Glsentrylongpl{#2} (\Glsentryshortpl{#2})}%
+        }%
+      } {% label: #2, opts: #1, final: #3
+        \ifglsused{#2}{% subsequent use
+          \glsdisp[#1]{#2}{\Glsentryshort{#2}#3\glspluralsuffix}%
+        }{% first use
+          \glsdisp[#1]{#2}{\Glsentrylongpl{#2} #3 (\Glsentryshort{#2}#3\glspluralsuffix)}%
+        }%
+      }%
+    }%
+  }%
+}%
+
+\newcommand*\acrrev[2][]{%
   \ifglsused{#2}{%
     %% subsequent use
     \glsdisp[#1]{#2}{\glsentryshort{#2}}%
@@ -11,7 +144,7 @@
     \glsdisp[#1]{#2}{\glsentryshort{#2}\space(\glsentrylong{#2})}%
   }%
 }
-\newcommand*\Glsrev[2][]{%
+\newcommand*\Acrrev[2][]{%
   \ifglsused{#2}{%
     %% subsequent use
     \glsdisp[#1]{#2}{\Glsentryshort{#2}}%
@@ -20,7 +153,7 @@
     \glsdisp[#1]{#2}{\Glsentryshort{#2}\space(\glsentrylong{#2})}%
   }%
 }
-\newcommand*\glsrevpl[2][]{%
+\newcommand*\acrrevpl[2][]{%
   \ifglsused{#2}{%
     %% subsequent use
     \glsdisp[#1]{#2}{\glsentryshortpl{#2}}%
@@ -29,7 +162,7 @@
     \glsdisp[#1]{#2}{\glsentryshortpl{#2}\space(\glsentrylongpl{#2})}%
   }%
 }
-\newcommand*\Glsrevpl[2][]{%
+\newcommand*\Acrrevpl[2][]{%
   \ifglsused{#2}{%
     %% subsequent use
     \glsdisp[#1]{#2}{\Glsentryshortpl{#2}}%
@@ -38,18 +171,6 @@
     \glsdisp[#1]{#2}{\Glsentryshortpl{#2}\space(\glsentrylongpl{#2})}%
   }%
 }
-
-%\DeclareCiteCommand{\citeauthorfirstlastyear}
-%  {\boolfalse{citetracker}%
-%   \boolfalse{pagetracker}%
-%   \DeclareNameAlias{labelname}{first-last-year}%
-%   \usebibmacro{prenote}}
-%  {\ifciteindex
-%     {\indexnames{labelname}}
-%     {}%
-%   \printnames{labelname}}
-%  {\multicitedelim}
-%  {\usebibmacro{postnote}}
 
 %% underscript in text
 \newcommand{\textunderscript}[1]{$_{\text{#1}}$}
@@ -112,7 +233,7 @@
 \DeclareMathOperator{\median}{median}
 \DeclareMathOperator{\Med}{Med}
 \DeclareMathOperator{\mad}{mad}
-\DeclareMathOperator{\Erw}{\mathbf{E}}%-- see also \E (below)
+\DeclareMathOperator{\E}{\mathrm{E}}
 \DeclareMathOperator{\var}{var}
 \DeclareMathOperator{\Var}{Var}
 \DeclareMathOperator{\Cov}{Cov}
@@ -186,7 +307,6 @@
 \DeclareMathOperator{\M}{\mathcal{M}}% Multinom ?
 \DeclareMathOperator{\B}{\mathcal{B}}% Binom
 \DeclareMathOperator{\Bern}{\mathcal{B}ernoulli}
-\DeclareMathOperator{\E}{\mathcal{E}}%-- see also \Erw (above)
 \DeclareMathOperator{\F}{\mathcal{F}}
 \DeclareMathOperator{\Wish}{\mathcal{W}}
 \newcommand{\phibf}{\boldsymbol{\phi}}%{\phi\hskip-5.4pt\phi} % bold \phi

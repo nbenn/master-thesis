@@ -1,4 +1,4 @@
-<<who-deaths_by-disease, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of deadly infectious diseases for 2012 by World Bank income groups. Binning is based on Gross National Income (GNI; see figure \\ref{fig:who-deaths_top-causes}). The data was obtained from the \\cite{WHO2012}.", fig.scap="Relative frequencies deadly infectious diseases for 2012 by World Bank income groups">>=
+<<who-deaths_by-disease, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of deadly infectious diseases for 2012 by World Bank income groups. Binning is based on \\acrfull{gni} (see figure \\ref{fig:who-deaths_top-causes} for category thresholds). The data was obtained from the \\citet{WHO2012}.", fig.scap="Relative frequencies deadly infectious diseases for 2012 by World Bank income groups">>=
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library("grid"))
 who.deaths <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/all.rds"))
@@ -26,16 +26,23 @@ ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_fill_brewer(name="Cause of death", palette="Spectral",
                     labels=c("Acute hepatitis B", "Acute hepatitis C",
-                             "Diarrhoeal diseases", "HIV/AIDS",
+                             "Diarrhoeal\ndiseases", "HIV/AIDS",
                              "Lower respiratory\ninfections", "Malaria",
                              "Measles", "Meningitis",
                              "Other infectious\ndiseases", "Tuberculosis")) +
   scale_x_discrete(labels=c("World", "High\nincome", "Upper\nmiddle",
-                            "Lower\nmiddle", "Low\nincome")) +
+                            "Lower\nmiddle", "Low\nincome"), expand=c(0, 0)) +
+  scale_y_continuous(breaks=c(0, 0.2, 0.4, 0.6, 0.8, 1),
+                     labels=c("0%", "20%", "40%", "60%", "80%", "100%"),
+                     limits=c(0, 1), expand=c(0, 0)) +
   labs(y="Percentage of deaths caused by infectious diseases") +
   coord_flip() +
   theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"),
-        plot.margin=unit(c(c(0, 3, 0, 3)), units="mm"))
+        plot.margin=unit(c(c(0, 0, 5, 5)), units="mm"),
+        legend.margin=unit(10, "mm"),
+        panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+        panel.border=element_blank(), axis.ticks=element_blank(),
+        axis.title.x=element_text(vjust=-1))
 @
 
 \newcommand{\knitrPercentageInfectTwelveWorldLRI}{\Sexpr{round(aggr[aggr$Region=="World" & aggr$Cause == "Lower respiratory infections",]$scaled*100, digits=1)}\%}

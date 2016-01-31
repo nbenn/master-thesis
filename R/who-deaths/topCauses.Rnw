@@ -1,4 +1,4 @@
-<<who-deaths_top-causes, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of death causes in 2012 by World Bank income groups. Binning is based on Gross National Income (GNI) per capita and the thresholds are \\$1045 or less for low income, \\$1046 to \\$4125 for lower-middle, \\$4126 to \\$12745 for upper-middle and \\$12746 or more for high income economies. The data was obtained from the \\cite{WHO2012}.", fig.scap="Relative frequencies of death causes in 2012 by World Bank income groups">>=
+<<who-deaths_top-causes, eval=TRUE, echo=FALSE, fig.width=12, fig.height=6, fig.cap="Relative frequencies of death causes in 2012 by World Bank income groups. Binning is based on \\acrfull{gni} per capita and the thresholds are \\$1045 or less for low income, \\$1046 to \\$4125 for lower-middle, \\$4126 to \\$12745 for upper-middle and \\$12746 or more for high income economies. The data was obtained from the \\citet{WHO2012}.", fig.scap="Relative frequencies of death causes in 2012 by World Bank income groups">>=
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library("grid"))
 who.deaths <- readRDS(paste0(gsub("/R/", "/data/", getwd()), "/all.rds"))
@@ -40,12 +40,19 @@ ggplot(aggr, aes(x=Region, y=scaled, fill=Cause)) +
                              "Unintentional\ninjuries",
                              "Intentional injuries")) +
   scale_x_discrete(labels=c("World", "High\nincome", "Upper\nmiddle",
-                            "Lower\nmiddle", "Low\nincome")) +
+                            "Lower\nmiddle", "Low\nincome"), expand=c(0, 0)) +
+  scale_y_continuous(breaks=c(0, 0.2, 0.4, 0.6, 0.8, 1),
+                     labels=c("0%", "20%", "40%", "60%", "80%", "100%"),
+                     limits=c(0, 1), expand=c(0, 0)) +
   labs(y="Percentage of deaths") +
   coord_flip() +
   theme(axis.title.y=element_blank(), legend.key.height=unit(12, "mm"),
         #              top, right, bottom, left
-        plot.margin=unit(c(c(0, 4, 0, 3)), units="mm"))
+        plot.margin=unit(c(c(5, 0, 5, 5)), units="mm"),
+        legend.margin=unit(10, "mm"),
+        panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+        panel.border=element_blank(), axis.ticks=element_blank(),
+        axis.title.x=element_text(vjust=-1))
 @
 
 \newcommand{\knitrTotalDeathsTwelve}{\Sexpr{round(sum(who.deaths[who.deaths$Region=="World",]$Deaths2012)/10e5, digits=1)} million}

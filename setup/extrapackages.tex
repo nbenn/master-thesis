@@ -68,7 +68,7 @@
   backend=biber,
   isbn=false,
   numbermonth=false]{biblatex-chicago}
-\bibliography{mendeley}
+\addbibresource{mendeley.bib}
 %% non-utf8 characters imported by mendeley into the bibliography
 \DeclareUnicodeCharacter{2010}{-}
 \DeclareUnicodeCharacter{0301}{/}
@@ -104,9 +104,11 @@
 
 %% glossary/acronyms
 \usepackage[nogroupskip, toc]{glossaries}
+\usepackage{glossary-mcols}
 \glsdisablehyper
 \makeglossaries
 \glsenableentrycount
+\renewcommand*{\glspostdescription}{} % Removes dots at the end of each entry.
 
 %% greek letters in text mode
 \usepackage[euler]{textgreek}
@@ -131,3 +133,4 @@
 
 %% for indicator function 1
 \usepackage{dsfont}
+\usepackage{xparse}

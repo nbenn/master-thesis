@@ -1,144 +1,184 @@
-%% cellular biochemistry
-% t3ss
+%% biology
+\newacronym{ote}{OTE}{off-target effects}
+\newacronym{hts}{HTS}{high throughput screening}
+\newacronym{lof}{LOF}{loss-of-function}
+\newacronym{hcs}{HCS}{high content screening}
+% t3ss/t4ss
 \newacronym{t3ss}{T3SS}{type III secretion system}
 \newacronym{ipa}{Ipa}{\textit{Shigella} invasion protein}
 \newacronym{sop}{Sop}{\textit{Salmonella} outer protein}
-% general
+\newacronym{inv}{Inv}{\textit{Salmonella} invasion protein}
+\newacronym{sptp}{SptP}{\textit{Salmonella} protein tyrosine phosphatase}
+\newacronym{ssp}{Ssp}{\textit{Salmonella}-secreted protein}
+\newacronym{ssa}{Ssa}{\textit{Sal\-mon\-ella} secretion system apparatus protein}
+\newacronym{mxi}{Mxi}{\textit{Shigella} membrane expression of ipa}
+\newacronym{pho}{Pho}{phosphate metabolism protein}
+\newacronym[description={\textit{Salmonella} \acrshort{pho}[P]-repressed gene}]{prg}{Prg}{\textit{Salmonella} PhoP-repressed gene}
+\newacronym{spa}{Spa}{\textit{Salmonella} surface presentation of antigen}
+\newacronym{org}{Org}{\textit{Salmonella} oxygen-regulated gene}
+\newacronym{sse}{Sse}{\textit{Salmonella} secreted effector protein}
+\newacronym{sic}{Sic}{\textit{Salmonella} invasion chaperone protein}
+\newacronym{ssc}{Ssc}{\textit{Salmonella} secreted chaperone protein}
+\newacronym{ipg}{Ipg}{\textit{Shigella} invasion plasmid gene}
+\newacronym{sif}{Sif}{\textit{Salmonella}-induced filament}
+\newacronym{spv}{Spv}{\textit{Salmonella} plasmid virulence}
+\newacronym{ics}{Ics}{\textit{Shigella} intracellular spread protein}
+\newacronym{vir}{Vir}{virulence spread protein}
+\newacronym{hil}{Hil}{\textit{Salmonella} hyperinvasion locus}
+\newacronym{omp}{Omp}{\textit{Salmonella} outer-membrane protein}
+\newacronym{avra}{AvrA}{\textit{Salmonella} avirulence protein A}
+\newacronym{osp}{Osp}{outer \textit{Shigella} protein}
+\newacronym{tir}{Tir}{translocated intimin receptor}
+\newacronym{sip}{Sip}{\textit{Salmonella} invasion protein}
+\newacronym{t4ss}{T4SS}{type IV secretion system}
+% biochemistry
+\newacronym{galnac}{GalNAc}{N-acetylgalactosamine}
 \newacronym{gtp}{GTP}{guanosine triphosphate}
 \newacronym{gdp}{GDP}{guanosine diphosphate}
 \newacronym{gef}{GEF}{guanine nucleotide exchange factor}
-\newacronym{gap}{GAP}{GTPase activating protein}
-%% cell biology
-\newacronym{erad}{ERAD}{endoplasmic-reticulum-associated protein degradation}
-\newacronym{er}{ER}{endoplasmic reticulum}
-
-\newacronym{tir}{Tir}{translocated intimin receptor}
-\newacronym{rac-1}{Rac1}{Ras-related C3 botulinum toxin substrate 1}
+\newacronym[description={\acrshort{gtp}ase activating protein}]{gap}{GAP}{GTPase activating protein}
+\newacronym{rt}{RT}{reverse transcriptase}
+\newacronym{ras}{Ras}{rat sarcoma family protein}
+\newacronym[description={\acrshort{ras}-related nuclear protein}]{ran}{Ran}{Ras-related nuclear protein}
+\newacronym[description={\acrshort{ras}-related in brain}]{rab}{Rab}{Ras-related in brain}
+\newacronym[description={\acrshort{ras}-related C3 botulinum toxin substrate 1}]{rac-1}{Rac1}{Ras-related C3 botulinum toxin substrate 1}
 \newacronym{arp23}{Arp2/3}{actin-related-protein 2 and 3}
-\newacronym{sip}{Sip}{\textit{Salmonella} invasion protein}
 \newacronym{cdc-42}{Cdc42}{cell division control protein 42 homolog}
-\newacronym{spt-p}{SptP}{secreted effector protein}
-\newacronym{t4ss}{T4SS}{type IV secretion system}
 \newacronym{vegf}{VEGF}{vascular endothelial growth factor}
-\newacronym{icam-1}{ICAM-1}{interleukin-8}
-\newacronym{il-8}{IL-8}{intercellular adhesion molecule 1}
+\newacronym{icam-1}{ICAM-1}{intercellular adhesion mol\-ecule 1}
+\newacronym{il-8}{IL-8}{interleukin-8}
 \newacronym{lps}{LPS}{lipopolysaccharide}
 \newacronym{tlr}{TLR}{toll-like receptor}
 \newacronym{prpc}{PrPC}{cellular prion protein}
 \newacronym{hsp}{HSP}{heat shock protein}
 \newacronym{tir-1}{TIR}{toll-interleukin-1 receptor}
 \newacronym{mhc}{MHC}{major histocompatibility complex}
-\newacronym{ergic}{ERGIC}{ER-Golgi intermediate compartment}
 \newacronym{cop-2}{COPII}{coat protein complex II}
-\newacronym{atr}{ATR}{acid tolerance response}
 \newacronym{tap}{TAP}{tapasin}
 \newacronym{mapk}{MAPK}{mitogen-activated protein kinase}
-\newacronym{m-cells}{M cells}{microfold cells}
-\newacronym{pi45p2}{PI(4,5)P\textsubscript{2}}{phosphatidylinositol 4,5-bisphosphate}
-\newacronym{pi3p}{PI(3)P}{phosphatidylinositol 3-phosphate}
-\newacronym{pi4p}{PI(4)P}{phosphatidylinositol 4-phosphate}
-\newacronym{pi5p}{PI(5)P}{phosphatidylinositol 5-phosphate}
+\newacronym{pi45p2}{PI(4,5)P\textsubscript{2}}{phosphatidylinositol 4,5-bis\-phos\-phate}
+\newacronym{pi3p}{PI(3)P}{phosphatidylinositol 3-phos\-phate}
+\newacronym{pi4p}{PI(4)P}{phosphatidylinositol 4-phos\-phate}
+\newacronym{pi5p}{PI(5)P}{phosphatidylinositol 5-phos\-phate}
 \newacronym{i13456p5}{I(1,3,4,5,6)P\textsubscript{5}}{inositol 1,3,4,5,6-pentakisphosphate}
 \newacronym{i1456p4}{I(1,4,5,6)P\textsubscript{4}}{inositol 1,4,5,6-tetrakisphosphate}
-\newacronym{abm}{ABM}{actin based motility}
-\newacronym{lcv}{LCV}{\textit{Legionella}-containing vacuole}
-\newacronym{npf}{NPF}{nucleation promoting factor}
-\newacronym{sp41}{SP41}{\textit{Brucella} surface protein}
-\newacronym{cbg}{C\textbeta G}{\textit{Brucella} cyclic \textbeta-1,2-glucan}
-\newacronym{bacv}{BaCV}{\textit{Bartonella}-containing vacuole}
-\newacronym{brcv}{BrCV}{\textit{Brucella}-containing vacuole}
-\newacronym{fcv}{FCV}{\textit{Francisella}-containing vacuole}
-\newacronym{scv}{SCV}{\textit{Salmonella}-con\-tain\-ing vacuole}
-\newacronym{spi}{SPI}{\textit{Salmonella} pathogenicity island}
-\newacronym{sif}{SIF}{\textit{Salmonella}-induced filaments}
-\newacronym{rho-g}{RhoG}{Ras homology growth-related}
-\newacronym{ics}{Ics}{\textit{Shigella} intracellular spread protein}
-\newacronym{n-wasp}{N-WASP}{neural Wiskott-Aldrich syndrome protein}
+\newacronym[description={\acrshort{ras} homology growth-related}]{rho-g}{RhoG}{Ras homology growth-related}
 \newacronym{wasp}{WASP}{Wiskott-Aldrich syndrome protein}
+\newacronym[description={neural \acrshort{wasp}}]{n-wasp}{N-WASP}{neural Wiskott-Aldrich syndrome protein}
 \newacronym{ilk}{ILK}{integrin linked kinase}
-\newacronym{car}{CAR}{coxsackievirus and adenovirus receptor}
-\newacronym{nf-kb}{NF-\textkappa B}{nuclear factor \textkappa-light-chain-enhancer of activated B cells}
+\newacronym{nf-kb}{NF-\textkappa B}{nuclear factor \textkappa-light-chain-en\-hancer of activated B cells}
 \newacronym[longplural={nuclear pore complexes}]{npc}{NPC}{nuclear pore complex}
-\newacronym{moi}{MOI}{multiplicity of infection}
 \newacronym{nls}{NLS}{nuclear localization signal}
 \newacronym{ptp}{pTP}{precursor terminal protein}
-\newacronym{dbp}{DBP}{DNA-binding protein}
+\newacronym{dna}{DNA}{deoxyribonucleic acid}
+\newacronym[description={double stranded \acrshort{dna}}]{dsdna}{dsDNA}{double stranded DNA}
+\newacronym[description={single stranded \acrshort{dna}}]{ssdna}{ssDNA}{single stranded DNA}
+\newacronym[description={\acrshort{dna}-binding protein}]{dbp}{DBP}{DNA-binding protein}
 \newacronym{vldlr}{VLDLR}{very low-density lipoprotein receptor}
 \newacronym{cdhr3}{CDHR3}{cadherin-related family member 3}
-\newacronym{mv}{MV}{mature virion}
-\newacronym{ev}{EV}{extracellular virion}
 \newacronym{ccp}{CCP}{clathrin-coated pit}
 \newacronym{ccv}{CCV}{clathrin-coated vesicles}
 \newacronym{rna}{RNA}{ribonucleic acid}
-\newacronym{mrna}{mRNA}{messenger \gls{rna}}
-\newacronym{sirna}{siRNA}{short interfering \gls{rna}}
-\newacronym{mirna}{miRNA}{microRNA}
-\newacronym{pri-mirna}{pri-\gls{mirna}}{primary \gls{mirna}}
-\newacronym{pre-mirna}{pre-\gls{mirna}}{precursor \gls{mirna}}
+\newacronym{rnase}{RNase}{ribonuclease}
+\newacronym[description={\acrshort{rna} interference}]{rnai}{RNAi}{RNA interference}
+\newacronym[description={double stranded \acrshort{rna}}]{dsrna}{dsRNA}{double stranded RNA}
+\newacronym[description={single stranded \acrshort{rna}}]{ssrna}{ssRNA}{single stranded RNA}
+\newacronym[description={\acrshort{rna} activation}]{rnaa}{RNAa}{RNA activation}
+\newacronym[description={ribosomal \acrshort{rna}}]{rrna}{rRNA}{ribosomal RNA}
+\newacronym[description={messenger \acrshort{rna}}]{mrna}{mRNA}{messenger RNA}
+\newacronym[description={short interfering \acrshort{rna}}]{sirna}{siRNA}{short interfering RNA}
+\newacronym[description={micro \acrshort{rna}}]{mirna}{miRNA}{micro RNA}
+\newacronym[description={primary \acrshort{mirna}}]{pri-mirna}{pri-miRNA}{primary miRNA}
+\newacronym[description={precursor \acrshort{mirna}}]{pre-mirna}{pre-miRNA}{precursor miRNA}
 \newacronym{dgcr8}{DGCR8}{DiGeorge syndrome critical region gene 8}
-\newacronym{trbp}{TRBP}{TRA \gls{rna}-binding protein}
-\newacronym{pact}{PACT}{protein activator of protein kinase PKR}
-\newacronym{risc}{RISC}{\gls{rna}-induced silencing complex}
-\newacronym{ago}{Ago}{Argonaute}
+\newacronym{tar}{TAR}{trans-activation response element}
+\newacronym[description={\acrshort{tar} \acrshort{rna}-binding protein}]{trbp}{TRBP}{TAR RNA-binding protein}
+\newacronym[description={protein kinase \acrshort{rna}-activated}]{pkr}{PKR}{protein kinase RNA-activated}
+\newacronym[description={protein activator of protein kinase \acrshort{pkr}}]{pact}{PACT}{protein activator of protein kinase PKR}
+\newacronym[description={\acrshort{rna}-induced silencing complex}]{risc}{RISC}{RNA-induced silencing complex}
+\newacronym{ago}{Ago}{Argonaute protein family}
 \newacronym{paz}{PAZ}{PIWI-Argonaute-Zwille domain}
 \newacronym{mid}{MID}{Argonaute middle domain}
 \newacronym{piwi}{PIWI}{P-element-induced whimpy testes domain}
-\newacronym{rits}{RITS}{\gls{rna}-induced transcriptional silencing complex}
-\newacronym{rdrc}{RDRC}{\gls{rna}-dependent \gls{rna} polymerase complex}
-\newacronym{pkr}{PKR}{\gls{rna}-dependent protein kinase pathway}
-\newacronym{ote}{OTE}{off-target effects}
-\newacronym{hts}{HTS}{high throughput screening}
-\newacronym{lof}{LOF}{loss-of-function}
+\newacronym[description={\acrshort{rna}-induced transcriptional silencing complex}]{rits}{RITS}{RNA-induced transcriptional silencing complex}
+\newacronym[description={\acrshort{rna}-dependent \acrshort{rna} polymerase complex}]{rdrc}{RDRC}{RNA-dependent \acrshort{rna} polymerase complex}
 \newacronym{gfp}{GFP}{green fluorescent protein}
 \newacronym{rfp}{RFP}{red fluorescent protein}
-\newacronym{shrna}{shRNA}{short hairpin \gls{rna}}
+\newacronym[description={short hairpin \acrshort{rna}}]{shrna}{shRNA}{short hairpin RNA}
 \newacronym{atp}{ATP}{adenosine triphosphate}
-\newacronym{llo}{LLO}{listeriolysin O}
+\newacronym{adp}{ADP}{adenosine diphosphate}
 \newacronym{gilt}{GILT}{\textgamma-interferon-inducible lysosomal thiol reductase}
-\newacronym{ehec}{EHEC}{enterohemorrhagic \textit{E. coli}}
-\newacronym{epec}{EPEC}{enteropathogenic \textit{E. coli}}
-\newacronym{mtor}{mTOR}{mechanistic target of rapamycin}
+\newacronym{mtor}{MTOR}{mechanistic target of rapa\-mycin}
+\newacronym{pik3r3}{PIK3R3}{phosphoinositide-3-kinase re\-gulatory subunit 3}
+\newacronym{ripk4}{RIPK4}{receptor-interacting serine\slash thre\-onine kinase 4}
+\newacronym{tgfbr1}{TGFBR1}{transforming growth factor, beta receptor 1}
 \newacronym{ros}{ROS}{reactive oxygen species}
 \newacronym{eis}{Eis}{enhanced intracellular survival protein}
 \newacronym{camp}{cAMP}{cyclic adenosine monophosphate}
 \newacronym{taa}{TAA}{trimeric autotransporter adhesin}
-\newacronym{ecm}{ECM}{extracellular matrix}
-\newacronym{kif11}{KIF11}{kinesin family member 11}
+\newacronym{kif11}{Kif11}{kinesin family member 11}
 \newacronym{ppib}{PPIB}{Peptidyl-prolyl cis-trans isomerase B}
-\newacronym{gapdh}{GAPDH}{glyceraldehyde-3-phosphate dehydrogenase}
+\newacronym{gapdh}{GAPDH}{glyceraldehyde-3-phos\-phate dehydrogenase}
 \newacronym{lmna}{LMNA}{lamin A/C}
 \newacronym{igg}{IgG}{immunoglobulin G}
 \newacronym{3-utr}{3'-UTR}{three prime untranslated region}
-
-%% diseases
+\newacronym{tln1}{TLN1}{talin-1}
+\newacronym{cltc}{CLTC}{clathrin heavy chain 1}
+\newacronym{dnm2}{DNM2}{dynamin-2}
+\newacronym{cfl1}{CFL1}{cofilin-1}
+\newacronym{bep}{Bep}{\textit{Bartonella} effector protein}
+\newacronym{inl}{Inl}{\textit{Listeria} internalin}
+\newacronym{acta}{ActA}{\textit{Listeria} actin assembly-inducing protein}
+\newacronym{sp41}{SP41}{\textit{Brucella} surface protein}
+\newacronym{cbg}{C\textbeta G}{\textit{Brucella} cyclic \textbeta-1,2-glucan}
+\newacronym{spi}{SPI}{\textit{Salmonella} pathogenicity island}
+\newacronym{car}{CAR}{coxsackievirus and adenovirus receptor}
+\newacronym{llo}{LLO}{listeriolysin O}
+% cell biology
+\newacronym{er}{ER}{endoplasmic reticulum}
+\newacronym[description={\acrshort{er}-associated protein degradation}]{erad}{ERAD}{ER-associated protein degradation}
+\newacronym[description={\acrshort{er}-Golgi intermediate compartment}]{ergic}{ERGIC}{ER-Golgi intermediate compartment}
+\newacronym{atr}{ATR}{acid tolerance response}
+\newacronym{m-cells}{M cells}{microfold cells}
+\newacronym{abm}{ABM}{actin based motility}
+\newacronym{lcv}{LCV}{\textit{Legionella}-containing vacuole}
+\newacronym{npf}{NPF}{nucleation promoting factor}
+\newacronym{bacv}{BaCV}{\textit{Bartonella}-containing vacuole}
+\newacronym{brcv}{BrCV}{\textit{Brucella}-containing vacuole}
+\newacronym{fcv}{FCV}{\textit{Francisella}-containing vacuole}
+\newacronym{scv}{SCV}{\textit{Salmonella}-con\-tain\-ing vacuole}
+\newacronym{moi}{MOI}{multiplicity of infection}
+\newacronym{mv}{MV}{mature virion}
+\newacronym{ev}{EV}{extracellular virion}
+\newacronym{ehec}{EHEC}{enterohemorrhagic \textit{E. coli}}
+\newacronym{epec}{EPEC}{enteropathogenic \textit{E. coli}}
+\newacronym{ecm}{ECM}{extracellular matrix}
+\newacronym{dmem}{DMEM}{Dulbecco modified Eagle me\-dium}
+\newacronym{fbs}{FBS}{fetal bovine serum}
+\newacronym{aav}{AAV}{adeno-associated virus}
+\newacronym{spp}{spp.}{\textit{species pluralis}; multiple, not explicitly enumerated species}
+\newacronym{subsp}{subsp.}{subspecies}
+\newacronym{atcc}{ATCC}{American Type Culture Collection}
+\newacronym{cba}{CBA}{Columbia base agar}
+\newacronym{tsb}{TSB}{tryptic soy broth}
+\newacronym{bsa}{BSA}{bovine serum albumin protein}
+\newacronym{pbs}{PBS}{phosphate-buffered saline}
+\newacronym{pfa}{PFA}{paraformaldehyde}
+\newacronym{dapi}{DAPI}{4',6-diamidino-2-phenylindole}
+\newacronym{cy}{Cy}{cyanine dye}
+\newacronym{lb}{LB}{lysogeny broth}
+% diseases
 \newacronym{aids}{AIDS}{acquired immune deficiency syndrome}
-\newacronym{csd}{CSD}{Cat Scratch Disease}
+\newacronym{csd}{CSD}{cat scratch disease}
 \newacronym{hiv}{HIV}{human immunodeficiency virus}
 \newacronym{sars}{SARS}{severe acute respiratory syndrome}
 \newacronym{amr}{AMR}{antimicrobial resistance}
 \newacronym{hdt}{HDT}{host directed therapeutics}
 \newacronym{cap}{CAP}{community-acquired pneumonia}
-\newacronym{aav}{AAV}{adeno-associated virus}
-
-%% misc
-\newacronym{who}{WHO}{World Health Organization}
-\newacronym{icu}{ICU}{intensive care unit}
-\newacronym{rtd}{RTD}{research, technology and development}
-\newacronym{dmem}{DMEM}{Dulbecco Modified Eagle Medium}
-\newacronym{fbs}{FBS}{fetal bovine serum}
-\newacronym{pfa}{PFA}{paraformaldehyde}
-\newacronym{hpc}{HPC}{high performance computing}
-\newacronym{hcs}{HCS}{high content screening}
-\newacronym{api}{API}{application programming interface}
-\newacronym{as}{AS}{application server}
-\newacronym{dss}{DSS}{data store server}
+\newacronym[description={localized, sustained \acrshort{sirna} delivery technology}]{loder}{LODER}{localized, sustained siRNA delivery technology}
+%% stats
 \newacronym{svm}{SVM}{support vector machine}
 \newacronym{dtis}{DTIS}{decision tree infection scoring}
-\newacronym{oop}{OOP}{object oriented programming}
-\newacronym[longplural={reference classes}]{rc}{RC}{reference class}
-\newacronym{crs}{CRS}{compressed row storage}
-\newacronym{lil}{LIL}{list of lists}
-
 \newacronym{mars}{MARS}{multivariate adaptive regression splines}
 \newacronym{glm}{GLM}{generalized linear model}
 \newacronym{pmm}{PMM}{parallel mixed model}
@@ -153,7 +193,24 @@
 \newacronym{mad}{MAD}{median absolute deviation}
 \newacronym{irls}{IRLS}{iteratively reweighted least squares}
 \newacronym{gcv}{GCV}{generalized cross validation}
+%% comp sci
+\newacronym{hpc}{HPC}{high performance computing}
+\newacronym{api}{API}{application programming interface}
+\newacronym{as}{AS}{application server}
+\newacronym{dss}{DSS}{data store server}
+\newacronym{oop}{OOP}{object oriented programming}
+\newacronym[longplural={reference classes}]{rc}{RC}{reference class}
+\newacronym{crs}{CRS}{compressed row storage}
+\newacronym{lil}{LIL}{list of lists}
+\newacronym{cpu}{CPU}{central processing unit}
+\newacronym{io}{I\slash O}{input\slash output}
+\newacronym{cran}{CRAN}{Comprehensive R Archive Network}
 \newacronym{ssd}{SSD}{solid state drive}
-
-\newacronym{spp}{spp.}{\textit{species pluralis}; multiple, not explicitly enumerated species}
-\newacronym{subsp}{subsp.}{subspecies}
+%% misc
+\newacronym{gni}{GNI}{gross national income}
+\newacronym{who}{WHO}{World Health Organization}
+\newacronym{icu}{ICU}{intensive care unit}
+\newacronym{rtd}{RTD}{Research, Technology and Development}
+\newacronym{led}{LED}{light-emitting diode}
+\newacronym{ccd}{CCD}{charge-coupled device}
+\newacronym{rtmp}{rt}{room temperature}

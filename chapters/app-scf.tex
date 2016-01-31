@@ -49,7 +49,7 @@ The configuration file structure is shown in listing \ref{lst:config}. The two e
 \label{sec:update-metadata}
 Metadata files are used in two separate contexts, the first being generation of lookup tables for dataset searches and feature availability checks and the second is involved with compilation of relevant metadata upon import of new data (see section \ref{sec:data-access}). Three different types of CSV-based files are required, a plate database, feature lists and aggregate files, creation and storage of which is described in the following paragraphs.
 
-For production use of singleCellFeatures, only aggregate files are required, as the other two file types are available in processed form as package data files, distributed with the package. All the metadata contained in aggregate files could unfortunately not be supplied directly with the package due to large size and more importantly, because they hold information that currently may not be released to the public as a whole (e.g. sequences of all \glspl{sirna} used throughout all screens, only a subset of which is currently published).
+For production use of singleCellFeatures, only aggregate files are required, as the other two file types are available in processed form as package data files, distributed with the package. All the metadata contained in aggregate files could unfortunately not be supplied directly with the package due to large size and more importantly, because they hold information that currently may not be released to the public as a whole (e.g. sequences of all \cglspl{sirna} used throughout all screens, only a subset of which is currently published).
 
 \subsection{Plate Database}
 \label{sec:plate-database}

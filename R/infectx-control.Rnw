@@ -59,11 +59,11 @@ cnms <- sapply(all, function(n) {
   else if(n == "Silencer_Select_Negative_Control_2")
     return("UNKNOWN")
   else if(n == "egfp")
-    return(paste0("GFP 1\\footnote{\\label{fn:gfp}GFP targeting \\gls{sirna} ",
-                  "sequences are provided by Ambion (Ambion Silencer eGFP; ",
-                  "GFP 1) and Dharmacon (GFP Duplex III; GFP 2).}"))
+    return(paste0("\\acrshort{gfp} 1\\footnote{\\label{fn:gfp}\\acrshort{gfp} targeting \\gls{sirna} ",
+                  "sequences are provided by Ambion (Ambion Silencer e\\acrshort{gfp}; ",
+                  "\\acrshort{gfp} 1) and Dharmacon (\\acrshort{gfp} Duplex III; \\acrshort{gfp} 2).}"))
   else if(n == "GFP Duplex III")
-    return("GFP 2\\textsuperscript{\\ref{fn:gfp}}")
+    return("\\acrshort{gfp} 2\\textsuperscript{\\ref{fn:gfp}}")
   else if(n == "AllStars Hs Cell Death siRNA")
     return(paste0("Kill\\footnote{A positive control cell killer is provided ",
                   "by Qiagen (AllStars Hs Cell Death Control)}"))
@@ -74,10 +74,10 @@ cnms <- sapply(all, function(n) {
     return("UNKNOWN")
   else if(n== "ARF1") return("\\hypertarget{tab:control-arf1}{ARF1}")
   else if(n== "CBL") return("\\hypertarget{tab:control-cbl}{CBL}")
-  else if(n== "CFL1") return("\\hypertarget{tab:control-cfl1}{CFL1}")
+  else if(n== "CFL1") return("\\hypertarget{tab:control-cfl1}{\\ACRshort{cfl1}}")
   else if(n== "CHUK") return("\\hypertarget{tab:control-chuk}{CHUK}")
-  else if(n== "CLTC") return("\\hypertarget{tab:control-cltc}{CLTC}")
-  else if(n== "DNM2") return("\\hypertarget{tab:control-dnm2}{DNM2}")
+  else if(n== "CLTC") return("\\hypertarget{tab:control-cltc}{\\ACRshort{cltc}}")
+  else if(n== "DNM2") return("\\hypertarget{tab:control-dnm2}{\\ACRshort{dnm2}}")
   else if(n== "ITGAV") return("\\hypertarget{tab:control-itgav}{ITGAV}")
   else if(n== "NOD1") return("\\hypertarget{tab:control-nod1}{NOD1}")
   else if(n== "PAK1") return("\\hypertarget{tab:control-pak1}{PAK1}")
@@ -85,11 +85,14 @@ cnms <- sapply(all, function(n) {
   else if(n== "PIK3R1") return("\\hypertarget{tab:control-pik3r1}{PIK3R1}")
   else if(n== "PRKCA") return("\\hypertarget{tab:control-prkca}{PRKCA}")
   else if(n== "PSMA6") return("\\hypertarget{tab:control-psma6}{PSMA6}")
-  else if(n== "RAB7A") return("\\hypertarget{tab:control-rab7a}{RAB7A}")
-  else if(n== "Rab2") return("\\hypertarget{tab:control-rab2}{Rab2}")
+  else if(n== "RAB7A") return("\\hypertarget{tab:control-rab7a}{\\ACRshort{rab}[7A]}")
+  else if(n== "Rab2") return("\\hypertarget{tab:control-rab2}{\\acrshort{rab}[2]}")
   else if(n== "SNX9") return("\\hypertarget{tab:control-snx9}{SNX9}")
-  else if(n== "TLN1") return("\\hypertarget{tab:control-tln1}{TLN1}")
+  else if(n== "TLN1") return("\\hypertarget{tab:control-tln1}{\\ACRshort{tln1}}")
   else if(n== "TSG101") return("\\hypertarget{tab:control-TSG101}{TSG101}")
+  else if(n== "Kif11") return("\\acrshort{kif11}")
+  else if(n== "CDC42") return("\\ACRshort{cdc-42}")
+  else if(n== "RAC1") return("\\ACRshort{rac-1}")
   else return(n)
 })
 
