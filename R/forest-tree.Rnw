@@ -1,0 +1,146 @@
+<<forest-tree, eval=TRUE, echo=FALSE, message=FALSE, fig.width=8, fig.height=5, out.width=".7\\linewidth", fig.align="center", fig.cap="Complete linkage hierarchical clustering performed on euclidean distances from cell feature importance scores, obtained through random forest analysis and averaged by well. For each gene and scrambled well, all available 8 replicates of the \\textit{Brucella} Dharmacon unpooled dataset were considered.", fig.scap="Hierarchical clustering on averaged random forest importance scores of cellular features.">>=
+
+suppressPackageStartupMessages(library(singleCellFeatures))
+suppressPackageStartupMessages(library(randomForest))
+suppressPackageStartupMessages(library(ggdendro))
+suppressPackageStartupMessages(library(grid))
+
+options(singleCellFeatures.progressBars = "none")
+
+fetchData <- function(genes, select.feat, drop.feat, select.norm, drop.norm) {
+  wells <- lapply(genes, function(gene, args, patho, exp) {
+    return(do.call(findWells, gene))
+  })
+  wells <- unlist(wells, recursive=FALSE)
+
+  data <- getSingleCellData(wells)
+  data <- unlist(data, recursive=FALSE)
+  data <- lapply(data, extractFeatures, select=select.feat, drop=drop.feat)
+  data <- lapply(data, augmentAggregate, features=select.norm, drop=drop.norm,
+                 func.aggr="mean")
+  data <- lapply(data, normalizeData, select=select.norm, drop=drop.norm,
+                 values=".", center="_Aggreg_W_mean", scale=NULL)
+
+  data <- lapply(genes, function(gene, dat) {
+    res <- lapply(dat, function(d, key) {
+      if(!is.null(key$contents)) {
+        if(grepl(key$contents, d$meta$gene.name, ignore.case=TRUE)) {
+          tmp <- meltData(d)$mat
+          tmp <- tmp[!sapply(tmp, is.null)]
+          ind <- grepl("_Normed$",
+                       sapply(tmp, function(d) return(names(d)[1])))
+          names(tmp)[ind]  <- paste0(names(tmp)[ind], "_Normalized")
+          names(tmp)[!ind] <- paste0(names(tmp)[!ind], "_Original")
+          return(tmp)
+        } else return(NULL)
+      } else if(!is.null(key$well.names)) {
+        if(key$well.names == paste0(d$meta$well.row, d$meta$well.col)) {
+          tmp <- meltData(d)$mat
+          tmp <- tmp[!sapply(tmp, is.null)]
+          ind <- grepl("_Normed$",
+                       sapply(tmp, function(d) return(names(d)[1])))
+          names(tmp)[ind]  <- paste0(names(tmp)[ind], "_Normalized")
+          names(tmp)[!ind] <- paste0(names(tmp)[!ind], "_Original")
+          return(tmp)
+        } else return(NULL)
+      }
+    }, gene)
+    return(res[!sapply(res, is.null)])
+  }, data)
+  return(data)
+}
+
+runForest <- function(data, random.seed=126) {
+  set.seed(random.seed)
+  res  <- lapply(data, function(gene) {
+    res <- lapply(gene, function(bc) {
+      ind.norm <- grep("_Normalized$", names(bc))
+      ind.orig <- grep("_Original$", names(bc))
+      if(length(ind.orig) > 1) stop("multiple matrices found.")
+      mat <- cbind(bc[[ind.norm]],
+                   as.factor(bc[[ind.orig]]$Cells.Infection_IsInfected))
+      names(mat) <- c(names(bc[[ind.norm]]),
+                      "Cells.Infection_IsInfected")
+      remove <- unlist(lapply(c("^Image.", "^Well", "^Plate"), grep,
+                              names(mat)))
+      if(length(remove) > 0) mat <- mat[,-remove]
+      # remova na cols
+      remove <- which(apply(mat, 2, function(x) sum(is.na(x))) > 1)
+      if(length(remove) > 0) mat <- mat[,-remove]
+      ind.resp <- grep("Cells.Infection_IsInfected", names(mat))
+      form <- as.formula(paste("Cells.Infection_IsInfected", 
+                               paste(names(mat)[-ind.resp], collapse=" + "),
+                         sep=" ~ "))
+      fit <- randomForest(form, data=mat)
+      imp <- importance(fit) # importance of each predictor
+      imp <- imp[order(imp[,1], decreasing=TRUE),]
+      return(list(importance=imp, fit=fit))
+    })
+    imp.individ <- sapply(res, function(x) {
+      return(x[["importance"]][order(names(x[["importance"]]))])
+    })
+    imp.overall <- apply(imp.individ, 1, mean)
+    res[["overall.importance"]] <- sort(imp.overall, decreasing=TRUE)
+    res[["correlation"]] <- list(pearson=cor(imp.individ, method="pearson"),
+                                 spearman=cor(imp.individ, method="spearman"),
+                                 kendall=cor(imp.individ, method="kendall"))
+    res[["data"]] <- gene
+    return(res)
+  })
+}
+
+plates <- sapply(findWells(contents="mtor", experiments="BRUCELLA-DU-K[12]"),
+                 getBarcode)
+genes  <- list(MTOR=list(contents="^mtor$", plates=plates),
+               TGFBR1=list(contents="^tgfbr1$", plates=plates),
+               RIPK4=list(contents="^ripk4$", plates=plates),
+               PIK3R3=list(contents="^pik3r3$", plates=plates),
+               G23=list(well.names="G23", plates=plates),
+               H2=list(well.names="H2", plates=plates),
+               J2=list(well.names="J2", plates=plates),
+               L1=list(well.names="L1", plates=plates))
+
+data <- fetchData(genes=genes,
+                  select.feat=c("^Cells.", "^Nuclei.", "^PeriNuclei.",
+                                "^VoronoiCells."),
+                  drop.feat=c("CorrPathogen", "Bacteria", ".Location_",
+                              "ClosestObjectNumber", "Parent_Nuclei",
+                              ".Parent_ExpandedNuclei"),
+                  select.norm=".", drop.norm=".Infection_")
+
+forest <- runForest(data)
+
+over.imp <- sapply(forest, function(x) {
+  return(x$overall.importance[order(names(x$overall.importance))])
+})
+
+colnames(over.imp) <- c("MTOR (H6)", "TGFBR1 (M4)", "RIPK4 (G17)",
+                        "PIPK3RB (K8)", "Scrambled (G23)",  "Scrambled (H2)",
+                        "Scrambled (J2)", "Scrambled (L1)")
+
+hc.imp <- hclust(dist(t(over.imp)))
+hc.imp <- as.dendrogram(hc.imp)
+ddata <- dendro_data(hc.imp, type = "rectangle")
+
+ggplot(segment(ddata)) + 
+  geom_segment(aes(x=x, y=y, xend=xend, yend=yend)) +
+  scale_x_discrete(labels=ddata$labels$label, expand=c(0.05, 0)) +
+  scale_y_continuous(limits=c(0, 21), expand=c(0, 0),
+                     breaks=seq(0, 21, by=3)) +
+  ylab("Complete linkage, euclidean\ncluster distance") +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, color="black",
+                                 size=14),
+        plot.margin=unit(c(c(5, 5, 0, 12)), units="mm"),
+        axis.text.y=element_text(hjust=1, color="black", size=14),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.background=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.ticks.y=element_line(color="black"),
+        axis.title.x=element_blank(),
+        axis.title.y=element_text(vjust=2, size=14),
+        axis.line=element_line(color="black"),
+        axis.line.x=element_blank())
+
+@
+

@@ -1,0 +1,96 @@
+<<scf-example0, eval=TRUE, echo=FALSE, message=FALSE>>=
+knit_hooks$set(chunk = function(x, options) {
+  paste0("\\begin{rflow}\n", x, "\n\\end{rflow}\n")
+})
+knit_hooks$set(source = function(x, options) paste0(x, "\n"))
+knit_hooks$set(message = function(x, options) x)
+
+suppressPackageStartupMessages(library(Matrix))
+suppressPackageStartupMessages(library(foreach))
+suppressPackageStartupMessages(library(doParallel))
+suppressPackageStartupMessages(library(iterators))
+suppressPackageStartupMessages(library(parallel))
+suppressPackageStartupMessages(library(stringi))
+suppressPackageStartupMessages(library(yaml))
+suppressPackageStartupMessages(library(plyr))
+suppressPackageStartupMessages(library(lpSolveAPI))
+suppressPackageStartupMessages(library(glmnet))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(methods))
+suppressPackageStartupMessages(library(RColorBrewer))
+suppressPackageStartupMessages(library(R.matlab))
+
+options(singleCellFeatures.progressBars = "none")
+@
+
+This short demonstration of singleCellFeatures may serve as an entry point for readers interested in using the package for accessing and processing InfectX data. More code examples are available as vignettes. 
+
+<<scf-example1, eval=TRUE>>=
+library(singleCellFeatures)
+@
+
+Whenever loading the package, the \mintinline{text}{.onLoad} hook triggers the generation of a short report on metadata coverage. This essentially checks that detailed metadata information is present in metadata databases (see section \ref{sec:plate-database}) for all plates on openBIS and reports on any unavailable data. Issuing the command \mintinline{text}{wellDatabaseCoverage(TRUE)} will show a more detailed report, explicitly listing all barcodes of missing plates.
+
+<<scf-example2, eval=TRUE>>=
+wells  <- findWells(experiment="brucella-du-k[12]", content="MTOR")
+plates <- lapply(wells, convertToPlateLocation)
+@
+
+The regular expression \mintinline{text}{brucella-du-k[12]} will restrict the search to either the K1 or K2 screens of Dharmacon unpooled \textit{Brucella} plates and within this set all wells are selected that contain \ACRshort{mtor} targeting \cgls{sirna} (for further parameters, see table \ref{tab:dataset-search}). The resulting \mintinline{text}{WellLocation} objects can be converted to \mintinline{text}{PlateLocation} structures for fetching complete plates instead of single wells.
+
+<<scf-example3, eval=TRUE>>=
+data <- PlateData(plates[[1]])
+data <- extractFeatures(data,
+                        select=c("^Cells.", "^Nuclei.", "^PeriNuclei.",
+                                 "^VoronoiCells."),
+                        drop=c("CorrPathogen", "Bacteria",
+                               "_MedianUpperTwoPercentIntensity_",
+                               "_MedianUpperFivePercentIntensity_",
+                               "_MedianUpperTenPercentIntensity_"))
+@
+
+
+Loading of a complete \mintinline{text}{PlateData} object will issue several sanity checks to ensure the resulting dataset is consistent throughout wells and all expected features are available, while removing spurious features. In order to detect whether there are 6 or 9 images per well, a heuristic determines the fraction of features which contain as many slots as are maximally encountered. As not all features are of interest, a subset can be extracted, based on the two (vectors of) regular expressions supplied as \mintinline{text}{select} and \mintinline{text}{drop} arguments. 
+
+<<scf-example4, eval=TRUE>>=
+data <- augmentImageLocation(data)
+data <- augmentCordinateFeatures(data, ellipse=1, facet=NULL,
+                                 center.dist=FALSE, density=FALSE)
+@
+
+Next, several functions are used to augment the dataset with new features, the first two of which are concerned with geometric data such as image location within well and object location within image. Here, all location features are expanded to include object location within well (by using the information of image location within well and location information within image) and object locations are categorized with respect to two ellipses, one at well level and the other at image level.
+
+<<scf-example5, eval=TRUE>>=
+data <- augmentBscore(data, features=c(".AreaShape_", ".Intensity_",
+                                       ".Texture_"),
+                      func.aggr="mean")
+data <- augmentMars(data, bscore=TRUE,
+                    model=c("^Nuclei.Location_In_Ellipse_Well$",
+                            "^Nuclei.Location_In_Ellipse_Image$"),
+                    features=c(".AreaShape_", ".Intensity_",
+                               ".Texture_"))
+@
+
+Augmenting data with B-scores will calculate row-, column- and plate-effects for each of the matched features. This is followed by \cgls{mars} modeling, which, in the present case, estimates the effect of the corresponding B-scores and the previously generated ellipse features on each of the selected features, returning only residuals. Further terms may be included, such as object densities or nucleus size, using the \mintinline{text}{model} argument (see section \ref{sub:norm-res}).
+
+<<scf-example6, eval=TRUE>>=
+data <- augmentAggregate(data, features="_MARSed$", level="plate",
+                         func.aggr="median")
+data <- augmentAggregate(data, features="_MARSed$", level="well",
+                         neighbors=TRUE,  func.aggr="mad")
+data <- normalizeData(data, values="MARSed$",
+                      center="MARSed_Aggreg_P_median$",
+                      scale="MARSed_Aggreg_N_mad$")
+@
+
+The \mintinline{text}{augmentAggregate} function is used to generate aggregated values at well of plate level, which is needed for centering and scaling feature data. First, for each of the \cgls{mars} residuals, the plate median is calculated, followed by \cgls{mad} values at well level. To make this step more robust, the option of including 4 neighbors of each well (left, right, top and bottom) is enabled. Using the intermediate features, a call to \mintinline{text}{normalizeData} will produce normalized features. Here all variables resulting from \cgls{mars} analysis are centered using plate medians and scaled with corresponding \cgls{mad} values per well.
+
+<<scf-example7, eval=TRUE>>=
+data <- meltData(data)
+data <- moveFeatures(data, to="Cells",
+                     from=c("_Normed", "Well.Type", "Well.Gene_Name"))
+@
+
+Finally, the \mintinline{text}{PlateData} object is molten into a list of \mintinline{text}{data.frames}. In order to obtain a single \mintinline{text}{data.frame}, containing all data of interest, features can be moved between nodes of the molten data structure by using the \mintinline{text}{moveFeatures} function. Cases where dimensions disagree (for example when moving a feature that is scalar valued per well, e.g. well index, to a node containing features that are vector valued per image) are handled automatically by duplicating or aggregating data.
+
+This small example is intended highlight some of the flexibility that comes with singleCellFeatures. Due to there not being a clear-cut analysis procedure that can be applied to all datasets, the package is designed to accommodate future applications as good as possible at the expense of some complexity.

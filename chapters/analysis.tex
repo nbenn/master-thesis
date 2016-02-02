@@ -256,6 +256,7 @@ providing new values $\beta^{(n+1)}$.
 % esl p61
 
 \subsection{Parallel Mixed Model}
+\label{sub:pmm}
 As a way of exploiting multi-tier replication, typically involved in \cgls{sirna} screening, starting at the level of individual sequences, different sequences targeting the same gene and as is the case for InfectX, different treatments in the form of varying pathogens, \citeauthor{Ramo2014} developed a \acrfull{pmm}, capable of gaining statistical power from structural parallelism. All following remarks are adapted from the referenced publication and the topic is only outlined briefly for completeness sake. The interested reader is directed to \citet{Ramo2014} for more information. The model as proposed is written as
 
 \begin{equation}
@@ -285,6 +286,7 @@ and represents the probability that the effect for a given gene and pathogen is 
 and quantifies how common a hit gene is among pathogens by describing both the extent of downward shift from 1 of the mean $q_{pg}$ value (over all $P=8$ pathogens), as well as the fraction of pathogens that contribute $q_{pg} < 1$ instances.
 
 \section{Preliminary Findings}
+\label{sec:preliminary-res}
 Due to the high degree of redundancy in feature extraction during image analysis, a significant amount of correlation among features can be expected. Measurements of objects describing similar image segments, as well as features that build on related concepts, such as mean, median or integrated intensities, will obviously yield similar values and cause a dependence structure that has to be dealt with in statistical analysis. Figure \ref{fig:analysis-correlation} visualizes the issue by showing a heatmap representation of a correlation matrix, obtained from all available \textit{AreaShape}, \textit{Intensity} and \textit{Texture} features for a \textit{Brucella} plate using Dharmacon \cgls{sirna} (J110-2D) and a randomly sampled subpopulation of cells (10\%).
 
 The three feature groups can easily be spotted as diagonal blocks with high within group and lower between group correlation, and the situation is worst for intensity features due to the extensive set of measurements quantifying similar properties (see figure \ref{fig:intensity-features}). The texture segment is subdivided into four groups, corresponding from bottom left to top right to \textit{Cells}, \textit{Nuclei}, \textit{PeriNuclei} and \textit{VoronoiCells}. Absent off-diagonal correlation between nuclear and perinuclear regions is due to mutual exclusivity, whereas the off-diagonal correlation of cell and Voronoi cell features is due to significant overlap.
@@ -293,7 +295,7 @@ The three feature groups can easily be spotted as diagonal blocks with high with
 
 In order to deal with this data issue, features are transformed to the coordinate system of \cglspl{pc} prior to \cgls{glm} model fitting. When employing \cgls{pca}, typically the first 10\% (or 30--50) of \cglspl{pc} capture around 90\% of the overall variance in the data, corroborating the above claim of significant correlation among feature vectors. A further problem that is present in many datasets is that pairs of wells can be perfectly separated. This causes problems in maximum likelihood estimation, as affected coefficients are allowed to grow arbitrarily large, but is not unexpected given the large design space. \cGls{pca} provides a tool for addressing the issue by encouraging only inclusion of a subset of \cglspl{pc} and thus reducing dimensionality.
 
-Several \cgls{glm} model fits, based on principal component regression are summarized in table \ref{tab:glm-1}. For the same plate is used in figure \ref{fig:analysis-correlation} (J110-2D, \textit{Brucella}, Dharmacon unpooled, replicate 1), well pairs corresponding to the genes identified by \cgls{pmm} as down-hits, \ACRshort{mtor} (H6) and \ACRshort{pik3r3} (K8), as well as up-hits, \ACRshort{ripk4} (G17) and \ACRshort{tgfbr1} (M4), are formed with all available scrambled wells of the given plate. In order to establish a baseline of sorts, scrambled wells are also paired with each other.
+Several \cgls{glm} model fits, based on principal component regression are summarized in table \ref{tab:glm-1}. For the same plate is used in figure \ref{fig:analysis-correlation} (J110-2D, \textit{Brucella}, Dharmacon unpooled, replicate 1), well pairs corresponding to the genes identified by \cgls{pmm} as down-hits, \ACRshort{mtor} (H6) and \ACRshort{tgfbr1} (M4), as well as up-hits, \ACRshort{pik3r3} (K8) and \ACRshort{ripk4} (G17), are formed with all available scrambled wells of the given plate. In order to establish a baseline of sorts, scrambled wells are also paired with each other.
 
 For describing how well the discrepancy between the two input wells is captured, some model characteristics, alongside scores for predictions, are reported. The AIC is a goodness of fit estimate, constituting of the maximized log-likelihood $l$, as well as a penalty term for model size $k$, and is defined as
 
@@ -455,6 +457,7 @@ where cost complexity term $C(\lambda)$ represents the effective number of param
 By having the option of combining functions in the active set with newly entering terms, the algorithm builds a hierarchical model in the sense that interactions of added variables are only possible if all interacting partners are already present, forming an interaction of one order less. The reasoning behind this is that otherwise the search space would grow exponentially, causing computational issues for higher order interactions and in many cases it seems justifiable to require main effects as basis for interactions. Furthermore, the formation of powers is not allowed as a term may only enter a single time in an iteration, again limiting the search space in favor of computational efficiency. For interpretability and in larger problems for performance reasons, it is often advisable to restrict the number of interactions to degree 2 or 3.
 
 \subsection{Normalization of Single Cell Data}
+\label{sub:norm-res}
 Implemented as part of singleCellFeatures, are both procedures for applying Z-scoring and B-scoring, as well as fitting a user-defined \cgls{mars} model to each feature selected to be normalized (see section \ref{sec:scf-aug-norm}). Two sets of features so far have been used as predictors in \cgls{mars}, a simpler, more conservative selection intended for targeting technical issues and a larger set based on the work of \citet{Knapp2011}, which includes population context.
 
 \input{R/location-trends}
