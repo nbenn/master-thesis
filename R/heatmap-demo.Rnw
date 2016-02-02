@@ -1,11 +1,11 @@
-<<scf-heatmap, eval=TRUE, echo=FALSE, message=FALSE, fig.width=12, fig.height=8, out.width=".95\\linewidth", fig.align="center", fig.cap="Several visualization procedures are integrated with singelCellFeatures. In this example, the median of the feature \\mintinline{text}{Nuclei.AreaShape_Area} is shown on a logarithmic scale. Two parameters of \\mintinline{text}{plateHeatmap} are functions so that the user can customize both, how data per well is summarized and on what scale colors are determined. The plate is J101-2C (wells C1, L2, C23 and L24 contain cell killer \\gls{kif11} \\gls{sirna}).", fig.scap="An example heatmap plot as produced by \\mintinline{text}{plateHeatmap}.">>=
+<<scf-heatmap, eval=TRUE, echo=FALSE, message=FALSE, fig.width=12, fig.height=8, out.width=".95\\linewidth", fig.align="center", fig.cap="Several visualization procedures are integrated with singleCellFeatures. In this example, the median of the feature \\mintinline{text}{Nuclei.AreaShape_Area} is shown on a logarithmic scale. Two parameters of \\mintinline{text}{plateHeatmap} are functions so that the user can customize both, how data per well is summarized and on what scale colors are determined. The plate is J101-2C (wells C1, L2, C23 and L24 contain cell killer \\gls{kif11} \\gls{sirna}).", fig.scap="An example heatmap plot as produced by \\mintinline{text}{plateHeatmap}.">>=
 suppressPackageStartupMessages(library(singleCellFeatures))
 suppressPackageStartupMessages(library(gtable))
 options(singleCellFeatures.progressBars = "none")
 
 data <- PlateData(PlateLocation("J101-2C"))
 plot <- plateHeatmap(data, "Nuclei.AreaShape_Area", median, log,
-                     colors=brewer.pal(9, "YlGnBu")[3:9])
+                     colors=brewer.pal(5, "YlGnBu"))
 plot$scales$scales[[3]]$name <- paste0("Median of Nuclei.AreaShape_Area on ",
                                        "log scale  ")
 plot <- plot +

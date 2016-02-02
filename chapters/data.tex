@@ -8,7 +8,7 @@ Due to the large scale yielding from screening multiple libraries and using diff
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]{infectx}
-  \caption[InfectX \cgls{rnai} data acquisition and analysis workflow.]{A total of 11 single \cgls{sirna} libraries, pdroduced by 3 separate manufacturers, (4 from Dharmacon, 4 from Quiagen and 3 from Ambion), as well as one pooled library (Dharmacon) were screened with 8 pathogens. Plates were imaged under wide-field microscopes and the resulting images run through an image analysis pipeline. \citep{Ramo2014}.}
+  \caption[InfectX \acrshort{rnai} data acquisition and analysis workflow.]{A total of 11 single \cgls{sirna} libraries, pdroduced by 3 separate manufacturers, (4 from Dharmacon, 4 from Quiagen and 3 from Ambion), as well as one pooled library (Dharmacon) were screened with 8 pathogens. Plates were imaged under wide-field microscopes and the resulting images run through an image analysis pipeline. \citep{Ramo2014}.}
   \label{fig:infectx}
 \end{figure}
 
@@ -29,7 +29,7 @@ In order to offset potential bias introduced by \cgls{sirna} design paradigms em
 
 \begin{table}
   \centering
-  \caption[Number of replicates performed for each of the pathogens and \cgls{sirna} libraries.]{Number of replicates performed for each of the pathogens and \cgls{sirna} libraries. The primary values indicate how many were performed in total while the value in parenthesis represents the number of screens that turned out to be unusable and had to be discarded. The effectively available number of replicates is the difference between the two \citep{Ramo2014}.}
+  \caption[Number of replicates performed for each of the pathogens and \acrfull{sirna} libraries.]{Number of replicates performed for each of the pathogens and \cgls{sirna} libraries. The primary values indicate how many were performed in total while the value in parenthesis represents the number of screens that turned out to be unusable and had to be discarded. The effectively available number of replicates is the difference between the two \citep{Ramo2014}.}
   \label{tab:infectx-replicates}
   \footnotesize
   \begin{tabular}{L{0.2\linewidth}C{0.13\linewidth}C{0.13\linewidth}C{0.13\linewidth}C{0.15\linewidth}}
@@ -95,7 +95,7 @@ Central to the \cgls{sirna} screens produced by InfectX was the effort to develo
   \caption[Differences in assay protocols among the 8 pathogens.]{Despite putting much emphasis on using identical protocols throughout all screens, some assay parameters were fine-tuned in order to obtain phenotypes such as infection and cell counts that are similar among the investigated pathogens \citep{Ramo2014}.}
   \label{tab:infectx-differences}
   \footnotesize
-  \begin{tabular}{L{0.17\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.10\linewidth}C{0.10\linewidth}}
+  \begin{tabular}{L{0.17\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.09\linewidth}C{0.11\linewidth}C{0.10\linewidth}}
     Pathogen &
       \mcrot{1}{l}{60}{Seeded cell number} &
       \mcrot{1}{l}{60}{\Acrshort{moi}} &
@@ -172,11 +172,11 @@ Central to the \cgls{sirna} screens produced by InfectX was the effort to develo
     vaccinia virus &
       600 &
       0.125 &
-      \SI{1}{\hour}\slash \SI{8}{\hour}\footnote{The two values stand for primary and secondary infection times, respectively. The same goes for pathogen dyes.} &
+      \SI{1}{\hour}\slash \SI{8}{\hour}\footnote{\label{fn:prim-sec} The two values stand for primary and secondary infection times, respectively. The same goes for pathogen dyes.} &
       \SI{24}{\hour} &
       Hoechst &
       DY-647 &
-      \acrshort{gfp}\slash \acrshort{rfp} &
+      \acrshort{gfp}\slash \acrshort{rfp}\textsuperscript{\ref{fn:prim-sec}} &
       - \\
   \end{tabular}
   \end{minipage}
@@ -285,7 +285,7 @@ In the above example, the measured objects are cells, the feature is of intensit
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]{segmentation}
-  \caption[Object detection of nuclei, perinuclei, Voronoi cells and cell bodies along with potential pitfalls.]{Object identification is started with easily recognizable nuclei, which become primary objects and serve as basis for detecting secondary objects. Problems with nuclei detection include superfluous splitting (a) and failure to separate some touching objects (c). Mostly results are acceptable and some touching nuclei are correctly separated (b). Perinuclei extend the nuclear border and therefore suffer from problems introduced in nuclear recognition. Further issues include overlap with extracellular space (d) and small perinuclear area in densely populated regions (e). Voronoi cells further extend the nuclear area and often grow beyond cell boundaries (f). Finally, cell segmentation is a hard problem due to irregular shapes, variability in size and inhomogeneities in actin distribution (h). Results suffer from falsely identified nuclei (g and i). Image source: plate KB2-05-1A, well G6, site 8 (\textit{Salmonella}).}
+  \caption[Object detection of Nuclei, PeriNuclei, VoronoiCells and Cells along with potential pitfalls.]{Object identification is started with easily recognizable nuclei, which become primary objects and serve as basis for detecting secondary objects. Problems with nuclei detection include superfluous splitting (a) and failure to separate some touching objects (c). Mostly results are acceptable and some touching nuclei are correctly separated (b). Perinuclei extend the nuclear border and therefore suffer from problems introduced in nuclear recognition. Further issues include overlap with extracellular space (d) and small perinuclear area in densely populated regions (e). Voronoi cells further extend the nuclear area and often grow beyond cell boundaries (f). Finally, cell segmentation is a hard problem due to irregular shapes, variability in size and inhomogeneities in actin distribution (h). Results suffer from falsely identified nuclei (g and i). Images are reproduced from InfectX \textit{Salmonella} screening data.}
   \label{fig:segmentation}
 \end{figure}
 
@@ -302,8 +302,7 @@ In the above example, the measured objects are cells, the feature is of intensit
 \begin{figure}
   \centering
   \includegraphics[width=0.95\textwidth]{actin-features}
-  \caption[Detection of two actin based structures, CometTails and Invasomes.]{Both CometTails and Invasomes are detected on actin channels, which poses difficulties due to noisy background. Invasomes are characterized by their ring-shaped morphology (a), while CometTails appear as actin streaks (c). Currently invasome detection yields many false-positives (b). Image sources: plate K008-5G (\textit{Bartonella}), well J12, site 3 (A); plate J109-2H (\textit{Listeria}), well F16, site 5 (B).}
-  % image references are wrong! cannot check at the moment as openBIS is down...
+  \caption[Detection of two actin based structures, CometTails and Invasomes.]{Both CometTails and Invasomes are detected on actin channels, which poses difficulties due to noisy background. Invasomes are characterized by their ring-shaped morphology (a), while CometTails appear as actin streaks (c). Currently invasome detection yields many false-positives (b), which is problematic due to their inclusion in infection scoring (see figure \ref{fig:dectree-bartonella}). Images are taken from InfectX \textit{Bartonella} (A) and \textit{Listeria} (B) screens.}
   \label{fig:actin-features}
 \end{figure}
 
@@ -490,17 +489,17 @@ Classification by an \cgls{svm} yields the $(p-1)$-dimensional hyperplane from $
   \centering
   \begin{tikzpicture}
     \node [decision={$> \text{A}$}{$\le \text{A}$}] {
-      \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}}
     }
     [decision tree]
-    child { node [infected] { infected } }
+    child { node [infected] { \bfseries{infected} } }
     child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
-    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
-      child { node [infected] { infected } }
+    {\fontfamily{pcr}\fontseries{b}\selectfont{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen}} } 
+      child { node [infected] { \bfseries{infected} } }
       child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
-      \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen} } 
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen}} } 
         child { node [infected] { infected } }
-        child { node [healthy] { not infected } }
+        child { node [healthy] { \bfseries{not infected} } }
       }
     };
   \end{tikzpicture}
@@ -522,28 +521,28 @@ Adenovirus infection scoring is based on \cgls{gfp} signal intensity which varie
   \centering
   \begin{tikzpicture}
     \node [decision={$> 0.800$}{$\le 0.800$}] { 
-      \texttt{Invasomes.Intensity\_MaxIntensity\_\\Corr1Pathogen}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Invasomes.Intensity\_MaxIntensity\_\\Corr1Pathogen}}
     }
     [decision tree]
-    child { node [infected] { infected } }
+    child { node [infected] { \bfseries{infected} } }
     child { node [decision={$> 0.075$}{$\le 0.075$}] { 
-    \texttt{Invasomes.Intensity\_MeanIntensity\_\\Corr1Pathogen} } 
-      child { node [infected] { infected } }
+    {\fontfamily{pcr}\fontseries{b}\selectfont{Invasomes.Intensity\_MeanIntensity\_\\Corr1Pathogen}} } 
+      child { node [infected] { \bfseries{infected} } }
       child { node [decision={$> 0.085$}{$\le 0.085$}] { 
-      \texttt{Invasomes.Intensity\_UpperQuartile-\\Intensity\_Corr1Pathogen} }
-        child { node [infected] { infected } }
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Invasomes.Intensity\_UpperQuartile-\\Intensity\_Corr1Pathogen}} }
+        child { node [infected] { \bfseries{infected} } }
         child { node [decision={$> 12.00$}{$\le 12.00$}] { 
-        \texttt{Invasomes.AreaShape\_Area} }
+        {\fontfamily{pcr}\fontseries{b}\selectfont{Invasomes.AreaShape\_Area}} }
           child { node [decision={$< 1000$}{$\ge 1000$}] { 
-            \texttt{Invasomes.AreaShape\_Area} }
+            {\fontfamily{pcr}\fontseries{b}\selectfont{Invasomes.AreaShape\_Area}} }
             child { node [decision={$< 0.060$}{$\ge 0.060$}] { 
-              \texttt{Invasomes.RadialDistribution\_\\FracAtD\_Corr1Actin\_1} }
-              child { node [infected] { infected } }
-              child { node [healthy] { not infected } }
+              {\fontfamily{pcr}\fontseries{b}\selectfont{Invasomes.RadialDistribution\_\\FracAtD\_Corr1Actin\_1}} }
+              child { node [infected] { \bfseries{infected} } }
+              child { node [healthy] { \bfseries{not infected} } }
             }
-            child { node [healthy] { not infected } }
+            child { node [healthy] { \bfseries{not infected} } }
           }
-          child { node [healthy] { not infected } }
+          child { node [healthy] { \bfseries{not infected} } }
         }
       }
     };

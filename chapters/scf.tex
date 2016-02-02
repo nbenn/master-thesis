@@ -169,7 +169,7 @@ The next logical level is the screen (\cgls{sirna} library), but clustering seve
       text=white,
       minimum width=1cm,
       minimum height=0.5cm,
-      font=\footnotesize
+      font=\bfseries\footnotesize
     }
   ]
     \node[vertex style=Turquoise]{PlateData}
@@ -270,17 +270,17 @@ In order to retrieve data from all plates containing wells with \cgls{sirna} dir
   \begin{tikzpicture}[%
     decision style/.style={%
       diamond, draw=#1, on grid, thick, fill=#1!70, inner sep=2pt, aspect=2, 
-      text=white, text width=5em, text centered, font=\footnotesize
+      text=white, text width=5em, text centered, font=\bfseries\footnotesize
     },
     block style/.style={%
       rectangle, draw=#1, on grid, thick, fill=#1!70, rounded corners,
       minimum height=3em, inner sep=4pt, minimum width=7em, text=white,
-      text width=5em, text centered, font=\footnotesize
+      text width=5em, text centered, font=\bfseries\footnotesize
     },
     cloud style/.style={%
       ellipse, draw=#1, on grid, thick, fill=#1!70, minimum height=3em,
       minimum width=6em, inner sep=2pt, text=white, text width=5em,
-      text centered, font=\footnotesize
+      text centered, font=\bfseries\footnotesize
     },
     line style/.style={%
       draw, -latex'
@@ -471,9 +471,9 @@ The function \mintinline{text}{cleanData}, which may act on plates and wells, is
 Further, related functionality is provided by \mintinline{text}{makeFeatureCompatible}, which can be used to ensure that multiple \mintinline{text}{Data} objects, supplied as a list, share the same features. For dealing with data heterogeneity, the intersection of individual feature sets is computed using the base function \mintinline{text}{Reduce} and subsequently extracted from each object. In order to illustrate the brevity with which such procedures can be implemented owing to R's broad range of library functions, coupled with convenience functions available to singleCellFeatures, the source to this function is reproduced in listing \ref{lst:feature-compat}. This procedure can be applied to any combination of \mintinline{text}{PlateData}, \mintinline{text}{WellData} and \mintinline{text}{ImageData}, owing to generic functions and the S3 method dispatch system.
 
 \subsection{Ensuring Dataset Consistency}
-Despite efforts to design data structure modifying functions in such a way that prevents introducing inconsistencies, there if no formal safe-guarding and due to how S3 objects are designed, the user can do whatever he pleases (for example removing features only in a subset of wells). Therefore, several procedures exist, that can be used to ensure that some assumptions made throughout the code base (such as an identical set of features throughout a plate) still hold. Checking whether the set of features per se is complete can be done with \mintinline{text}{checkCompletenessFeature}, which has been introduced earlier as the function that checks \mintinline{text}{PlateData} objects before well caches are written and reports on the state of \mintinline{text}{MatData} caches following their retrieval.
+Despite efforts to design data structure modifying functions in such a way that prevents introducing inconsistencies, there if no formal safe-guarding and due to how S3 objects are designed, the user can do whatever he pleases (for example removing features only in a subset of wells). Therefore, several procedures exist, that can be used to make sure that some assumptions made throughout the code base (such as an identical set of features throughout a plate) still hold. Checking whether the set of features per se is complete can be done with \mintinline{text}{checkCompletenessFeature}, which has been introduced earlier as the function that checks \mintinline{text}{PlateData} objects before well caches are written and reports on the state of \mintinline{text}{MatData} caches following their retrieval.
 
-\begin{rlisting}{float=t}{The function \mintinline{text}{makeFeatureCompatible} can be used to ensure an identical feature set among the supplied objects.}{Used for reducing the supplied list of objects to the common set of features, this function serves as an illustration of the conciseness that is possible due to R's range of library functions coupled with functionality implemented in singleCellFeatures.}{feature-compat}
+\begin{rlisting}{float=t}{Ensuring identical feature sets among the supplied objects using the function \mintinline{text}{makeFeatureCompatible}.}{Used for reducing the supplied list of objects to the common set of features, this function serves as an illustration of the conciseness that is possible due to R's range of library functions coupled with functionality implemented in singleCellFeatures.}{feature-compat}
 \begin{rcode}
 makeFeatureCompatible <- function(lst) {
   # input validation

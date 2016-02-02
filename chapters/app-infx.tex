@@ -38,17 +38,17 @@ The decision trees for adenovirus and \textit{Bartonella} are shown in section~\
   \centering
   \begin{tikzpicture}
     \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
-      \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Nuclei.Intensity\_MeanIntensity\_\\CorrPathogen}}
     }
     [decision tree]
-    child { node [infected] { infected } }
+    child { node [infected] { \bfseries{infected} } }
     child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
-    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen} } 
-      child { node [infected] { infected } }
+    {\fontfamily{pcr}\fontseries{b}\selectfont{PeriNuclei.Intensity\_\\MeanIntensity\_CorrPathogen}} } 
+      child { node [infected] { \bfseries{infected} } }
       child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
-      \texttt{Cells.Intensity\_MeanIntensity\_\\CorrPathogen} }
-        child { node [infected] { infected } }
-        child { node [healthy] { not infected } }
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Cells.Intensity\_MeanIntensity\_\\CorrPathogen}} }
+        child { node [infected] { \bfseries{infected} } }
+        child { node [healthy] { \bfseries{not infected} } }
       }
     };
   \end{tikzpicture}
@@ -65,17 +65,17 @@ The decision trees for adenovirus and \textit{Bartonella} are shown in section~\
   \centering
   \begin{tikzpicture}
     \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
-      \texttt{Nuclei.Intensity\_MeanIntensity\_\\CorrInlC}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Nuclei.Intensity\_MeanIntensity\_\\CorrInlC}}
     }
     [decision tree]
-    child { node [infected] { infected } }
+    child { node [infected] { \bfseries{infected} } }
     child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
-    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_CorrInlC} } 
-      child { node [infected] { infected } }
+    {\fontfamily{pcr}\fontseries{b}\selectfont{PeriNuclei.Intensity\_\\MeanIntensity\_CorrInlC}} } 
+      child { node [infected] { \bfseries{infected} } }
       child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
-      \texttt{Nuclei.Intensity\_UpperQuartile-\\Intensity\_CorrInlC} }
-        child { node [infected] { infected } }
-        child { node [healthy] { not infected } }
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Nuclei.Intensity\_UpperQuartile-\\Intensity\_CorrInlC}} }
+        child { node [infected] { \bfseries{infected} } }
+        child { node [healthy] { \bfseries{not infected} } }
       }
     };
   \end{tikzpicture}
@@ -92,17 +92,17 @@ The decision trees for adenovirus and \textit{Bartonella} are shown in section~\
   \centering
   \begin{tikzpicture}
     \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
-      \texttt{Nuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Nuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen}}
     }
     [decision tree]
-    child { node [infected] { infected } }
+    child { node [infected] { \bfseries{infected} } }
     child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
-    \texttt{PeriNuclei.Intensity\_MeanUpperTen-\\PercentIntensity\_CorrPathogen} } 
-      child { node [infected] { infected } }
+    {\fontfamily{pcr}\fontseries{b}\selectfont{PeriNuclei.Intensity\_MeanUpper-\\TenPercentIntensity\_CorrPathogen}} } 
+      child { node [infected] { \bfseries{infected} } }
       child { node [decision={$> \text{C}$}{$\le \text{C}$}] { 
-      \texttt{VoronoiCells.Intensity\_MeanUpper-\\TenPercentIntensity\_CorrPathogen} }
-        child { node [infected] { infected } }
-        child { node [healthy] { not infected } }
+      {\fontfamily{pcr}\fontseries{b}\selectfont{VoronoiCells.Intensity\_MeanUpper-\\TenPercentIntensity\_CorrPathogen}} }
+        child { node [infected] { \bfseries{infected} } }
+        child { node [healthy] { \bfseries{not infected} } }
       }
     };
   \end{tikzpicture}
@@ -119,15 +119,15 @@ The decision trees for adenovirus and \textit{Bartonella} are shown in section~\
   \centering
   \begin{tikzpicture}
     \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
-      \texttt{Cells.Intensity\_SubCellBacteria-\\MeanIntensity\_CorrPathogen}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Cells.Intensity\_SubCellBacteria-\\MeanIntensity\_CorrPathogen}}
     }
     [decision tree]
     child { node [decision={$< \text{B}$}{$\ge \text{B}$}] { 
-      \texttt{Cells.AreaShape\_SubCellBacteria-\\Area\_CorrPathogen} }
-      child { node [infected] { infected } }
-      child { node [healthy] { not infected } }
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Cells.AreaShape\_SubCellBacteria-\\Area\_CorrPathogen} }}
+      child { node [infected] { \bfseries{infected} } }
+      child { node [healthy] { \bfseries{not infected} } }
     }
-    child { node [healthy] { not infected } };
+    child { node [healthy] { \bfseries{not infected} } };
   \end{tikzpicture}
 
   \vspace{5mm}
@@ -143,14 +143,14 @@ The decision trees for adenovirus and \textit{Bartonella} are shown in section~\
   \centering
   \begin{tikzpicture}
     \node [decision={$> \text{A}$}{$\le \text{A}$}] { 
-      \texttt{Nuclei.Intensity\_MeanIntensity\_\\Corr1Pathogen}
+      {\fontfamily{pcr}\fontseries{b}\selectfont{Nuclei.Intensity\_MeanIntensity\_\\Corr1Pathogen}}
     }
     [decision tree]
-    child { node [infected] { infected } }
+    child { node [infected] { \bfseries{infected} } }
     child { node [decision={$> \text{B}$}{$\le \text{B}$}] { 
-    \texttt{PeriNuclei.Intensity\_\\MeanIntensity\_Corr1Pathogen} } 
-      child { node [infected] { infected } }
-      child { node [healthy] { not infected } }
+    {\fontfamily{pcr}\fontseries{b}\selectfont{PeriNuclei.Intensity\_\\MeanIntensity\_Corr1Pathogen}} } 
+      child { node [infected] { \bfseries{infected} } }
+      child { node [healthy] { \bfseries{not infected} } }
     };
   \end{tikzpicture}
 
