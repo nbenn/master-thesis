@@ -98,15 +98,19 @@
 \definecolor{hrlink}{rgb}{0.192, 0.494, 0.8}
 \definecolor{hrcite}{rgb}{0.192, 0.494, 0.8}
 \definecolor{hrurl}{rgb}{0.69, 0.353, 0.396}
+\definecolor{printlink}{rgb}{0, 0, 0}
 \hypersetup{
   %hyperindex,
   colorlinks={true},
   %pagebackref,
   linktocpage,
   plainpages={false},
-  linkcolor={hrlink},
-  citecolor={hrlink},
-  urlcolor={hrurl},
+  linkcolor={printlink},
+  %linkcolor={hrlink},
+  citecolor={printlink},
+  %citecolor={hrlink},
+  urlcolor={printlink},
+  %urlcolor={hrurl},
   pdfstartview={Fit},
   pdfview={XYZ null null null}
 }
@@ -171,7 +175,6 @@
 
 \mainmatter
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Thesis body                                                            %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,6 +209,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \cleartorecto
-\includepdf[pages={-}, scale=1.05]{declaration-originality.pdf}
+%\includepdf[pages={-}, scale=1.05]{declaration-originality.pdf}
+%\cleartorecto
 
 \end{document}
