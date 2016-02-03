@@ -4,31 +4,40 @@
 %% Largely adapted from Adrian Nievergelt's template for the ADPS
 %% (lecture notes) project.
 
+\newif\iftargetprint
+%\targetprinttrue
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Document settings                                                      %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% We use the memoir class because it offers a many easy to use features.
-\documentclass[9pt,a4paper,titlepage,showtrims]{memoir}
-%% use a4 paper, set up smaller page size inside
-\settrimmedsize{22.8cm}{*}{0.7071} % yields 458pt x 648pt
-%% center smaller page on a4 paper
-\setlength{\trimtop}{\stockheight}
-\setlength{\trimedge}{\stockwidth}
-\addtolength{\trimtop}{-\paperheight} % \trimtop  = \stockheight - \paperheight
-\addtolength{\trimedge}{-\paperwidth} % \trimedge = \stockwidth  - \paperwidth
-\settrims{0.5\trimtop}{0.5\trimedge}
-%% set up body size
-\settypeblocksize{459pt}{314pt}{*} % yields 314pt x 460pt
-%% place body on page
-\setlrmargins{70pt}{*}{*}
-\setulmargins{100pt}{*}{*}
-%% finalize layout settings
-\checkandfixthelayout
-%% crop marks
-\quarkmarks
-%% layout package to print current layout (insert \layout in body)
-%\usepackage{layout}
+\iftargetprint
+  %% We use the memoir class because it offers a many easy to use features.
+  \documentclass[9pt,a4paper,titlepage,showtrims]{memoir}
+  %% use a4 paper, set up smaller page size inside
+  \settrimmedsize{22.8cm}{*}{0.7071} % yields 458pt x 648pt
+  %% center smaller page on a4 paper
+  \setlength{\trimtop}{\stockheight}
+  \setlength{\trimedge}{\stockwidth}
+  %% \trimtop = \stockheight - \paperheight
+  \addtolength{\trimtop}{-\paperheight}
+  %% \trimedge = \stockwidth - \paperwidth
+  \addtolength{\trimedge}{-\paperwidth}
+  \settrims{0.5\trimtop}{0.5\trimedge}
+  %% set up body size
+  \settypeblocksize{459pt}{314pt}{*} % yields 314pt x 460pt
+  %% place body on page
+  \setlrmargins{70pt}{*}{*}
+  \setulmargins{100pt}{*}{*}
+  %% finalize layout settings
+  \checkandfixthelayout
+  %% crop marks
+  \quarkmarks
+  %% layout package to print current layout (insert \layout in body)
+  %\usepackage{layout}
+\else
+  \documentclass[9pt,b5paper,titlepage]{memoir}
+\fi
 
 \renewcommand{\baselinestretch}{1.1}
 %% needed for getting around open stream limit
@@ -50,7 +59,7 @@
 %% capable, so you may want to use 'latin1' instead.
 \usepackage[utf8]{inputenc}
 
-%% to allow cloring in code listings
+%% to allow coloring in code listings
 \usepackage[dvipsnames]{xcolor}
 
 %% This changes default fonts for both text and math mode to use Herman Zapfs
@@ -67,7 +76,7 @@
 %% NOTE: Must be loaded AFTER amsmath, or the \qed placement will
 %% break
 \usepackage[amsmath,thmmarks]{ntheorem}
-%% alog align groups to be split over pages
+%% allow align groups to be split over pages
 \allowdisplaybreaks
 
 %% LaTeX' own graphics handling
@@ -95,23 +104,32 @@
 %% This MUST be loaded after varioref, which is loaded in 'extrapackages'
 %% above.  We just load it last to be safe.
 \usepackage{hyperref}
-\definecolor{hrlink}{rgb}{0.192, 0.494, 0.8}
-\definecolor{hrcite}{rgb}{0.192, 0.494, 0.8}
-\definecolor{hrurl}{rgb}{0.69, 0.353, 0.396}
-\hypersetup{
-  colorlinks={true},
-  linktocpage,
-  plainpages={false},
-  linkcolor={black},
-  %linkcolor={hrlink},
-  citecolor={black},
-  %citecolor={hrlink},
-  urlcolor={black},
-  %urlcolor={hrurl},
-  pdfstartview={Fit},
-  pdfview={XYZ null null null}
-}
-
+\iftargetprint
+  \hypersetup{
+    colorlinks={true},
+    linktocpage,
+    plainpages={false},
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={black},
+    pdfstartview={Fit},
+    pdfview={XYZ null null null}
+  }
+\else
+  \definecolor{hrlink}{HTML}{1842B2}
+  \definecolor{hrcite}{HTML}{1842B2}
+  \definecolor{hrurl}{HTML}{AB120C}
+  \hypersetup{
+    colorlinks={true},
+    linktocpage,
+    plainpages={false},
+    linkcolor={hrlink},
+    citecolor={hrlink},
+    urlcolor={hrurl},
+    pdfstartview={Fit},
+    pdfview={XYZ null null null}
+  }
+\fi
 
 %% Set the paths where all figures are taken from:
 \graphicspath{{figures/}}
@@ -137,8 +155,11 @@
 %%%  Front matter                                                           %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\include{chapters/title-electronic}
-\include{chapters/title-print}
+\iftargetprint
+  \include{chapters/title-print}
+\else
+  \include{chapters/title-electronic}
+\fi
 
 \cleartorecto
 \include{chapters/epigraph}
@@ -205,8 +226,10 @@
 %%%  Declaration of originality                                             %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\cleartorecto
-%\includepdf[pages={-}, scale=1.05]{declaration-originality.pdf}
-%\cleartorecto
+\iftargetprint
+  \cleartorecto
+\else
+  \includepdf[pages={-}, scale=1.05]{declaration-originality.pdf}
+\fi
 
 \end{document}
