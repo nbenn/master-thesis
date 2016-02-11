@@ -14,7 +14,7 @@
     "name": "make",
     "cmd": ["make"],
     "shell": true,
-    "path": "/usr/local/bin:/usr/bin:/usr/texbin:/bin:/opt/local/bin"
+    "path": "/usr/local/bin:/usr/bin:/usr/texbin:/bin:/opt/local/bin:/Library/TeX/texbin"
   }],
   "options": {
     "root": "thesis.tex",
